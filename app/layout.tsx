@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Instrument_Serif } from 'next/font/google';
 import TopBar from '@/components/TopBar';
 import Footer from '@/components/Footer';
+import SectionRevealObserver from '@/components/SectionRevealObserver';
 import './globals.css';
 
 const inter = Inter({
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${inter.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable}`}
     >
       <body>
+        <SectionRevealObserver />
         <TopBar />
         {children}
         <Footer />

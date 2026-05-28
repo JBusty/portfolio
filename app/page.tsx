@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import SectionHead from '@/components/SectionHead';
 import { PROJECTS, STATS, VALUES, CREW, JOURNEY, FAQ, COMPANIES } from '@/lib/data';
+import styles from './page.module.css';
 
 // ---------- HOME ----------
 export default function Home() {
@@ -43,46 +44,31 @@ function HomeHero() {
     >
       <div className="spotlight" style={{ left: pos.x, top: pos.y, opacity: pos.on ? 1 : 0 }} />
 
-      <div className="container" style={{ padding: '64px 32px 24px' }}>
-        <h1 className="tight" style={{
-          margin: 0,
-          fontSize: 'clamp(56px, 11vw, 200px)',
-          lineHeight: 0.88,
-          letterSpacing: '-0.055em',
-          fontWeight: 700,
-        }}>
-          Designs complex<br />
-          systems that<br />
-          ship<span className="accent">.</span>{' '}
-          <span className="serif" style={{ fontStyle: 'italic', fontWeight: 400, letterSpacing: '-0.04em' }}>
-            (and stick)
-          </span>
-        </h1>
-
-        <div style={{
-          marginTop: 56,
-          display: 'grid',
-          gridTemplateColumns: '1.4fr 1fr',
-          gap: 48,
-          alignItems: 'end',
-        }}>
-          <div>
-            <div className="mono upper" style={{ fontSize: 11, color: 'var(--accent)', marginBottom: 12, letterSpacing: '0.1em' }}>
+      <div className={`container ${styles.heroInner}`}>
+        <div className={styles.heroGrid}>
+          <div className={styles.heroCopy}>
+            <h1 className={`tight ${styles.heroTitle}`}>
+              <span className={styles.heroLine} style={{ animationDelay: '0ms' }}>
+                Designing complex
+              </span>
+              <span className={styles.heroLine} style={{ animationDelay: '100ms' }}>
+                systems that
+              </span>
+              <span className={`${styles.heroLine} ${styles.heroShipLine}`} style={{ animationDelay: '200ms' }}>
+                <span className={styles.heroShip}>ship</span>
+                <span className="accent">.</span>
+              </span>
+            </h1>
+            {/*
               ▍ Now serving
-            </div>
-            <p style={{
-              margin: 0,
-              fontSize: 'clamp(18px, 1.5vw, 22px)',
-              lineHeight: 1.45,
-              color: 'var(--ink-2)',
-              maxWidth: '52ch',
-            }}>
-              Hi, I&#x2019;m Josh — a front-end developer turned senior product
+            */}
+            <p className={styles.heroIntro}>
+              Hi, I'm Josh — a front-end developer turned senior product
               designer with 12+ years of experience untangling enterprise
               software. I lead 0→1 work, design systems, and the kind of
               quiet refactors no one notices but everyone benefits from.
             </p>
-            <div style={{ marginTop: 28, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <div className={styles.heroActions}>
               <Link href="/work" className="btn">
                 View selected work <span className="arr">→</span>
               </Link>
@@ -92,7 +78,9 @@ function HomeHero() {
             </div>
           </div>
 
-          <PolaroidStack />
+          <div className={styles.heroStackWrap}>
+            <PolaroidStack />
+          </div>
         </div>
       </div>
     </section>
@@ -126,7 +114,7 @@ function PolaroidStack() {
   }
 
   return (
-    <div style={{ position: 'relative', height: 0, paddingBottom: '115%', perspective: '1200px' }}>
+    <div className={styles.polaroidShell}>
       <div
         ref={wrapRef}
         onMouseMove={e => {
@@ -248,28 +236,29 @@ function CircularStamp() {
 
 // ---------- STATS ----------
 function HomeStats() {
+  const statIcons = ['years', 'people', 'craft', 'loops'] as const;
+
   return (
     <section style={{ background: 'var(--bone)', borderTop: '1px solid var(--ink)' }}>
-      <div className="container" style={{ padding: '56px 32px 64px' }}>
-        <div className="mono upper" style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.12em', marginBottom: 36 }}>
-          ▍ The journey, by the numbers
-        </div>
+      <div className="container" style={{ padding: '112px 32px 128px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0 }}>
           {STATS.map((s, i) => (
-            <div key={i} style={{ padding: '4px 28px', borderLeft: '1px solid var(--rule-strong)' }}>
-              <div className="tight" style={{
-                fontSize: 'clamp(44px, 5.5vw, 84px)',
-                lineHeight: 0.95,
-                fontWeight: 700,
-                letterSpacing: '-0.04em',
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: 8,
-              }}>
-                {s.n}
-                <span className="mono" style={{ fontSize: 13, fontWeight: 500, letterSpacing: 0, color: 'var(--accent)' }}>
-                  {s.unit}
-                </span>
+            <div key={i} style={{ padding: '4px 28px', borderLeft: i === 0 ? 'none' : '1px solid var(--rule-strong)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 10 }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--accent)' }}>
+                  <StatIcon kind={statIcons[i] ?? 'years'} />
+                  <span className="mono upper" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.1em' }}>
+                    {s.unit}
+                  </span>
+                </div>
+                <div className="tight" style={{
+                  fontSize: 'clamp(44px, 5.5vw, 84px)',
+                  lineHeight: 0.95,
+                  fontWeight: 700,
+                  letterSpacing: '-0.04em',
+                }}>
+                  {s.n}
+                </div>
               </div>
               <div style={{ marginTop: 16, fontSize: 14, color: 'var(--ink-2)', maxWidth: '22ch', lineHeight: 1.45 }}>
                 {s.label}
@@ -282,16 +271,63 @@ function HomeStats() {
   );
 }
 
+function StatIcon({ kind }: { kind: 'years' | 'people' | 'craft' | 'loops' }) {
+  const commonProps = {
+    width: 16,
+    height: 16,
+    viewBox: '0 0 16 16',
+    fill: 'none',
+    xmlns: 'http://www.w3.org/2000/svg',
+    'aria-hidden': true,
+  } as const;
+
+  if (kind === 'people') {
+    return (
+      <svg {...commonProps}>
+        <circle cx="5" cy="6" r="2.25" stroke="currentColor" strokeWidth="1.25" />
+        <circle cx="11" cy="6.5" r="1.75" stroke="currentColor" strokeWidth="1.25" opacity="0.72" />
+        <path d="M2.75 12c.4-1.67 1.68-2.5 3.83-2.5S10.02 10.33 10.4 12" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+        <path d="M9.65 11.85c.2-1.13 1.03-1.7 2.5-1.7.55 0 1.03.08 1.45.25" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" opacity="0.72" />
+      </svg>
+    );
+  }
+
+  if (kind === 'craft') {
+    return (
+      <svg {...commonProps}>
+        <rect x="2.75" y="3" width="10.5" height="10" rx="1.6" stroke="currentColor" strokeWidth="1.25" />
+        <path d="M5.25 6h5.5M5.25 8.5h5.5M5.25 11h3.25" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (kind === 'loops') {
+    return (
+      <svg {...commonProps}>
+        <path d="M5.4 3.35H12v6.6" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M12 3.35 3.9 11.45" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+        <path d="M10.6 12.65H4V6.05" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
+        <path d="M4 12.65 12.1 4.55" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" opacity="0.7" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg {...commonProps}>
+      <rect x="2.75" y="3.25" width="10.5" height="9.75" rx="1.5" stroke="currentColor" strokeWidth="1.25" />
+      <path d="M5 1.9v2.2M11 1.9v2.2M2.75 6.2h10.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+      <path d="M5.5 8.5h1.8M8.7 8.5h1.8M5.5 10.8h1.8" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 // ---------- VALUES ----------
 function HomeValues() {
   return (
     <section style={{ background: 'var(--ink)', color: 'var(--bone)', overflow: 'hidden' }}>
-      <div className="container" style={{ padding: '80px 32px 104px' }}>
+      <div className="container" style={{ padding: '160px 32px 208px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 32, flexWrap: 'wrap', marginBottom: 64 }}>
           <div>
-            <div className="mono upper" style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.12em', marginBottom: 14 }}>
-              ▍ Core values
-            </div>
             <h2 className="tight" style={{
               margin: 0,
               fontSize: 'clamp(36px, 5vw, 80px)',
@@ -303,9 +339,6 @@ function HomeValues() {
               <em className="serif" style={{ fontStyle: 'italic', fontWeight: 400, letterSpacing: '-0.03em' }}>at the table</em>
               <span className="accent">.</span>
             </h2>
-          </div>
-          <div className="mono upper" style={{ fontSize: 11, color: 'rgba(236,231,220,0.5)', letterSpacing: '0.12em', maxWidth: '30ch', textAlign: 'right' }}>
-            03 principles<br />hover the cards · click to stamp
           </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
@@ -416,7 +449,7 @@ function ValueCard({ v, idx }: { v: typeof VALUES[number]; idx: number }) {
         transition: 'transform 240ms cubic-bezier(.2,.7,.2,1), opacity 220ms',
         pointerEvents: 'none',
       }}>
-        Noted<br />· 26 ·
+        Noted
       </div>
     </div>
   );
@@ -469,11 +502,8 @@ function HomeFeatured() {
   const featured = PROJECTS.slice(0, 4);
   return (
     <section>
-      <SectionHead
-        kicker="▍ Recent projects"
-        title={<>Work that wasn&#x2019;t<br />just a deck<span className="accent">.</span></>}
-      />
-      <div className="container" style={{ padding: '0 32px 80px' }}>
+      <SectionHead title={<>Work that wasn't<br />just a deck<span className="accent">.</span></>} />
+      <div className="container" style={{ padding: '0 32px 160px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 24 }}>
           <FeaturedCard p={featured[0]} big />
           <FeaturedCard p={featured[1]} />
@@ -572,9 +602,6 @@ function FeatureGraphic({ p, hover }: { p: typeof PROJECTS[number]; hover: boole
   const words = p.metric.split(' ');
   return (
     <div style={{ position: 'absolute', inset: 0, padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-      <div className="mono upper" style={{ fontSize: 11, color: hover ? 'rgba(236,231,220,0.7)' : 'var(--ink-2)', letterSpacing: '0.1em' }}>
-        ▍ Featured / {p.role}
-      </div>
       <div className="tight" style={{
         fontSize: 'clamp(54px, 8.5vw, 130px)',
         lineHeight: 0.9, fontWeight: 700, letterSpacing: '-0.05em',
@@ -601,11 +628,8 @@ function FeatureGraphic({ p, hover }: { p: typeof PROJECTS[number]; hover: boole
 function HomeCrew() {
   return (
     <section>
-      <SectionHead
-        kicker="▍ The crew"
-        title={<>Three of us. Two of them<br />have stronger opinions<span className="accent">.</span></>}
-      />
-      <div className="container" style={{ padding: '0 32px 80px' }}>
+      <SectionHead title={<>The crew behind<br />the work<span className="accent">.</span></>} />
+      <div className="container" style={{ padding: '0 32px 160px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
           {CREW.map((c, i) => (
             <div key={c.name} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -665,19 +689,13 @@ function HomeJourney() {
 
   return (
     <section>
-      <SectionHead
-        kicker="▍ Started in HTML, ended up here"
-        title={<>From <em className="serif" style={{ fontStyle: 'italic', fontWeight: 400 }}>div soup</em><br />to design systems<span className="accent">.</span></>}
-      />
-      <div className="container" style={{ padding: '0 32px 120px' }}>
+      <SectionHead title={<>12 years,<br />one winding road<span className="accent">.</span></>} />
+      <div className="container" style={{ padding: '0 32px 240px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 56 }}>
           {/* Sticky scrubber */}
           <div style={{ position: 'sticky', top: 100, alignSelf: 'start' }}>
-            <div className="mono upper" style={{ fontSize: 10, color: 'var(--sub)', letterSpacing: '0.12em' }}>
-              ▍ Now showing
-            </div>
             <div className="tight" style={{
-              fontSize: 88, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, marginTop: 12,
+              fontSize: 88, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1,
               display: 'flex', alignItems: 'baseline', gap: 2,
             }}>
               <span style={{ color: 'var(--accent)' }}>{String(active + 1).padStart(2, '0')}</span>
@@ -711,9 +729,6 @@ function HomeJourney() {
                   }}
                 />
               ))}
-            </div>
-            <div className="mono upper" style={{ fontSize: 10, color: 'var(--sub)', letterSpacing: '0.12em', marginTop: 16 }}>
-              Scroll, or tap a dot
             </div>
           </div>
 
@@ -770,11 +785,8 @@ function HomeFAQ() {
   const [openIdx, setOpenIdx] = useState(0);
   return (
     <section>
-      <SectionHead
-        kicker="▍ FAQ"
-        title={<>The questions<br />everyone asks<span className="accent">.</span></>}
-      />
-      <div className="container" style={{ padding: '0 32px 80px' }}>
+      <SectionHead title={<>What it's like<br />working with me<span className="accent">.</span></>} />
+      <div className="container" style={{ padding: '0 32px 160px' }}>
         <div style={{ borderTop: '1px solid var(--ink)' }}>
           {FAQ.map((it, i) => {
             const isOpen = i === openIdx;
@@ -829,12 +841,12 @@ function HomeFAQ() {
 function HomeCompanies() {
   return (
     <section style={{ background: 'var(--paper)', borderTop: '1px solid var(--ink)' }}>
-      <div className="container" style={{ padding: '56px 32px 80px' }}>
+      <div className="container" style={{ padding: '112px 32px 160px' }}>
         <div className="tight" style={{
           fontSize: 'clamp(36px, 5vw, 80px)', lineHeight: 0.96, letterSpacing: '-0.04em', fontWeight: 700,
           maxWidth: '16ch', marginBottom: 48,
         }}>
-          A short list of places I&#x2019;ve shipped from<span className="accent">.</span>
+          A short list of places I've shipped from<span className="accent">.</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
           {COMPANIES.map((c, i) => (

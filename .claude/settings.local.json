@@ -5,7 +5,13 @@
       "PowerShell(npm *)",
       "PowerShell(winget install *)",
       "PowerShell(git *)",
-      "PowerShell(Start-Process \"c:\\\\Users\\\\jbuss\\\\Downloads\\\\Josh Portfolio _standalone_.html\")"
+      "PowerShell(Start-Process \"c:\\\\Users\\\\jbuss\\\\Downloads\\\\Josh Portfolio _standalone_.html\")",
+      "PowerShell(Head-Object *)",
+      "Bash(npm run *)",
+      "Bash(echo \"Started PID $!\")",
+      "mcp__mcp-unframer-co__getProjectXml",
+      "mcp__mcp-unframer-co__getNodeXml",
+      "Bash(node *)"
     ]
   }
 }

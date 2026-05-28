@@ -221,7 +221,7 @@ export const STATS: Stat[] = [
 export const VALUES: Value[] = [
   {
     kind: 'collab',
-    tag: 'I work best in the room',
+    tag: 'WE will take the ring to mordor',
     title: 'Collaborator',
     body: 'Exploring new ideas, jumping into CSS tweaks, or whiteboarding through a problem — I work best shoulder-to-shoulder with the team to drive the strongest outcome.',
   },

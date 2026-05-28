@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 const navItems = [
   { href: '/', label: 'Index' },
   { href: '/work', label: 'Work' },
+  { href: '/contact', label: 'Contact' },
 ];
 
 const heroBgMap: Record<string, string> = {
@@ -65,7 +66,7 @@ export default function TopBar() {
             borderRadius: 8,
           }}>J</span>
           <span className="mono upper" style={{ fontSize: 12, letterSpacing: '0.08em' }}>
-            Josh / Portfolio · &#x2019;26
+            Joshua Bussey / Product Designer · '26
           </span>
         </Link>
 
@@ -81,22 +82,15 @@ export default function TopBar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="mono upper"
+                className={`mono upper nav-link${isActive ? ' nav-link-active' : ''}`}
                 style={{
                   padding: '6px 12px',
                   fontSize: 12,
                   letterSpacing: '0.06em',
-                  border: '1px solid transparent',
                   borderRadius: 999,
                   color: isActive ? 'var(--bone)' : 'var(--ink)',
                   background: isActive ? 'var(--ink)' : 'transparent',
                   transition: 'background 120ms, border-color 120ms',
-                }}
-                onMouseEnter={e => {
-                  if (!isActive) (e.currentTarget as HTMLElement).style.borderColor = 'var(--rule-strong)';
-                }}
-                onMouseLeave={e => {
-                  if (!isActive) (e.currentTarget as HTMLElement).style.borderColor = 'transparent';
                 }}
               >
                 <span style={{ marginRight: 6, color: 'var(--accent)' }}>·</span>
@@ -117,25 +111,14 @@ export default function TopBar() {
           letterSpacing: '0.04em',
           textTransform: 'uppercase',
         }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            <span style={{
-              width: 7,
-              height: 7,
-              borderRadius: '50%',
-              background: '#1f9d55',
-              display: 'inline-block',
-              boxShadow: '0 0 0 3px rgba(31,157,85,0.15)',
-            }} />
-            Available · Q3 &#x2019;26
-          </span>
           <span className="rule-v" style={{ height: 14 }} />
-          {time && <span>{time} ET</span>}
+          {time && <span>{time} Eastern Time</span>}
         </div>
 
         {/* CTA */}
-        <Link href="/contact" className="btn">
-          Let&#x2019;s talk <span className="arr">↗</span>
-        </Link>
+        <a href="https://www.linkedin.com/in/joshuabussey/" target="_blank" rel="noopener noreferrer" className="btn">
+          LinkedIn <span className="arr">↗</span>
+        </a>
       </div>
     </header>
   );

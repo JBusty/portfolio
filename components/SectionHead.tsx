@@ -1,24 +1,13 @@
 import { ReactNode } from 'react';
 
 interface SectionHeadProps {
-  kicker?: string;
   title?: ReactNode;
 }
 
-export default function SectionHead({ kicker, title }: SectionHeadProps) {
+export default function SectionHead({ title }: SectionHeadProps) {
   return (
-    <div style={{ borderTop: '1px solid var(--ink)' }}>
-      <div className="container" style={{ padding: '40px 32px 32px' }}>
-        {kicker && (
-          <div className="mono upper" style={{
-            fontSize: 11,
-            color: 'var(--accent)',
-            marginBottom: 12,
-            letterSpacing: '0.1em',
-          }}>
-            {kicker}
-          </div>
-        )}
+    <div data-reveal style={{ borderTop: '1px solid var(--ink)' }}>
+      <div className="container" style={{ padding: '80px 32px 64px' }}>
         {title && (
           <h2 className="tight" style={{
             margin: 0,

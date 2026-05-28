@@ -211,6 +211,31 @@ button { font: inherit; cursor: pointer; }
 /* ---- page enter animation ---- */
 .page-enter { animation: pageIn 360ms cubic-bezier(0.2, 0.7, 0.2, 1); }
 
+html.motion-ready [data-reveal-state] > .container,
+html.motion-ready [data-reveal-state] > [data-reveal] > .container {
+  --reveal-delay: 0ms;
+  transition:
+    opacity 520ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition-delay: var(--reveal-delay);
+  will-change: opacity, transform, filter;
+}
+
+html.motion-ready [data-reveal-state="pending"] > .container,
+html.motion-ready [data-reveal-state="pending"] > [data-reveal] > .container {
+  opacity: 0;
+  transform: translateY(16px);
+  filter: blur(3px);
+}
+
+html.motion-ready [data-reveal-state="visible"] > .container,
+html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
 @keyframes pageIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -226,13 +251,53 @@ button { font: inherit; cursor: pointer; }
   to   { transform: rotate(360deg); }
 }
 
+.scroll-reveal {
+  --reveal-delay: 0ms;
+  opacity: 0;
+  transform: translateY(16px);
+  filter: blur(3px);
+  transition:
+    opacity 520ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition-delay: var(--reveal-delay);
+  will-change: opacity, transform, filter;
+}
+
+.scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
 .stamp-spin {
   animation: spin 22s linear infinite;
   transform-origin: 50% 50%;
 }
 
+/* ---- nav links ---- */
+.nav-link { border: 1px solid transparent; }
+.nav-link:not(.nav-link-active):hover { border-color: var(--rule-strong); }
+
 /* ---- mobile ---- */
 @media (max-width: 880px) {
   .container { padding: 0 20px !important; }
   .hide-sm   { display: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  html.motion-ready [data-reveal-state] > .container,
+  html.motion-ready [data-reveal-state] > [data-reveal] > .container {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
 }

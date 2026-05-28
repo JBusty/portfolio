@@ -10,16 +10,14 @@ const siteLinks = [
 ];
 
 const elsewhereLinks = [
-  { label: 'LinkedIn ↗', href: '#' },
-  { label: 'Read.cv ↗', href: '#' },
-  { label: 'Are.na ↗', href: '#' },
-  { label: 'Github ↗', href: '#' },
+  { label: 'LinkedIn ↗', href: 'https://www.linkedin.com/in/joshuabussey/' },
+  { label: 'Github ↗', href: 'https://github.com/JBusty' },
 ];
 
 export default function Footer() {
   return (
     <footer style={{ borderTop: '1px solid var(--ink)', background: 'var(--ink)', color: 'var(--bone)' }}>
-      <div className="container" style={{ padding: '80px 32px 40px' }}>
+      <div className="container" style={{ padding: '160px 32px 80px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr', gap: 40 }}>
           {/* CTA */}
           <div>
@@ -31,15 +29,15 @@ export default function Footer() {
               margin: 0,
               maxWidth: '12ch',
             }}>
-              Let&#x2019;s build something{' '}
+              Let's build something{' '}
               <span style={{ color: 'var(--accent)' }}>worth shipping.</span>
             </h2>
             <div style={{ marginTop: 28, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <a href="mailto:hello@josh.design" className="btn" style={{ background: 'var(--accent)', borderColor: 'var(--accent)' }}>
-                hello@josh.design <span className="arr">↗</span>
+              <a href="mailto:jbusseywork@gmail.com" className="btn" style={{ background: 'var(--accent)', borderColor: 'var(--accent)' }}>
+                jbusseywork@gmail.com <span className="arr">↗</span>
               </a>
-              <a href="#" className="btn ghost" style={{ color: 'var(--bone)', borderColor: 'rgba(236,231,220,0.4)' }}>
-                Resume / CV <span className="arr">↓</span>
+              <a href="https://drive.google.com/file/d/17OJanguMKHAdKGfoBDpI_eS_1_a5fZEh/view" className="btn ghost" style={{ color: 'var(--bone)', borderColor: 'rgba(236,231,220,0.4)' }}>
+                Resume / CV <span className="arr">↗</span>
               </a>
             </div>
           </div>
@@ -58,7 +56,7 @@ export default function Footer() {
               {siteLinks.map(it => (
                 <li key={it.href}>
                   <Link href={it.href} className="link-u" style={{ fontFamily: 'var(--font-jetbrains-mono)', fontSize: 13 }}>
-                    → {it.label}
+                    â†’ {it.label}
                   </Link>
                 </li>
               ))}
@@ -102,9 +100,9 @@ export default function Footer() {
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
         }}>
-          <span>© 2026 Josh — Hand-built in HTML & opinions.</span>
-          <span>Set in Inter & JetBrains Mono. No frameworks were harmed.</span>
-          <span>v 7.0 · Updated May &#x2019;26</span>
+          <span>Â© 2026 Josh — Hand-built in HTML & opinions.</span>
+          <span>No robots were harmed in the making of this portfolio.</span>
+          <span>v 7.0 Â· Updated May '26</span>
         </div>
       </div>
     </footer>
