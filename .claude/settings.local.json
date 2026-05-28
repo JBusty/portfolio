@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(gh *)",
+      "PowerShell(npm *)",
+      "PowerShell(winget install *)",
+      "PowerShell(git *)"
+    ]
+  }
+}
