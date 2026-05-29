@@ -14,8 +14,8 @@ export default function Home() {
       <HomeHero />
       <HomeStats />
       <HomeValues />
-      <HomeFeatured />
       <HomeJourney />
+      <HomeFeatured />
       <HomeFAQ />
       <HomeCompanies />
     </main>
@@ -485,23 +485,36 @@ function ValueGlyph({ kind, hover }: { kind: string; hover: boolean }) {
 
 // ---------- FEATURED WORK ----------
 function HomeFeatured() {
-  const featured = PROJECTS.slice(0, 4);
+  const featured = PROJECTS.slice(0, 3);
   return (
     <section>
       <SectionHead title={<>Work that wasn't<br />just a deck<span className="accent">.</span></>} />
       <div className="container" style={{ padding: '0 32px 160px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 24 }}>
-          <FeaturedCard p={featured[0]} big />
-          <FeaturedCard p={featured[1]} />
-          <FeaturedCard p={featured[2]} />
-          <FeaturedCard p={featured[3]} wide />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          {featured.map(p => <FeaturedCard key={p.slug} p={p} />)}
+        </div>
+        <div style={{
+          marginTop: 24,
+          padding: '20px 24px',
+          border: '1px solid var(--rule)',
+          borderRadius: 'var(--radius-lg)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+          <span style={{ fontSize: 14, color: 'var(--ink-2)' }}>
+            {PROJECTS.length - 3} more projects — including NDA work, design systems, and a personal build.
+          </span>
+          <Link href="/work" className="btn">
+            View all work <span className="arr">→</span>
+          </Link>
         </div>
       </div>
     </section>
   );
 }
 
-function FeaturedCard({ p, big, wide }: { p: typeof PROJECTS[number]; big?: boolean; wide?: boolean }) {
+function FeaturedCard({ p }: { p: typeof PROJECTS[number] }) {
   const [hover, setHover] = useState(false);
   return (
     <Link
@@ -509,14 +522,12 @@ function FeaturedCard({ p, big, wide }: { p: typeof PROJECTS[number]; big?: bool
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        gridColumn: big ? 'span 8' : wide ? 'span 8' : 'span 4',
         border: '1px solid var(--ink)',
         display: 'flex',
         flexDirection: 'column',
-        minHeight: big ? 560 : 360,
-        position: 'relative',
-        overflow: 'hidden',
+        minHeight: 360,
         borderRadius: 'var(--radius-lg)',
+        overflow: 'hidden',
         transition: 'transform 200ms, background 200ms',
         transform: hover ? 'translateY(-4px)' : 'translateY(0)',
         background: hover ? 'var(--ink)' : 'var(--paper)',
@@ -530,41 +541,17 @@ function FeaturedCard({ p, big, wide }: { p: typeof PROJECTS[number]; big?: bool
         fontSize: 11, letterSpacing: '0.08em',
         color: hover ? 'rgba(236,231,220,0.65)' : 'var(--sub)',
       }}>
-        <span>{p.num} · {p.company}</span>
+        <span>{p.company}</span>
         <span>{p.quarter}</span>
       </div>
 
-      {big && (
-        <div style={{
-          flex: 1,
-          background: hover ? 'rgba(225,59,20,0.18)' : 'var(--bone-2)',
-          position: 'relative',
-          borderBottom: hover ? '1px solid rgba(236,231,220,0.2)' : '1px solid var(--rule)',
-        }}>
-          <FeatureGraphic p={p} hover={hover} />
+      <div style={{ padding: '24px 24px 28px', display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+        <div className="tight" style={{ fontSize: 'clamp(22px, 2vw, 28px)', lineHeight: 1.02, fontWeight: 600, letterSpacing: '-0.035em' }}>
+          {p.title}
         </div>
-      )}
-
-      <div style={{ padding: '24px 24px 28px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <div>
-          <div className="tight" style={{
-            fontSize: big ? 'clamp(28px, 3.4vw, 44px)' : 'clamp(22px, 2vw, 28px)',
-            lineHeight: 1.02, fontWeight: 600, letterSpacing: '-0.035em',
-          }}>
-            {p.title}
-          </div>
-          {!big && (
-            <div style={{ marginTop: 12, fontSize: 14, lineHeight: 1.45, color: hover ? 'rgba(236,231,220,0.75)' : 'var(--ink-2)', maxWidth: '44ch' }}>
-              {p.blurb}
-            </div>
-          )}
+        <div style={{ fontSize: 14, lineHeight: 1.45, color: hover ? 'rgba(236,231,220,0.75)' : 'var(--ink-2)', maxWidth: '44ch' }}>
+          {p.blurb}
         </div>
-
-        {big && (
-          <div style={{ fontSize: 16, lineHeight: 1.5, color: hover ? 'rgba(236,231,220,0.85)' : 'var(--ink-2)', maxWidth: '60ch' }}>
-            {p.blurb}
-          </div>
-        )}
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', flexWrap: 'wrap', gap: 12, marginTop: 'auto' }}>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -576,37 +563,11 @@ function FeaturedCard({ p, big, wide }: { p: typeof PROJECTS[number]; big?: bool
             ))}
           </div>
           <span className="mono upper" style={{ fontSize: 11, letterSpacing: '0.1em', color: hover ? 'var(--accent)' : 'var(--ink)' }}>
-            {hover ? 'Open ↗' : 'View case →'}
+            View case →
           </span>
         </div>
       </div>
     </Link>
-  );
-}
-
-function FeatureGraphic({ p, hover }: { p: typeof PROJECTS[number]; hover: boolean }) {
-  const words = p.metric.split(' ');
-  return (
-    <div style={{ position: 'absolute', inset: 0, padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-      <div className="tight" style={{
-        fontSize: 'clamp(54px, 8.5vw, 130px)',
-        lineHeight: 0.9, fontWeight: 700, letterSpacing: '-0.05em',
-        color: hover ? 'var(--bone)' : 'var(--ink)',
-      }}>
-        {words.slice(0, 2).join(' ')}
-        <br />
-        <span style={{ color: 'var(--accent)' }}>{words.slice(2).join(' ')}</span>
-      </div>
-      <div style={{
-        display: 'flex', justifyContent: 'space-between',
-        fontFamily: 'var(--font-jetbrains-mono)', fontSize: 11,
-        color: hover ? 'rgba(236,231,220,0.5)' : 'var(--sub)',
-        letterSpacing: '0.06em', textTransform: 'uppercase',
-      }}>
-        <span>// {p.team}</span>
-        <span>Ref. {p.num}-A</span>
-      </div>
-    </div>
   );
 }
 

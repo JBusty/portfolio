@@ -79,7 +79,7 @@ export const PROJECTS: Project[] = [
     quarter: 'Q3 2024',
     role: 'Lead Product Designer',
     team: '2 PM · 6 Eng · 1 Designer',
-    tags: ['0→1', 'Strategy'],
+    tags: ['0→1'],
     metric: 'GA in 9 months',
   },
   {
@@ -107,7 +107,7 @@ export const PROJECTS: Project[] = [
     quarter: '2025',
     role: 'Senior Designer',
     team: '1 PM · 2 Eng · 1 Designer',
-    tags: ['Strategy', 'Systems'],
+    tags: ['Systems'],
     metric: '−40% support tickets',
   },
   {
@@ -135,7 +135,7 @@ export const PROJECTS: Project[] = [
     quarter: 'Q2 2022',
     role: 'Senior UX Designer',
     team: '1 PM · 5 Eng · 1 Designer',
-    tags: ['0→1', 'Strategy'],
+    tags: ['0→1'],
     metric: '$NEW line of revenue',
   },
   {
@@ -199,23 +199,23 @@ export const JOURNEY: JourneyStep[] = [
 export const FAQ: FaqItem[] = [
   {
     q: "What's your design superpower?",
-    a: "Translating an ambiguous problem into a deck of options that engineering can actually estimate. I think in flows and trade-offs more than in screens.",
+    a: "Systems thinking. I default to building scalable patterns and component libraries rather than one-off solutions — so the work compounds over time instead of creating more debt.",
   },
   {
     q: "What kind of problems do you solve best?",
-    a: 'Enterprise-y systems with too many states and not enough hierarchy. Onboarding, settings, admin, anything with the word "console" in it.',
+    a: "Complex enterprise workflows that have gotten out of hand — the kind where users have learned to work around the product instead of with it. I've spent 12+ years in cybersecurity, finance, and healthcare, which means I'm comfortable with high-stakes, high-complexity problems where getting it wrong actually matters.",
   },
   {
     q: "What's it like working with you?",
-    a: "Bias to action. Quick comps over a week-long Figma file. I write specs. I write tickets. I'll close the loop with engineering instead of throwing a file over the wall.",
+    a: "I'm the person teammates come to when something's stuck. Friendly, collaborative, and genuinely dependable — and when something's blocking us, I'll kick down whatever doors are necessary to move forward. People know that when I'm involved, it gets done.",
   },
   {
-    q: 'Remote-friendly?',
-    a: "I'm fully remote, US East Coast. I overlap with EU mornings and West Coast afternoons. I'm in Slack, not vibes.",
+    q: "How do you work with engineers?",
+    a: "Closely and directly — which is easier when you can speak their language. I've contributed to front-end production code, implemented design systems in Bootstrap, and spent enough time in the codebase to know what's actually feasible.",
   },
   {
-    q: 'How do you handle disagreement?',
-    a: "Stronger opinions, loosely held. If you have data or context I don't, I want it. If you don't, I'll defend the design.",
+    q: "What environments bring out your best work?",
+    a: "Teams where design has a real seat at the table and engineers are treated as partners, not executors. I do my best work when there's a hard problem, a collaborative team, and enough trust to move fast and iterate.",
   },
 ];
 

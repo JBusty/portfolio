@@ -185,8 +185,6 @@ button { font: inherit; cursor: pointer; }
 .meta-col dt { color: var(--sub); text-transform: uppercase; }
 .meta-col dd { margin: 0; color: var(--ink); }
 
-/* ---- focus block (case study key decision) ---- */
-.focus-block { background: var(--ink); color: var(--bone); }
 
 /* ---- browser frame (case study screenshots) ---- */
 .frame-bar {

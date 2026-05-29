@@ -54,7 +54,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     decisionQuestion: 'How much GenAI content is too much?',
     decisionContext:
       "We had an in-house GenAI product with a lot of untapped potential. It could generate plenty of content, but that did not mean customers needed to read all of it.",
-    decisionAnswerTitle: "Don't make people read.",
+    decisionAnswerTitle: "Don't make people read (oh the irony).",
     decisionAnswerBody:
       'Use GenAI to create brief, high-value summaries only, while keeping the underlying evidence available when customers want to dig deeper.',
     outcomes: {

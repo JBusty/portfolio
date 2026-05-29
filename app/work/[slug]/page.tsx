@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState, type CSSProperties, type ReactNode } from 'react';
+import { use, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -153,80 +153,12 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
         </div>
       </CSection>
 
-      <section className="focus-block" style={{ position: 'relative', overflow: 'hidden' }}>
-        <ScrollReveal as="div" className="container" style={{ padding: '160px 32px', textAlign: 'center' }}>
-          <div
-            className="serif"
-            style={{
-              fontStyle: 'italic',
-              fontSize: 'clamp(28px, 3vw, 44px)',
-              lineHeight: 1.2,
-              maxWidth: '30ch',
-              margin: '0 auto',
-              color: 'var(--bone)',
-              letterSpacing: '-0.01em',
-            }}
-          >
-            "{study.decisionQuestion}"
-          </div>
-          <div
-            style={{
-              margin: '32px auto 0',
-              maxWidth: '60ch',
-              fontSize: 17,
-              lineHeight: 1.6,
-              color: 'rgba(236,231,220,0.8)',
-            }}
-          >
-            {study.decisionContext}
-          </div>
-          <div
-            style={{
-              marginTop: 48,
-              display: 'inline-flex',
-              alignItems: 'stretch',
-              border: '1px solid var(--accent)',
-              background: 'rgba(225,59,20,0.08)',
-              borderRadius: 'var(--radius)',
-              overflow: 'hidden',
-              maxWidth: '720px',
-            }}
-          >
-            <div
-              style={{
-                padding: '20px 28px',
-                borderRight: '1px solid var(--accent)',
-                fontFamily: 'var(--font-jetbrains-mono)',
-                fontSize: 11,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                color: 'var(--accent)',
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              Decision
-            </div>
-            <div style={{ padding: '20px 28px', textAlign: 'left' }}>
-              <div className="tight" style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em' }}>
-                {study.decisionAnswerTitle}
-              </div>
-              <div
-                style={{
-                  fontFamily: 'var(--font-jetbrains-mono)',
-                  fontSize: 12,
-                  color: 'rgba(236,231,220,0.7)',
-                  marginTop: 4,
-                  letterSpacing: '0.02em',
-                  lineHeight: 1.5,
-                }}
-              >
-                {study.decisionAnswerBody}
-              </div>
-            </div>
-          </div>
-        </ScrollReveal>
-      </section>
+      <KeyDecisionBlock
+        question={study.decisionQuestion}
+        context={study.decisionContext}
+        answerTitle={study.decisionAnswerTitle}
+        answerBody={study.decisionAnswerBody}
+      />
 
       <CSection title={renderTitleLines(study.solutionTitle)}>
         {study.solutionIntro ? <p style={cssCopy()}>{study.solutionIntro}</p> : null}
@@ -334,6 +266,170 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
         </ScrollReveal>
       </section>
     </main>
+  );
+}
+
+function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
+  question: string;
+  context: string;
+  answerTitle: string;
+  answerBody: string;
+}) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [pos, setPos] = useState({ x: -9999, y: -9999, on: false });
+  const [revealed, setRevealed] = useState(false);
+
+  return (
+    <section
+      ref={sectionRef}
+      onMouseMove={e => {
+        const r = sectionRef.current!.getBoundingClientRect();
+        setPos({ x: e.clientX - r.left, y: e.clientY - r.top, on: true });
+      }}
+      onMouseLeave={() => setPos(p => ({ ...p, on: false }))}
+      style={{ position: 'relative', overflow: 'hidden', background: 'var(--ink)', color: 'var(--bone)' }}
+    >
+      {/* Mouse spotlight */}
+      <div style={{
+        position: 'absolute',
+        width: 700,
+        height: 700,
+        borderRadius: '50%',
+        background: 'radial-gradient(closest-side, rgba(225,59,20,0.22), transparent 70%)',
+        left: pos.x,
+        top: pos.y,
+        transform: 'translate(-50%,-50%)',
+        opacity: pos.on ? 1 : 0,
+        transition: 'opacity 300ms ease',
+        pointerEvents: 'none',
+        zIndex: 0,
+      }} />
+
+      {/* Animated grid */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
+        backgroundImage: 'linear-gradient(rgba(236,231,220,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(236,231,220,0.04) 1px, transparent 1px)',
+        backgroundSize: '24px 24px',
+      }} />
+
+      <ScrollReveal as="div" className="container" style={{ position: 'relative', zIndex: 1, padding: '140px 32px 160px', textAlign: 'center' }}>
+        <div style={{ marginBottom: 48, display: 'flex', alignItems: 'center', gap: 16, maxWidth: '800px', margin: '0 auto 48px' }}>
+          <div style={{ flex: 1, height: 1, background: 'rgba(225,59,20,0.35)' }} />
+          <span className="mono upper" style={{
+            fontSize: 12,
+            letterSpacing: '0.14em',
+            color: 'var(--accent)',
+            whiteSpace: 'nowrap',
+            border: '1px solid rgba(225,59,20,0.5)',
+            background: 'rgba(225,59,20,0.1)',
+            borderRadius: 999,
+            padding: '6px 18px',
+          }}>
+            Key Decision
+          </span>
+          <div style={{ flex: 1, height: 1, background: 'rgba(225,59,20,0.35)' }} />
+        </div>
+
+        <div
+          className="serif"
+          style={{
+            fontStyle: 'italic',
+            fontSize: 'clamp(26px, 3.5vw, 52px)',
+            lineHeight: 1.2,
+            maxWidth: '26ch',
+            margin: '0 auto',
+            color: 'var(--bone)',
+            letterSpacing: '0.01em',
+          }}
+        >
+          "{question}"
+        </div>
+
+        <div style={{ margin: '36px auto 0', maxWidth: '58ch', fontSize: 17, lineHeight: 1.65, color: 'rgba(236,231,220,0.72)' }}>
+          {context}
+        </div>
+
+        {/* Decision card */}
+        <div
+          onClick={() => setRevealed(r => !r)}
+          style={{
+            marginTop: 64,
+            width: '100%',
+            maxWidth: '800px',
+            margin: '64px auto 0',
+            border: `1px solid ${revealed ? 'var(--accent)' : 'rgba(236,231,220,0.15)'}`,
+            background: revealed ? 'rgba(225,59,20,0.08)' : 'rgba(236,231,220,0.03)',
+            borderRadius: 'var(--radius-lg)',
+            overflow: 'hidden',
+            textAlign: 'left',
+            cursor: 'pointer',
+            transition: 'border-color 300ms, background 300ms, box-shadow 300ms',
+            boxShadow: revealed ? '0 0 60px -20px rgba(225,59,20,0.35)' : '0 0 0 0 transparent',
+          }}
+        >
+          {/* Collapsed CTA */}
+          <div style={{
+            padding: '28px 36px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 24,
+            borderBottom: `1px solid ${revealed ? 'rgba(225,59,20,0.2)' : 'transparent'}`,
+            transition: 'border-color 300ms',
+          }}>
+            <div>
+              <div className="mono upper" style={{ fontSize: 10, letterSpacing: '0.14em', color: 'var(--accent)', marginBottom: 8 }}>
+                The Decision
+              </div>
+              <div className="tight" style={{
+                fontSize: 'clamp(26px, 3vw, 42px)',
+                fontWeight: 700,
+                letterSpacing: '-0.03em',
+                lineHeight: 1.05,
+                color: revealed ? 'var(--bone)' : 'rgba(236,231,220,0.45)',
+                filter: revealed ? 'none' : 'blur(6px)',
+                transition: 'color 400ms, filter 400ms',
+                userSelect: 'none',
+              }}>
+                {answerTitle}
+              </div>
+            </div>
+            <div style={{
+              flexShrink: 0,
+              width: 52, height: 52,
+              border: `1px solid ${revealed ? 'var(--accent)' : 'rgba(236,231,220,0.2)'}`,
+              borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: revealed ? 'var(--accent)' : 'rgba(236,231,220,0.5)',
+              fontSize: 22,
+              transform: revealed ? 'rotate(45deg)' : 'rotate(0deg)',
+              transition: 'all 280ms cubic-bezier(.2,.7,.2,1)',
+            }}>+</div>
+          </div>
+
+          {/* Expanded body */}
+          <div style={{
+            display: 'grid',
+            gridTemplateRows: revealed ? '1fr' : '0fr',
+            transition: 'grid-template-rows 400ms cubic-bezier(.2,.7,.2,1)',
+          }}>
+            <div style={{ overflow: 'hidden' }}>
+              <div style={{ padding: '28px 36px 36px' }}>
+                <div style={{ fontFamily: 'var(--font-jetbrains-mono)', fontSize: 14, color: 'rgba(236,231,220,0.75)', letterSpacing: '0.02em', lineHeight: 1.7 }}>
+                  {answerBody}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {!revealed && (
+            <div className="mono upper" style={{ padding: '0 36px 24px', fontSize: 10, color: 'rgba(236,231,220,0.3)', letterSpacing: '0.14em' }}>
+              Click to reveal →
+            </div>
+          )}
+        </div>
+      </ScrollReveal>
+    </section>
   );
 }
 
