@@ -29,23 +29,19 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
               flexWrap: 'wrap',
               gap: 24,
               justifyContent: 'space-between',
-              fontSize: 11,
-              color: 'var(--sub)',
+              fontSize: 12,
               letterSpacing: '0.08em',
               paddingBottom: 24,
               borderBottom: '1px solid var(--rule)',
             }}
           >
-            <span>
-              <Link href="/" className="link-u" style={{ color: 'var(--sub)' }}>
-                Index
-              </Link>
-              {' / '}
-              <Link href="/work" className="link-u" style={{ color: 'var(--sub)' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <Link href="/work" className="link-u" style={{ color: 'var(--ink)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ color: 'var(--accent)', fontSize: 14 }}>←</span>
                 Work
               </Link>
-              {' / '}
-              <span style={{ color: 'var(--ink)' }}>{p.title}</span>
+              <span style={{ color: 'var(--accent)', opacity: 0.5 }}>/</span>
+              <span style={{ color: 'var(--ink-2)' }}>{p.title}</span>
             </span>
           </div>
 
@@ -134,11 +130,11 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
       </section>
 
       <section style={{ background: 'var(--ink)', color: 'var(--bone)' }}>
-        <ScrollReveal as="div" className="container" style={{ padding: '64px 32px 112px' }}>
+        <ScrollReveal as="div" className="container" style={{ padding: '40px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0 }}>
-            <OutcomeColumn kicker="01" label="Pain" title="What hurt" items={study.outcomes.painPoints} />
-            <OutcomeColumn kicker="02" label="Role" title="What I owned" items={study.outcomes.role} />
-            <OutcomeColumn kicker="03" label="Outcome" title="What shipped" items={study.outcomes.shipped} last />
+            <OutcomeColumn label="Friction" title="Pain points for the customer" items={study.outcomes.painPoints} />
+            <OutcomeColumn label="My Role" title="What I owned during the process" items={study.outcomes.role} />
+            <OutcomeColumn label="Outcome" title="What I shipped" items={study.outcomes.shipped} last />
           </div>
         </ScrollReveal>
       </section>
@@ -255,7 +251,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
               <div className="mono" style={{ fontSize: 12, color: 'var(--accent)' }}>
                 {card.n}
               </div>
-              <div className="tight" style={{ fontSize: 22, fontWeight: 600, marginTop: 12, letterSpacing: '-0.025em' }}>
+              <div className="tight" style={{ fontSize: 22, fontWeight: 600, marginTop: 18, letterSpacing: '-0.025em' }}>
                 {card.h}
               </div>
               <p style={{ margin: '12px 0 0', color: 'var(--ink-2)', fontSize: 15, lineHeight: 1.55 }}>{card.b}</p>
@@ -295,7 +291,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
               >
                 {stat.n}
               </div>
-              <div className="mono upper" style={{ marginTop: 12, fontSize: 11, color: 'var(--sub)', letterSpacing: '0.08em' }}>
+              <div className="mono upper" style={{ marginTop: 18, fontSize: 11, color: 'var(--sub)', letterSpacing: '0.08em' }}>
                 {stat.label}
               </div>
             </div>
@@ -353,13 +349,11 @@ function CSection({ title, children }: { title: ReactNode; children: ReactNode }
 }
 
 function OutcomeColumn({
-  kicker,
   label,
   title,
   items,
   last = false,
 }: {
-  kicker: string;
   label: string;
   title: string;
   items: string[];
@@ -368,32 +362,22 @@ function OutcomeColumn({
   return (
     <div
       style={{
-        padding: '32px 24px',
+        padding: '40px 28px',
         borderRight: last ? 'none' : '1px solid rgba(236,231,220,0.18)',
-        paddingLeft: kicker === '01' ? 0 : 24,
-        paddingRight: last ? 0 : 24,
+        paddingLeft: 28,
+        paddingRight: last ? 0 : 28,
       }}
     >
-      <div
-        className="mono upper"
-        style={{
-          fontSize: 10,
-          color: 'rgba(236,231,220,0.5)',
-          letterSpacing: '0.1em',
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
-      >
-        <span>{kicker}</span>
-        <span>{label}</span>
-      </div>
-      <h3 className="tight" style={{ margin: '16px 0 0', fontSize: 'clamp(26px, 2.6vw, 36px)', fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.05 }}>
-        {title}
+      <h3 className="tight" style={{ margin: 0, fontSize: 'clamp(44px, 5vw, 72px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.95, color: 'var(--bone)' }}>
+        {label}
       </h3>
+      <div className="mono upper" style={{ marginTop: 18, fontSize: 10, color: 'rgba(236,231,220,0.45)', letterSpacing: '0.1em' }}>
+        — {title}
+      </div>
       <ul style={{ margin: '20px 0 0', padding: 0, listStyle: 'none' }}>
         {items.map((item, index) => (
           <li
-            key={`${kicker}-${index}`}
+            key={`${label}-${index}`}
             style={{
               display: 'grid',
               gridTemplateColumns: '20px 1fr',

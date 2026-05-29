@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import SectionHead from '@/components/SectionHead';
+import ScrollReveal from '@/components/ScrollReveal';
 import { PROJECTS, STATS, VALUES, CREW, JOURNEY, FAQ, COMPANIES } from '@/lib/data';
 import styles from './page.module.css';
 
@@ -14,7 +15,6 @@ export default function Home() {
       <HomeStats />
       <HomeValues />
       <HomeFeatured />
-      <HomeCrew />
       <HomeJourney />
       <HomeFAQ />
       <HomeCompanies />
@@ -93,6 +93,7 @@ function PolaroidStack() {
   const [shuffling, setShuffling] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const dragStart = useRef<{ x: number; y: number } | null>(null);
 
   const slots = [
     { x: 0, y: 0, r: -4, z: 30, shadow: '0 30px 50px -20px rgba(17,17,16,0.40)' },
@@ -113,10 +114,26 @@ function PolaroidStack() {
     return slots[order.indexOf(idx)];
   }
 
+  function onPointerDown(e: React.PointerEvent) {
+    dragStart.current = { x: e.clientX, y: e.clientY };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  }
+
+  function onPointerUp(e: React.PointerEvent) {
+    if (!dragStart.current) return;
+    const dx = e.clientX - dragStart.current.x;
+    const dy = e.clientY - dragStart.current.y;
+    dragStart.current = null;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 8 || (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy))) shuffle();
+  }
+
   return (
     <div className={styles.polaroidShell}>
       <div
         ref={wrapRef}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
         onMouseMove={e => {
           if (!wrapRef.current) return;
           const r = wrapRef.current.getBoundingClientRect();
@@ -129,6 +146,9 @@ function PolaroidStack() {
           transformStyle: 'preserve-3d',
           transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
           transition: 'transform 240ms ease-out',
+          touchAction: 'pan-y',
+          cursor: shuffling ? 'default' : 'grab',
+          userSelect: 'none',
         }}
       >
         {CREW.map((c, i) => {
@@ -138,7 +158,6 @@ function PolaroidStack() {
           return (
             <div
               key={i}
-              onClick={isTop ? shuffle : undefined}
               style={{
                 position: 'absolute',
                 inset: 'auto 0 0 0',
@@ -157,22 +176,10 @@ function PolaroidStack() {
                 opacity: flying ? 0 : 1,
                 transition: 'transform 420ms cubic-bezier(.2,.7,.2,1), opacity 380ms ease, box-shadow 280ms ease',
                 zIndex: slot.z,
-                cursor: isTop ? 'pointer' : 'default',
-                userSelect: 'none',
               }}
             >
               <div className="photo" style={{ aspectRatio: '4/5', borderRadius: 8 }}>
-                <span className="ph-label">{c.label}</span>
-                {isTop && (
-                  <span style={{
-                    position: 'absolute', right: 12, top: 12,
-                    background: 'var(--accent)', color: 'var(--bone)',
-                    fontFamily: 'var(--font-jetbrains-mono)', fontSize: 10,
-                    letterSpacing: '0.08em', textTransform: 'uppercase',
-                    padding: '4px 8px', borderRadius: 6,
-                    zIndex: 1,
-                  }}>Top of stack</span>
-                )}
+                <img src={c.img} alt={c.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, pointerEvents: 'none' }} />
               </div>
               <div style={{
                 paddingTop: 14, paddingBottom: 6,
@@ -234,90 +241,84 @@ function CircularStamp() {
   );
 }
 
+// ---------- COUNT UP ----------
+function parseStatN(n: string): { value: number; suffix: string; fmt: (v: number) => string } {
+  if (n.includes('M')) {
+    const value = parseInt(n);
+    return { value, suffix: 'M+', fmt: v => String(v) };
+  }
+  const suffix = n.endsWith('+') ? '+' : '';
+  const value = parseInt(n.replace(/[^0-9]/g, ''));
+  const needsComma = value >= 1000;
+  return { value, suffix, fmt: v => needsComma ? v.toLocaleString('en-US') : String(v) };
+}
+
+function CountUp({ n, delayMs }: { n: string; delayMs: number }) {
+  const { value, suffix, fmt } = parseStatN(n);
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setCount(value);
+      return;
+    }
+    const observer = new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting) return;
+      observer.disconnect();
+      setTimeout(() => {
+        const duration = 1100;
+        const start = performance.now();
+        function tick(now: number) {
+          const t = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - t, 3);
+          setCount(Math.round(eased * value));
+          if (t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }, delayMs);
+    }, { threshold: 0.3 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [value, delayMs]);
+
+  const final = fmt(value) + suffix;
+  const current = fmt(count) + suffix;
+
+  return (
+    <span ref={ref} style={{ position: 'relative', display: 'inline-block', fontVariantNumeric: 'tabular-nums' }}>
+      <span style={{ visibility: 'hidden', display: 'block', pointerEvents: 'none' }} aria-hidden>{final}</span>
+      <span style={{ position: 'absolute', top: 0, left: 0 }} aria-live="off">{current}</span>
+    </span>
+  );
+}
+
 // ---------- STATS ----------
 function HomeStats() {
-  const statIcons = ['years', 'people', 'craft', 'loops'] as const;
-
   return (
     <section style={{ background: 'var(--bone)', borderTop: '1px solid var(--ink)' }}>
       <div className="container" style={{ padding: '112px 32px 128px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0 }}>
           {STATS.map((s, i) => (
-            <div key={i} style={{ padding: '4px 28px', borderLeft: i === 0 ? 'none' : '1px solid var(--rule-strong)' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 10 }}>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--accent)' }}>
-                  <StatIcon kind={statIcons[i] ?? 'years'} />
-                  <span className="mono upper" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.1em' }}>
-                    {s.unit}
-                  </span>
-                </div>
-                <div className="tight" style={{
-                  fontSize: 'clamp(44px, 5.5vw, 84px)',
-                  lineHeight: 0.95,
-                  fontWeight: 700,
-                  letterSpacing: '-0.04em',
-                }}>
-                  {s.n}
-                </div>
+            <ScrollReveal key={i} delayMs={i * 100} style={{ padding: '4px 28px', borderLeft: i === 0 ? 'none' : '1px solid var(--rule-strong)' }}>
+              <div className="tight" style={{
+                fontSize: 'clamp(44px, 5.5vw, 84px)',
+                lineHeight: 0.95,
+                fontWeight: 700,
+                letterSpacing: '-0.04em',
+              }}>
+                <CountUp n={s.n} delayMs={i * 100} />
               </div>
               <div style={{ marginTop: 16, fontSize: 14, color: 'var(--ink-2)', maxWidth: '22ch', lineHeight: 1.45 }}>
                 {s.label}
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
     </section>
-  );
-}
-
-function StatIcon({ kind }: { kind: 'years' | 'people' | 'craft' | 'loops' }) {
-  const commonProps = {
-    width: 16,
-    height: 16,
-    viewBox: '0 0 16 16',
-    fill: 'none',
-    xmlns: 'http://www.w3.org/2000/svg',
-    'aria-hidden': true,
-  } as const;
-
-  if (kind === 'people') {
-    return (
-      <svg {...commonProps}>
-        <circle cx="5" cy="6" r="2.25" stroke="currentColor" strokeWidth="1.25" />
-        <circle cx="11" cy="6.5" r="1.75" stroke="currentColor" strokeWidth="1.25" opacity="0.72" />
-        <path d="M2.75 12c.4-1.67 1.68-2.5 3.83-2.5S10.02 10.33 10.4 12" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-        <path d="M9.65 11.85c.2-1.13 1.03-1.7 2.5-1.7.55 0 1.03.08 1.45.25" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" opacity="0.72" />
-      </svg>
-    );
-  }
-
-  if (kind === 'craft') {
-    return (
-      <svg {...commonProps}>
-        <rect x="2.75" y="3" width="10.5" height="10" rx="1.6" stroke="currentColor" strokeWidth="1.25" />
-        <path d="M5.25 6h5.5M5.25 8.5h5.5M5.25 11h3.25" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (kind === 'loops') {
-    return (
-      <svg {...commonProps}>
-        <path d="M5.4 3.35H12v6.6" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M12 3.35 3.9 11.45" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-        <path d="M10.6 12.65H4V6.05" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
-        <path d="M4 12.65 12.1 4.55" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" opacity="0.7" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg {...commonProps}>
-      <rect x="2.75" y="3.25" width="10.5" height="9.75" rx="1.5" stroke="currentColor" strokeWidth="1.25" />
-      <path d="M5 1.9v2.2M11 1.9v2.2M2.75 6.2h10.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-      <path d="M5.5 8.5h1.8M8.7 8.5h1.8M5.5 10.8h1.8" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-    </svg>
   );
 }
 
@@ -335,9 +336,7 @@ function HomeValues() {
               letterSpacing: '-0.04em',
               fontWeight: 700,
             }}>
-              How I show up<br />
-              <em className="serif" style={{ fontStyle: 'italic', fontWeight: 400, letterSpacing: '-0.03em' }}>at the table</em>
-              <span className="accent">.</span>
+              How I show up<span className="accent">.</span>
             </h2>
           </div>
         </div>
@@ -351,19 +350,14 @@ function HomeValues() {
 
 function ValueCard({ v, idx }: { v: typeof VALUES[number]; idx: number }) {
   const [hover, setHover] = useState(false);
-  const [stamped, setStamped] = useState(false);
+  const [noted, setNoted] = useState(false);
   const restRot = [-1.8, 1.2, -1.0][idx];
-
-  function stamp() {
-    setStamped(true);
-    setTimeout(() => setStamped(false), 1400);
-  }
 
   return (
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onClick={stamp}
+      onClick={() => setNoted(true)}
       style={{
         position: 'relative',
         background: hover ? 'rgba(236,231,220,0.06)' : 'rgba(236,231,220,0.03)',
@@ -373,25 +367,36 @@ function ValueCard({ v, idx }: { v: typeof VALUES[number]; idx: number }) {
         minHeight: 360,
         display: 'flex',
         flexDirection: 'column',
-        cursor: 'pointer',
+        cursor: noted ? 'default' : 'pointer',
         userSelect: 'none',
         transformOrigin: 'center bottom',
-        transform: stamped
-          ? 'translateY(0) rotate(0deg) scale(0.98)'
-          : hover
-            ? 'translateY(-8px) rotate(0deg) scale(1.01)'
-            : `translateY(0) rotate(${restRot}deg) scale(1)`,
+        transform: hover && !noted
+          ? 'translateY(-8px) rotate(0deg) scale(1.01)'
+          : `translateY(0) rotate(${noted ? 0 : restRot}deg) scale(1)`,
         transition: 'transform 340ms cubic-bezier(.2,.7,.2,1), background 220ms, border-color 220ms, box-shadow 240ms',
         boxShadow: hover
           ? '0 24px 56px -28px rgba(0,0,0,0.65)'
           : '0 10px 22px -18px rgba(0,0,0,0.5)',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 36 }}>
-        <div className="mono upper" style={{ fontSize: 11, color: 'rgba(236,231,220,0.55)', letterSpacing: '0.12em' }}>
-          0{idx + 1} <span style={{ color: 'rgba(236,231,220,0.25)' }}>/ 03</span>
-        </div>
-        <ValueGlyph kind={v.kind} hover={hover} />
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: 36 }}>
+        {noted ? (
+          <div style={{
+            width: 72, height: 72,
+            border: '2px dashed var(--accent)',
+            borderRadius: '50%',
+            background: 'rgba(225,59,20,0.1)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: 'var(--font-jetbrains-mono)', fontSize: 9,
+            textTransform: 'uppercase', letterSpacing: '0.14em',
+            color: 'var(--accent)', textAlign: 'center', lineHeight: 1.1,
+            transform: 'rotate(-14deg)',
+            animation: 'notedStamp 320ms cubic-bezier(.2,.7,.2,1)',
+            flexShrink: 0,
+          }}>Noted ✓</div>
+        ) : (
+          <ValueGlyph kind={v.kind} hover={hover} />
+        )}
       </div>
 
       <h3 className="tight" style={{
@@ -429,28 +434,9 @@ function ValueCard({ v, idx }: { v: typeof VALUES[number]; idx: number }) {
         alignItems: 'center',
       }}>
         <span>// {v.tag}</span>
-        <span style={{ color: stamped ? 'var(--accent)' : 'rgba(236,231,220,0.3)' }}>
-          {stamped ? 'stamped ✓' : 'tap'}
-        </span>
+        {!noted && <span style={{ color: 'rgba(236,231,220,0.3)' }}>tap</span>}
       </div>
 
-      {/* Stamp overlay */}
-      <div style={{
-        position: 'absolute', right: 18, top: 18,
-        width: 88, height: 88,
-        border: '2px solid var(--accent)',
-        borderRadius: '50%',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontFamily: 'var(--font-jetbrains-mono)', fontSize: 10,
-        textTransform: 'uppercase', letterSpacing: '0.14em',
-        color: 'var(--accent)', textAlign: 'center', lineHeight: 1.1,
-        transform: stamped ? 'rotate(-14deg) scale(1)' : 'rotate(-14deg) scale(0.4)',
-        opacity: stamped ? 0.92 : 0,
-        transition: 'transform 240ms cubic-bezier(.2,.7,.2,1), opacity 220ms',
-        pointerEvents: 'none',
-      }}>
-        Noted
-      </div>
     </div>
   );
 }
@@ -624,37 +610,6 @@ function FeatureGraphic({ p, hover }: { p: typeof PROJECTS[number]; hover: boole
   );
 }
 
-// ---------- CREW ----------
-function HomeCrew() {
-  return (
-    <section>
-      <SectionHead title={<>The crew behind<br />the work<span className="accent">.</span></>} />
-      <div className="container" style={{ padding: '0 32px 160px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
-          {CREW.map((c, i) => (
-            <div key={c.name} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div className="photo" style={{ aspectRatio: '4/5' }}>
-                <span className="ph-label">{c.label}</span>
-              </div>
-              <div>
-                <div className="mono upper" style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.08em' }}>
-                  Crew.0{i + 1}
-                </div>
-                <div className="tight" style={{ fontSize: 'clamp(24px, 2vw, 32px)', fontWeight: 600, marginTop: 4, letterSpacing: '-0.025em' }}>
-                  {c.name} <span style={{ color: 'var(--sub)', fontWeight: 400 }}>— {c.role}</span>
-                </div>
-                <div style={{ marginTop: 8, color: 'var(--ink-2)', fontSize: 14, lineHeight: 1.5 }}>
-                  {c.note}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 // ---------- JOURNEY ----------
 function HomeJourney() {
   const [active, setActive] = useState(0);
@@ -770,6 +725,15 @@ function HomeJourney() {
                   <p style={{ margin: '16px 0 0', fontSize: 17, lineHeight: 1.55, color: 'var(--ink-2)', maxWidth: '58ch' }}>
                     {step.body}
                   </p>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 20 }}>
+                    {step.companies.map(co => (
+                      <span key={co.name} className="chip" style={{
+                        borderColor: isActive ? 'var(--accent)' : 'var(--rule-strong)',
+                        color: isActive ? 'var(--accent)' : 'var(--sub)',
+                        transition: 'color 280ms, border-color 280ms',
+                      }}>{co.name}</span>
+                    ))}
+                  </div>
                 </div>
               );
             })}
@@ -870,7 +834,10 @@ function HomeCompanies() {
 function CompanyCard({ c, i }: { c: typeof COMPANIES[number]; i: number }) {
   const [hover, setHover] = useState(false);
   return (
-    <div
+    <a
+      href={c.url}
+      target="_blank"
+      rel="noopener noreferrer"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
@@ -880,7 +847,8 @@ function CompanyCard({ c, i }: { c: typeof COMPANIES[number]; i: number }) {
         color: hover ? 'var(--bone)' : 'var(--ink)',
         borderColor: hover ? 'var(--ink)' : 'var(--rule)',
         transition: 'background 160ms, color 160ms, border-color 160ms',
-        cursor: 'default',
+        cursor: 'pointer',
+        textDecoration: 'none',
       }}
     >
       <div className="mono upper" style={{ fontSize: 10, opacity: 0.55, letterSpacing: '0.1em' }}>
@@ -890,6 +858,6 @@ function CompanyCard({ c, i }: { c: typeof COMPANIES[number]; i: number }) {
         <div className="tight" style={{ fontSize: 26, fontWeight: 600, letterSpacing: '-0.025em' }}>{c.name}</div>
         <div className="mono" style={{ fontSize: 11, marginTop: 8, opacity: 0.7, letterSpacing: '0.04em' }}>// {c.note}</div>
       </div>
-    </div>
+    </a>
   );
 }

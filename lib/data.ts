@@ -17,6 +17,7 @@ export interface JourneyStep {
   range: string;
   title: string;
   body: string;
+  companies: { name: string; url: string }[];
 }
 
 export interface FaqItem {
@@ -27,6 +28,7 @@ export interface FaqItem {
 export interface Company {
   name: string;
   note: string;
+  url: string;
 }
 
 export interface Stat {
@@ -47,6 +49,7 @@ export interface CrewMember {
   role: string;
   note: string;
   label: string;
+  img: string;
 }
 
 export const PROJECTS: Project[] = [
@@ -61,7 +64,7 @@ export const PROJECTS: Project[] = [
     quarter: 'Q3 2025',
     role: 'Lead Product Designer',
     team: '1 PM · 4 Eng · 1 Designer',
-    tags: ['Strategy', 'Refactor', 'AI'],
+    tags: ['Strategy', 'AI'],
     metric: '-15% time-to-decision',
     accent: '#E13B14',
   },
@@ -76,7 +79,7 @@ export const PROJECTS: Project[] = [
     quarter: 'Q3 2024',
     role: 'Lead Product Designer',
     team: '2 PM · 6 Eng · 1 Designer',
-    tags: ['0→1', 'Innovate'],
+    tags: ['0→1', 'Strategy'],
     metric: 'GA in 9 months',
   },
   {
@@ -90,7 +93,7 @@ export const PROJECTS: Project[] = [
     quarter: 'Q4 2024',
     role: 'Lead Product Designer',
     team: '1 PM · 3 Eng · 1 Designer',
-    tags: ['Strategy', 'UX Cleanup'],
+    tags: ['Strategy', 'Systems'],
     metric: '1 pattern, 100+ integrations',
   },
   {
@@ -104,7 +107,7 @@ export const PROJECTS: Project[] = [
     quarter: '2025',
     role: 'Senior Designer',
     team: '1 PM · 2 Eng · 1 Designer',
-    tags: ['Design advocacy', 'UX loopholes'],
+    tags: ['Strategy', 'Systems'],
     metric: '−40% support tickets',
   },
   {
@@ -118,7 +121,7 @@ export const PROJECTS: Project[] = [
     quarter: 'Q2 2023',
     role: 'Senior UX Designer',
     team: '2 PM · 8 Eng · 2 Designers',
-    tags: ['Refactor', 'Strategy'],
+    tags: ['Systems', 'Strategy'],
     metric: 'Re-platformed in 11 months',
   },
   {
@@ -146,7 +149,7 @@ export const PROJECTS: Project[] = [
     quarter: '2024',
     role: 'Founder / Everything',
     team: 'Me, late at night',
-    tags: ['0→1', 'Founder'],
+    tags: ['0→1'],
     metric: '1 house, 0 spreadsheets',
   },
 ];
@@ -157,24 +160,39 @@ export const JOURNEY: JourneyStep[] = [
     title: 'Web Designer',
     body:
       'Cut my teeth on marketing sites. Learned that hierarchy is most of the job and that a grid is a tool, not a religion.',
+    companies: [
+      { name: 'Catertrax', url: 'https://www.catertrax.com' },
+    ],
   },
   {
     range: '2013 — 2018',
     title: 'Front-end Developer',
     body:
       'Wrote production HTML/CSS/JS for companies that cared a lot about pixels. Learned what\'s expensive vs. cheap to build — knowledge I still use every single day.',
+    companies: [
+      { name: 'U. of Rochester', url: 'https://www.urmc.rochester.edu' },
+      { name: 'Circadence', url: 'https://www.circadence.com' },
+    ],
   },
   {
     range: '2018 — 2021',
     title: 'UX Designer',
     body:
       'Moved into enterprise: finance, healthcare, security. Owned design systems, accessibility, and end-to-end flows. Started thinking in systems instead of screens.',
+    companies: [
+      { name: 'CIT Bank', url: 'https://www.cit.com' },
+    ],
   },
   {
     range: '2021 — Now',
     title: 'Senior / Lead Product Designer',
     body:
       'Leading 0→1 and platform work. Partnering closely with PM and Eng to ship faster and argue less. Comfortable with both the strategy doc and the spec.',
+    companies: [
+      { name: 'Edenred', url: 'https://www.edenred.com' },
+      { name: 'Red Canary', url: 'https://redcanary.com' },
+      { name: 'Zscaler', url: 'https://www.zscaler.com' },
+    ],
   },
 ];
 
@@ -202,13 +220,13 @@ export const FAQ: FaqItem[] = [
 ];
 
 export const COMPANIES: Company[] = [
-  { name: 'Zscaler', note: 'Cloud security' },
-  { name: 'CIT Bank', note: 'Consumer banking' },
-  { name: 'Circadence', note: 'Cyber training' },
-  { name: 'Red Canary', note: 'MDR + security ops' },
-  { name: 'U. of Rochester', note: 'Healthcare / research' },
-  { name: 'Edenred', note: 'Benefits + payments' },
-  { name: 'Catertrax', note: 'Catering platform' },
+  { name: 'Zscaler', note: 'Cloud security', url: 'https://www.zscaler.com' },
+  { name: 'CIT Bank', note: 'Consumer banking', url: 'https://www.cit.com' },
+  { name: 'Circadence', note: 'Cyber training', url: 'https://www.circadence.com' },
+  { name: 'Red Canary', note: 'MDR + security ops', url: 'https://redcanary.com' },
+  { name: 'U. of Rochester', note: 'Healthcare / research', url: 'https://www.urmc.rochester.edu' },
+  { name: 'Edenred', note: 'Benefits + payments', url: 'https://www.edenred.com' },
+  { name: 'Catertrax', note: 'Catering platform', url: 'https://www.catertrax.com' },
 ];
 
 export const STATS: Stat[] = [
@@ -245,17 +263,20 @@ export const CREW: CrewMember[] = [
     role: 'The human',
     note: 'Designs by day. Builds furniture badly by night.',
     label: 'PHOTO — JOSH (REAL)',
+    img: 'https://framerusercontent.com/images/pQVssKXDl3MGeXUnsOIlyRrk.jpg',
   },
   {
     name: 'Squash',
     role: 'Director of Vibes',
     note: 'Goldendoodle. Has opinions on every stand-up.',
     label: 'PHOTO — SQUASH',
+    img: 'https://framerusercontent.com/images/a0oeWqUB7vLiZ92mkZpIsvP3hkQ.jpg',
   },
   {
     name: 'Noodles',
     role: 'VP of Snacks',
     note: 'Smaller. Faster. Slightly worse manners.',
     label: 'PHOTO — NOODLES',
+    img: 'https://framerusercontent.com/images/hcFB78uQ64NAhoDDNKBiPdG1Dg.jpg',
   },
 ];

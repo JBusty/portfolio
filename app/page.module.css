@@ -58,7 +58,7 @@
 .heroGrid {
   margin-top: 8px;
   display: grid;
-  grid-template-columns: minmax(0, 1.28fr) minmax(260px, 360px);
+  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 460px);
   gap: 20px;
   align-items: center;
 }
@@ -81,7 +81,7 @@
   width: 100%;
   justify-self: end;
   align-self: center;
-  max-width: 420px;
+  max-width: 520px;
 }
 
 .polaroidShell {
@@ -117,7 +117,7 @@
 
 @media (max-width: 980px) {
   .heroGrid {
-    grid-template-columns: minmax(0, 1.12fr) 250px;
+    grid-template-columns: minmax(0, 1.05fr) 300px;
     gap: 20px;
   }
 

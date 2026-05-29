@@ -11,7 +11,11 @@
       "Bash(echo \"Started PID $!\")",
       "mcp__mcp-unframer-co__getProjectXml",
       "mcp__mcp-unframer-co__getNodeXml",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(vercel ls *)",
+      "Bash(vercel env *)",
+      "Bash(vercel inspect *)",
+      "WebFetch(domain:joshuabussey.com)"
     ]
   }
 }

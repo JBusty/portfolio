@@ -18,31 +18,19 @@ export default function ProjectRow({ p }: ProjectRowProps) {
       onMouseLeave={() => setHover(false)}
       style={{
         display: 'grid',
-        gridTemplateColumns: '60px 1.2fr 1.6fr 1fr 110px',
+        gridTemplateColumns: '1.2fr 1.6fr 1fr auto',
         alignItems: 'center',
         gap: 24,
-        padding: '26px 0',
+        padding: '32px 24px',
         borderTop: '1px solid var(--rule)',
-        position: 'relative',
-        background: hover ? 'rgba(225,59,20,0.04)' : 'transparent',
-        transition: 'background 160ms',
+        borderRadius: hover ? 'var(--radius)' : 0,
+        background: hover ? 'var(--ink)' : 'transparent',
+        color: hover ? 'var(--bone)' : 'var(--ink)',
+        transition: 'all 180ms ease',
       }}
     >
-      {/* hover accent bar */}
-      <span style={{
-        position: 'absolute',
-        left: -24,
-        top: 0,
-        bottom: 0,
-        width: 4,
-        background: hover ? 'var(--accent)' : 'transparent',
-        transition: 'background 160ms',
-      }} />
-
-      <div className="mono" style={{ fontSize: 12, color: 'var(--sub)' }}>{p.num}</div>
-
       <div>
-        <div className="mono upper" style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.1em' }}>
+        <div className="mono upper" style={{ fontSize: 11, color: hover ? 'var(--accent)' : 'var(--accent)', letterSpacing: '0.1em' }}>
           {p.company}
         </div>
         <div className="tight" style={{
@@ -55,24 +43,27 @@ export default function ProjectRow({ p }: ProjectRowProps) {
         </div>
       </div>
 
-      <div style={{ color: 'var(--ink-2)', fontSize: 14, lineHeight: 1.5, maxWidth: '52ch' }}>
+      <div style={{ color: hover ? 'rgba(236,231,220,0.72)' : 'var(--ink-2)', fontSize: 14, lineHeight: 1.5, maxWidth: '52ch', transition: 'color 180ms' }}>
         {p.blurb}
       </div>
 
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-        <span className="chip">{p.year}</span>
-        {p.tags.slice(0, 2).map(t => <span key={t} className="chip">{t}</span>)}
+        <span className="chip" style={{ borderColor: hover ? 'rgba(236,231,220,0.3)' : 'var(--rule-strong)', color: hover ? 'var(--bone)' : 'var(--ink-2)' }}>{p.year}</span>
+        {p.tags.slice(0, 2).map(t => (
+          <span key={t} className="chip" style={{ borderColor: hover ? 'rgba(236,231,220,0.3)' : 'var(--rule-strong)', color: hover ? 'var(--bone)' : 'var(--ink-2)' }}>{t}</span>
+        ))}
       </div>
 
-      <div style={{ textAlign: 'right' }}>
-        <span className="mono upper" style={{
-          fontSize: 11,
-          letterSpacing: '0.08em',
-          color: hover ? 'var(--accent)' : 'var(--ink)',
-        }}>
-          {hover ? 'Open →' : 'View'}
-        </span>
-      </div>
+      <span className="btn" style={{
+        borderColor: hover ? 'rgba(236,231,220,0.4)' : 'var(--ink)',
+        color: hover ? 'var(--bone)' : 'var(--ink)',
+        background: 'transparent',
+        transition: 'border-color 180ms, color 180ms',
+        whiteSpace: 'nowrap',
+        pointerEvents: 'none',
+      }}>
+        View <span className="arr">→</span>
+      </span>
     </Link>
   );
 }

@@ -1,6 +1,41 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
+
+function BackToTop() {
+  const [hover, setHover] = useState(false);
+  return (
+    <button
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 7,
+        background: 'transparent',
+        border: `1px solid ${hover ? 'rgba(236,231,220,0.5)' : 'rgba(236,231,220,0.2)'}`,
+        borderRadius: 999,
+        color: hover ? 'rgba(236,231,220,0.9)' : 'rgba(236,231,220,0.55)',
+        fontFamily: 'var(--font-jetbrains-mono)',
+        fontSize: 11,
+        letterSpacing: '0.05em',
+        textTransform: 'uppercase',
+        padding: '7px 14px',
+        cursor: 'pointer',
+        transition: 'color 160ms, border-color 160ms',
+      }}
+    >
+      <span style={{
+        display: 'inline-block',
+        transform: hover ? 'translateY(-2px)' : 'translateY(0)',
+        transition: 'transform 200ms cubic-bezier(.2,.7,.2,1)',
+      }}>↑</span>
+      Back to top
+    </button>
+  );
+}
 
 const siteLinks = [
   { href: '/', label: 'Homepage' },
@@ -56,7 +91,7 @@ export default function Footer() {
               {siteLinks.map(it => (
                 <li key={it.href}>
                   <Link href={it.href} className="link-u" style={{ fontFamily: 'var(--font-jetbrains-mono)', fontSize: 13 }}>
-                    â†’ {it.label}
+                    → {it.label}
                   </Link>
                 </li>
               ))}
@@ -92,6 +127,7 @@ export default function Footer() {
           borderTop: '1px solid rgba(236,231,220,0.18)',
           display: 'flex',
           justifyContent: 'space-between',
+          alignItems: 'center',
           flexWrap: 'wrap',
           gap: 16,
           fontFamily: 'var(--font-jetbrains-mono)',
@@ -100,9 +136,9 @@ export default function Footer() {
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
         }}>
-          <span>Â© 2026 Josh — Hand-built in HTML & opinions.</span>
+          <span>© 2026 Josh — Hand-built in HTML & opinions.</span>
           <span>No robots were harmed in the making of this portfolio.</span>
-          <span>v 7.0 Â· Updated May '26</span>
+          <BackToTop />
         </div>
       </div>
     </footer>

@@ -160,7 +160,7 @@ button { font: inherit; cursor: pointer; }
   z-index: 50;
   border-bottom: 1px solid var(--rule);
   backdrop-filter: saturate(180%) blur(8px);
-  transition: background 300ms ease;
+  transition: background 300ms ease, top 280ms ease;
 }
 
 /* ---- link underline animation ---- */
@@ -249,6 +249,11 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
+}
+
+@keyframes notedStamp {
+  from { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 
 .scroll-reveal {

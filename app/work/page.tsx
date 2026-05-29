@@ -39,19 +39,9 @@ export default function WorkPage() {
             <span className="accent">.</span>
           </h1>
 
-          <div
-            style={{
-              marginTop: 48,
-              marginBottom: 24,
-              display: 'grid',
-              gridTemplateColumns: '1.4fr 1fr',
-              gap: 48,
-              alignItems: 'end',
-            }}
-          >
-            <p
+          <p
               style={{
-                margin: 0,
+                margin: '32px 0 0',
                 fontSize: 'clamp(17px, 1.4vw, 20px)',
                 lineHeight: 1.5,
                 color: 'var(--ink-2)',
@@ -60,105 +50,64 @@ export default function WorkPage() {
             >
               From idea to implementation, these are projects where the work
               actually shipped, not just a Figma file with rounded corners.
-              A mix of 0-&gt;1, platform-level refactors, and the kind of design
+              A mix of 0→1, platform-level refactors, and the kind of design
               work that lives in production for years.
             </p>
-          </div>
-        </ScrollReveal>
-
-        <ScrollReveal
-          as="div"
-          className="container"
-          delayMs={60}
-          style={{
-            padding: '32px 32px',
-            borderTop: '1px solid var(--rule)',
-            display: 'flex',
-            gap: 16,
-            flexWrap: 'wrap',
-            alignItems: 'center',
-          }}
-        >
-          <span
-            className="mono upper"
-            style={{ fontSize: 11, color: 'var(--sub)', letterSpacing: '0.08em' }}
-          >
-            Filter
-          </span>
-          {allTags.map((tag) => (
-            <button
-              key={tag}
-              onClick={() => setActiveTag(tag)}
-              className="chip"
-              style={{
-                background: activeTag === tag ? 'var(--ink)' : 'transparent',
-                color: activeTag === tag ? 'var(--bone)' : 'var(--ink-2)',
-                borderColor: activeTag === tag ? 'var(--ink)' : 'var(--rule-strong)',
-                cursor: 'pointer',
-              }}
-            >
-              {tag}
-            </button>
-          ))}
-          <span className="grow" />
-          <span
-            className="mono upper"
-            style={{ fontSize: 11, color: 'var(--sub)', letterSpacing: '0.08em' }}
-          >
-            View
-          </span>
-          <div
-            style={{
-              display: 'flex',
-              border: '1px solid var(--rule-strong)',
-              borderRadius: 999,
-              overflow: 'hidden',
-            }}
-          >
-            {(['rows', 'grid'] as const).map((nextView) => (
-              <button
-                key={nextView}
-                onClick={() => setView(nextView)}
-                className="mono upper"
-                style={{
-                  padding: '6px 14px',
-                  fontSize: 11,
-                  letterSpacing: '0.08em',
-                  background: view === nextView ? 'var(--ink)' : 'transparent',
-                  color: view === nextView ? 'var(--bone)' : 'var(--ink)',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                {nextView}
-              </button>
-            ))}
-          </div>
         </ScrollReveal>
       </section>
 
       <section>
-        <div className="container" style={{ padding: '16px 32px 160px' }}>
-          <ScrollReveal as="div">
-            <div
-              className="mono upper"
-              style={{
-                fontSize: 11,
-                color: 'var(--sub)',
-                padding: '16px 0',
-                letterSpacing: '0.08em',
-                display: 'flex',
-                justifyContent: 'space-between',
-              }}
-            >
-              <span>
-                Showing {list.length} of {PROJECTS.length}
-                {activeTag !== 'All' ? ` - tagged "${activeTag}"` : ''}
-              </span>
-              <span>Press right on a row to open</span>
+        <div className="container" style={{ padding: '0 32px 160px' }}>
+          <ScrollReveal
+            as="div"
+            style={{
+              padding: '20px 0 24px',
+              display: 'flex',
+              gap: 10,
+              flexWrap: 'wrap',
+              alignItems: 'center',
+            }}
+          >
+            <span className="mono upper" style={{ fontSize: 11, color: 'var(--sub)', letterSpacing: '0.08em', marginRight: 4 }}>
+              Filter
+            </span>
+            {allTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setActiveTag(tag)}
+                className="chip"
+                style={{
+                  background: activeTag === tag ? 'var(--ink)' : 'transparent',
+                  color: activeTag === tag ? 'var(--bone)' : 'var(--ink-2)',
+                  borderColor: activeTag === tag ? 'var(--ink)' : 'var(--rule-strong)',
+                  cursor: 'pointer',
+                }}
+              >
+                {tag}
+              </button>
+            ))}
+            <span className="grow" />
+            <div style={{ display: 'flex', border: '1px solid var(--rule-strong)', borderRadius: 999, overflow: 'hidden' }}>
+              {(['rows', 'grid'] as const).map((nextView) => (
+                <button
+                  key={nextView}
+                  onClick={() => setView(nextView)}
+                  className="mono upper"
+                  style={{
+                    padding: '6px 14px',
+                    fontSize: 11,
+                    letterSpacing: '0.08em',
+                    background: view === nextView ? 'var(--ink)' : 'transparent',
+                    color: view === nextView ? 'var(--bone)' : 'var(--ink)',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {nextView}
+                </button>
+              ))}
             </div>
           </ScrollReveal>
-
           {view === 'rows' ? (
             <div style={{ borderBottom: '1px solid var(--rule)' }}>
               {list.map((project, index) => (
