@@ -15,7 +15,26 @@
       "Bash(vercel ls *)",
       "Bash(vercel env *)",
       "Bash(vercel inspect *)",
-      "WebFetch(domain:joshuabussey.com)"
+      "WebFetch(domain:joshuabussey.com)",
+      "Bash(npx tsc *)",
+      "Bash(npx next *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
+      "Bash(npx playwright *)",
+      "Bash(npm install *)",
+      "Bash(curl -s \"https://joshuabussey.com/work/identities\")",
+      "Bash(curl -s https://joshuabussey.com/work/__TRACKED_VAR__)",
+      "Bash(curl -s \"https://joshuabussey.com/work/sdl\")",
+      "Bash(curl -s \"https://joshuabussey.com/work/integrations\")",
+      "Bash(curl -s \"https://joshuabussey.com/work/status-checks\")",
+      "Bash(curl -s \"https://joshuabussey.com/work/commuter\")",
+      "Bash(curl -s \"https://joshuabussey.com/work/fleet\")",
+      "Bash(Remove-Item *)",
+      "Bash(del *)",
+      "Skill(run)",
+      "Bash(curl -s http://localhost:3000/work/identity-profiles)",
+      "Bash(curl -s \"http://localhost:3000/work/identity-profiles\" -o -)",
+      "Bash(findstr /C:\"r-problem-img\")",
+      "Bash(curl -s \"http://localhost:3000/work/identity-profiles\")"
     ]
   }
 }

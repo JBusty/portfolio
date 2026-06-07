@@ -64,7 +64,7 @@ export const PROJECTS: Project[] = [
     quarter: 'Q3 2025',
     role: 'Lead Product Designer',
     team: '1 PM · 4 Eng · 1 Designer',
-    tags: ['Strategy', 'AI'],
+    tags: ['Strategy', 'Refactor'],
     metric: '-15% time-to-decision',
     accent: '#E13B14',
   },
@@ -79,7 +79,7 @@ export const PROJECTS: Project[] = [
     quarter: 'Q3 2024',
     role: 'Lead Product Designer',
     team: '2 PM · 6 Eng · 1 Designer',
-    tags: ['0→1'],
+    tags: ['0→1', 'Innovate'],
     metric: 'GA in 9 months',
   },
   {
@@ -93,7 +93,7 @@ export const PROJECTS: Project[] = [
     quarter: 'Q4 2024',
     role: 'Lead Product Designer',
     team: '1 PM · 3 Eng · 1 Designer',
-    tags: ['Strategy', 'Systems'],
+    tags: ['Strategy', 'UX Cleanup'],
     metric: '1 pattern, 100+ integrations',
   },
   {
@@ -107,8 +107,8 @@ export const PROJECTS: Project[] = [
     quarter: '2025',
     role: 'Senior Designer',
     team: '1 PM · 2 Eng · 1 Designer',
-    tags: ['Systems'],
-    metric: '−40% support tickets',
+    tags: ['Design advocacy', 'UX loopholes'],
+    metric: '~25% fewer support escalations',
   },
   {
     slug: 'commuter-benefits',
@@ -121,8 +121,8 @@ export const PROJECTS: Project[] = [
     quarter: 'Q2 2023',
     role: 'Senior UX Designer',
     team: '2 PM · 8 Eng · 2 Designers',
-    tags: ['Systems', 'Strategy'],
-    metric: 'Re-platformed in 11 months',
+    tags: ['Refactor', 'Strategy'],
+    metric: 'Won the Google contract',
   },
   {
     slug: 'fleet-card',
@@ -135,8 +135,8 @@ export const PROJECTS: Project[] = [
     quarter: 'Q2 2022',
     role: 'Senior UX Designer',
     team: '1 PM · 5 Eng · 1 Designer',
-    tags: ['0→1'],
-    metric: '$NEW line of revenue',
+    tags: ['Strategy', '0→1'],
+    metric: '200+ businesses converted',
   },
   {
     slug: 'groundbase',
@@ -149,7 +149,7 @@ export const PROJECTS: Project[] = [
     quarter: '2024',
     role: 'Founder / Everything',
     team: 'Me, late at night',
-    tags: ['0→1'],
+    tags: ['Founder', '0→1'],
     metric: '1 house, 0 spreadsheets',
   },
 ];

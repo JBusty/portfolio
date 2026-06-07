@@ -24,17 +24,8 @@ export default function Home() {
 
 // ---------- HERO ----------
 function HomeHero() {
-  const heroRef = useRef<HTMLElement>(null);
-  const [pos, setPos] = useState({ x: -9999, y: -9999, on: false });
-
   return (
     <section
-      ref={heroRef}
-      onMouseMove={e => {
-        const r = heroRef.current!.getBoundingClientRect();
-        setPos({ x: e.clientX - r.left, y: e.clientY - r.top, on: true });
-      }}
-      onMouseLeave={() => setPos(p => ({ ...p, on: false }))}
       style={{
         position: 'relative',
         borderBottom: '1px solid var(--ink)',
@@ -42,7 +33,6 @@ function HomeHero() {
         overflow: 'hidden',
       }}
     >
-      <div className="spotlight" style={{ left: pos.x, top: pos.y, opacity: pos.on ? 1 : 0 }} />
 
       <div className={`container ${styles.heroInner}`}>
         <div className={styles.heroGrid}>
@@ -165,7 +155,6 @@ function PolaroidStack() {
                 width: '84%',
                 margin: '0 auto',
                 background: 'var(--bone)',
-                border: '1px solid var(--ink)',
                 borderRadius: 'var(--radius)',
                 padding: '14px 14px 12px',
                 boxShadow: slot.shadow,
@@ -179,7 +168,7 @@ function PolaroidStack() {
               }}
             >
               <div className="photo" style={{ aspectRatio: '4/5', borderRadius: 8 }}>
-                <img src={c.img} alt={c.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, pointerEvents: 'none' }} />
+                <img src={c.img} alt={c.name} className="polaroid-photo" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, pointerEvents: 'none', animationDelay: `${500 + i * 150}ms` }} />
               </div>
               <div style={{
                 paddingTop: 14, paddingBottom: 6,
@@ -192,16 +181,27 @@ function PolaroidStack() {
                   {c.role}
                 </div>
               </div>
+              <svg
+                aria-hidden="true"
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'none' }}
+              >
+                <rect
+                  x={0} y={0}
+                  width="100%" height="100%"
+                  rx={14}
+                  fill="none"
+                  stroke="var(--ink)"
+                  strokeWidth={1}
+                  pathLength={1000}
+                  strokeDasharray={1000}
+                  strokeDashoffset={1000}
+                  className="polaroid-draw"
+                  style={{ animationDelay: `${400 + i * 150}ms` }}
+                />
+              </svg>
             </div>
           );
         })}
-
-        {/* Rotating stamp */}
-        <div style={{ position: 'absolute', top: -28, right: -28, width: 116, height: 116, zIndex: 40, pointerEvents: 'none' }}>
-          <div className="stamp-spin" style={{ width: '100%', height: '100%' }}>
-            <CircularStamp />
-          </div>
-        </div>
 
         {/* Hint */}
         <div className="mono upper" style={{
@@ -217,27 +217,6 @@ function PolaroidStack() {
         </div>
       </div>
     </div>
-  );
-}
-
-function CircularStamp() {
-  const text = '  ★  AVAILABLE Q3 \'26  ★  HUDSON VALLEY NY  ★  AVAILABLE Q3 \'26  ★  HUDSON VALLEY NY  ';
-  return (
-    <svg viewBox="0 0 120 120" width="100%" height="100%">
-      <defs>
-        <path id="stamp-path" d="M 60,60 m -44,0 a 44,44 0 1,1 88,0 a 44,44 0 1,1 -88,0" fill="none" />
-      </defs>
-      <circle cx="60" cy="60" r="56" fill="#111110" />
-      <circle cx="60" cy="60" r="50" fill="none" stroke="#ECE7DC" strokeWidth={1} strokeDasharray="2 3" />
-      <circle cx="60" cy="60" r="22" fill="#E13B14" />
-      <text style={{ fontFamily: 'var(--font-jetbrains-mono), monospace', fontSize: 9, fill: '#ECE7DC', letterSpacing: 1.5, fontWeight: 600 }}>
-        <textPath href="#stamp-path" startOffset="0">{text}</textPath>
-      </text>
-      <text x="60" y="63" textAnchor="middle" style={{
-        fontFamily: 'var(--font-jetbrains-mono), monospace',
-        fontSize: 9, fontWeight: 700, fill: '#ECE7DC', letterSpacing: 1,
-      }}>HI.</text>
-    </svg>
   );
 }
 
@@ -299,10 +278,14 @@ function CountUp({ n, delayMs }: { n: string; delayMs: number }) {
 function HomeStats() {
   return (
     <section style={{ background: 'var(--bone)', borderTop: '1px solid var(--ink)' }}>
-      <div className="container" style={{ padding: '112px 32px 128px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0 }}>
+      <div className="container sp-normal" style={{ padding: '112px 32px 128px' }}>
+        <div className="r-grid-4" style={{ gap: 0 }}>
           {STATS.map((s, i) => (
-            <ScrollReveal key={i} delayMs={i * 100} style={{ padding: '4px 28px', borderLeft: i === 0 ? 'none' : '1px solid var(--rule-strong)' }}>
+            <ScrollReveal
+              key={i}
+              delayMs={i * 100}
+              style={{ padding: '4px 28px', borderLeft: i === 0 ? 'none' : '1px solid var(--rule-strong)' }}
+            >
               <div className="tight" style={{
                 fontSize: 'clamp(44px, 5.5vw, 84px)',
                 lineHeight: 0.95,
@@ -326,7 +309,7 @@ function HomeStats() {
 function HomeValues() {
   return (
     <section style={{ background: 'var(--ink)', color: 'var(--bone)', overflow: 'hidden' }}>
-      <div className="container" style={{ padding: '160px 32px 208px' }}>
+      <div className="container sp-large" style={{ padding: '160px 32px 208px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 32, flexWrap: 'wrap', marginBottom: 64 }}>
           <div>
             <h2 className="tight" style={{
@@ -340,7 +323,7 @@ function HomeValues() {
             </h2>
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+        <div className="r-grid-3">
           {VALUES.map((v, i) => <ValueCard key={v.title} v={v} idx={i} />)}
         </div>
       </div>
@@ -489,8 +472,8 @@ function HomeFeatured() {
   return (
     <section>
       <SectionHead title={<>Work that wasn't<br />just a deck<span className="accent">.</span></>} />
-      <div className="container" style={{ padding: '0 32px 160px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+      <div className="container sp-bot-sm" style={{ padding: '0 32px 160px' }}>
+        <div className="r-grid-3">
           {featured.map(p => <FeaturedCard key={p.slug} p={p} />)}
         </div>
         <div style={{
@@ -499,8 +482,10 @@ function HomeFeatured() {
           border: '1px solid var(--rule)',
           borderRadius: 'var(--radius-lg)',
           display: 'flex',
+          flexWrap: 'wrap',
           justifyContent: 'space-between',
           alignItems: 'center',
+          gap: 16,
         }}>
           <span style={{ fontSize: 14, color: 'var(--ink-2)' }}>
             {PROJECTS.length - 3} more projects — including NDA work, design systems, and a personal build.
@@ -606,10 +591,10 @@ function HomeJourney() {
   return (
     <section>
       <SectionHead title={<>12 years,<br />one winding road<span className="accent">.</span></>} />
-      <div className="container" style={{ padding: '0 32px 240px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 56 }}>
+      <div className="container sp-bot-xl" style={{ padding: '0 32px 240px' }}>
+        <div className="r-journey">
           {/* Sticky scrubber */}
-          <div style={{ position: 'sticky', top: 100, alignSelf: 'start' }}>
+          <div className="r-journey-sidebar" style={{ position: 'sticky', top: 100, alignSelf: 'start' }}>
             <div className="tight" style={{
               fontSize: 88, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1,
               display: 'flex', alignItems: 'baseline', gap: 2,
@@ -711,7 +696,7 @@ function HomeFAQ() {
   return (
     <section>
       <SectionHead title={<>What it's like<br />working with me<span className="accent">.</span></>} />
-      <div className="container" style={{ padding: '0 32px 160px' }}>
+      <div className="container sp-bot-sm" style={{ padding: '0 32px 160px' }}>
         <div style={{ borderTop: '1px solid var(--ink)' }}>
           {FAQ.map((it, i) => {
             const isOpen = i === openIdx;
@@ -766,7 +751,7 @@ function HomeFAQ() {
 function HomeCompanies() {
   return (
     <section style={{ background: 'var(--paper)', borderTop: '1px solid var(--ink)' }}>
-      <div className="container" style={{ padding: '112px 32px 160px' }}>
+      <div className="container sp-normal" style={{ padding: '112px 32px 160px' }}>
         <div className="tight" style={{
           fontSize: 'clamp(36px, 5vw, 80px)', lineHeight: 0.96, letterSpacing: '-0.04em', fontWeight: 700,
           maxWidth: '16ch', marginBottom: 48,

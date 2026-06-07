@@ -17,7 +17,20 @@ export interface CaseStudyStat {
   label: string;
 }
 
+export interface CaseStudyCaption {
+  label: string;
+  body: string;
+}
+
+export interface CaseStudyImages {
+  logo?: string;
+  problem?: string;
+  solution?: string[];
+  solutionCaptions?: CaseStudyCaption[];
+}
+
 export interface CaseStudy {
+  images?: CaseStudyImages;
   summary: string;
   problemTitle: string[];
   problemBody: string[];
@@ -44,6 +57,22 @@ export interface CaseStudy {
 
 export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
   'identity-profiles': {
+    images: {
+      logo: '/images/shared/red-canary-hero.png',
+      problem: '/images/identity-profiles/problem-overview.png',
+      solution: [
+        '/images/identity-profiles/solution-1.png',
+        '/images/identity-profiles/solution-2.png',
+        '/images/identity-profiles/solution-3.png',
+        '/images/identity-profiles/solution-4.png',
+      ],
+      solutionCaptions: [
+        { label: 'Benchmarking the field', body: 'I mapped every competitor\'s identity experience to establish the floor — what customers already expected — before deciding where to move ahead of it.' },
+        { label: 'AI summaries, not essays', body: 'GenAI generates a short, high-value wrap-up of identity activity. Enough to act on. Not enough to drown in.' },
+        { label: 'Evidence stays visible', body: 'The raw data didn\'t disappear — it moved below the fold so analysts can still dig in when they need to.' },
+        { label: 'The shipped experience', body: 'A unified identity profile that reduced analyst correlation time by roughly 15% in early customer testing.' },
+      ],
+    },
     summary:
       "I led the redesign of Red Canary's Identity Profiles, introducing actionable insights powered by generative AI and a modernized user experience. The update strengthened customer retention and gave us a significant competitive edge in a previously stagnant area of UX.",
     problemTitle: ['Flat. Boring.', 'Behind the curve'],
@@ -129,6 +158,22 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     },
   },
   'security-data-lake': {
+    images: {
+      logo: '/images/shared/red-canary-hero.png',
+      problem: '/images/security-data-lake/problem-overview.png',
+      solution: [
+        '/images/security-data-lake/solution-1.png',
+        '/images/security-data-lake/solution-2.png',
+        '/images/security-data-lake/solution-3.png',
+        '/images/security-data-lake/solution-4.png',
+      ],
+      solutionCaptions: [
+        { label: 'Usage at a glance', body: 'The first release was a dashboard: integration-level breakdowns, historical trends, and export support for compliance teams.' },
+        { label: 'A familiar query interface', body: 'The search tool was built on SQL patterns customers already knew so the power felt accessible instead of intimidating.' },
+        { label: 'Cost before you commit', body: 'Query size is surfaced before execution. Customers see what they\'re spending before they spend it.' },
+        { label: 'The shipped experience', body: 'SDL launched on schedule and immediately generated positive feedback — and new contracts — from enterprise customers.' },
+      ],
+    },
     summary:
       "We built the Security Data Lake (SDL), a new feature enabling customers to query their Red Canary data in real time. It solved compliance pain, elevated customer satisfaction, and gave users far more transparency and control over the data they were already sending into the platform.",
     problemTitle: ['Customers sent the data.', "They just couldn't use it"],
@@ -213,7 +258,115 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       ],
     },
   },
+  'unified-onboarding': {
+    images: {
+      logo: '/images/shared/red-canary-hero.png',
+      problem: '/images/unified-onboarding/problem-overview.png',
+      solution: [
+        '/images/unified-onboarding/solution-1.png',
+        '/images/unified-onboarding/solution-2.png',
+        '/images/unified-onboarding/solution-3.png',
+      ],
+      solutionCaptions: [
+        { label: 'The shared shell', body: 'A reusable onboarding frame that handles auth, configuration, and validation — with structured room for vendor-specific steps.' },
+        { label: 'Edge cases have a home', body: 'Instead of one-off flows, exceptions slot into a defined part of the pattern. Consistent structure, flexible details.' },
+        { label: 'The shipped pattern', body: 'One system that covers 100+ integrations and makes every new one cheaper to design and build than the last.' },
+      ],
+    },
+    summary:
+      'Red Canary has over 100 integrations, each with its own onboarding flow. I replaced the pile of one-offs with a single adaptable pattern — one that survives contact with every vendor while cutting the design and engineering cost of every integration that comes after.',
+    problemTitle: ['100 integrations.', '100 different onboarding flows'],
+    problemBody: [
+      "Every time a new integration was added, onboarding was designed from scratch. The result was a product that felt inconsistent and an engineering process that couldn't scale.",
+      'The technical debt was obvious, but the bigger problem was that customers experienced meaningfully different flows depending on which integration they were setting up — and none of them were as good as they should have been.',
+    ],
+    decisionQuestion: 'Do we fix one flow at a time, or do we design a system?',
+    decisionContext:
+      'The safer play was incremental: fix the worst offenders and move on. The riskier play was building a unified pattern that would require more upfront investment but pay off across every integration after.',
+    decisionAnswerTitle: 'Build the pattern once.',
+    decisionAnswerBody:
+      "Design a shared onboarding shell flexible enough to absorb every vendor's edge cases, so the next integration ships faster than the last one — and the one after that faster still.",
+    outcomes: {
+      painPoints: [
+        'Each integration had a bespoke onboarding flow, creating inconsistency for customers and toil for engineering.',
+        'New integrations required designing and building onboarding from scratch every time.',
+      ],
+      role: [
+        'Defined the unified onboarding pattern and information architecture.',
+        'Collaborated across product, engineering, and integration owners to pressure-test the system against real edge cases.',
+      ],
+      shipped: [
+        'One shared onboarding pattern that works across 100+ integrations.',
+        'Reduced engineering overhead per new integration.',
+        'A more consistent, professional experience for customers setting up any integration.',
+      ],
+    },
+    solutionTitle: ['One pattern.', '100+ integrations covered'],
+    solutionCards: [
+      {
+        n: '01',
+        h: 'Audit every existing flow',
+        b: 'I mapped the full range of existing onboarding patterns to understand what varied across integrations and what the actual common structure was beneath the noise.',
+      },
+      {
+        n: '02',
+        h: 'Design the shared shell',
+        b: 'The reusable skeleton handles the common steps — auth, configuration, validation — while leaving structured room for vendor-specific variations.',
+      },
+      {
+        n: '03',
+        h: 'Stress-test against edge cases',
+        b: 'The pattern was pressure-tested against the ugliest integrations first so we knew it could hold up before it became the standard.',
+      },
+    ],
+    processTitle: ['Two months.', 'One pattern'],
+    processStats: [
+      { n: '2 months', label: 'Design phase' },
+      { n: '1', label: 'Designer' },
+      { n: '23', label: 'Unique stakeholders' },
+    ],
+    processSteps: [
+      {
+        n: '01',
+        h: 'Map the existing landscape',
+        body: 'I catalogued the full range of integration onboarding flows to find what was truly shared versus what was genuinely integration-specific.',
+      },
+      {
+        n: '02',
+        h: 'Define the shared structure',
+        body: 'The common steps became the pattern. The edge cases got explicit slots in the system so they would stop becoming one-offs.',
+      },
+      {
+        n: '03',
+        h: 'Validate with the hardest cases',
+        body: 'The messiest integrations were the test. If the pattern worked for those, it would work for everything else.',
+      },
+    ],
+    reflection: {
+      wins: [
+        'Once the pattern was established, new integrations shipped significantly faster.',
+        'Engineering bought in quickly once they saw the reduction in design back-and-forth.',
+        'The system created a higher quality floor across every integration, not just the ones we redesigned.',
+      ],
+      challenges: [
+        'Getting stakeholders across 100+ integrations aligned on a single direction required sustained effort.',
+        'Some vendor constraints genuinely broke the pattern and required thoughtful exceptions rather than workarounds.',
+        'The audit phase surfaced more edge cases than expected, which pushed the timeline.',
+      ],
+    },
+  },
   'status-checks': {
+    images: {
+      logo: '/images/shared/red-canary-hero.png',
+      solution: [
+        '/images/status-checks/carousel-1.png',
+        '/images/status-checks/carousel-2.png',
+      ],
+      solutionCaptions: [
+        { label: 'Health in the list view', body: 'A status badge on the integrations list makes broken integrations visible before customers have to go looking for them.' },
+        { label: 'Checks in context', body: 'The detail page shows exactly which checks are failing, why they matter, and what to do next — no support ticket required.' },
+      ],
+    },
     summary:
       "I designed a proactive notification system for failing integrations so customers could see problems in real time instead of discovering them during an incident. The solution reduced support load, improved troubleshooting, and strengthened trust in the platform's reliability.",
     problemTitle: ['Failures were happening.', 'Customers were blind'],
@@ -299,6 +452,22 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     },
   },
   'commuter-benefits': {
+    images: {
+      logo: '/images/shared/edenred-hero.png',
+      problem: '/images/commuter-benefits/problem-overview.png',
+      solution: [
+        '/images/commuter-benefits/carousel-2.png',
+        '/images/commuter-benefits/carousel-3.png',
+        '/images/commuter-benefits/carousel-4.png',
+        '/images/commuter-benefits/solution-final.png',
+      ],
+      solutionCaptions: [
+        { label: 'The unified platform shell', body: 'A single frame capable of housing all commuter applications under one coherent experience instead of a set of disconnected tools.' },
+        { label: 'Reworked end-to-end flows', body: 'I mapped and rewired every workflow so individual tasks felt like one product journey rather than a handoff across apps.' },
+        { label: 'Tiered rollout', body: 'The customer-facing portal launched first, validating the approach in production before the administrative side followed.' },
+        { label: 'The shipped platform', body: 'A scalable foundation that simplified workflows, sharpened demos, and helped win the Google contract.' },
+      ],
+    },
     summary:
       'I led the consolidation of multiple fragmented commuter products into a single cohesive platform backed by a new design system. The overhaul simplified workflows, reduced admin overhead, increased interest during demos, and helped the business win the Google contract.',
     problemTitle: ['Too many products.', 'Not enough platform'],
@@ -384,6 +553,22 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     },
   },
   'fleet-card': {
+    images: {
+      logo: '/images/shared/edenred-hero.png',
+      problem: '/images/fleet-card/problem-overview.png',
+      solution: [
+        '/images/fleet-card/solution-1.png',
+        '/images/fleet-card/solution-2.png',
+        '/images/fleet-card/solution-3.png',
+        '/images/fleet-card/solution-4.png',
+      ],
+      solutionCaptions: [
+        { label: 'Design system first', body: 'Visual tokens, component direction, and spacing rules were locked in before screen work ramped up — so both the customer and admin sides stayed aligned.' },
+        { label: 'Real-time card controls', body: 'The cardholder experience centered on spend controls that worked in real time — the core value proposition of the whole product.' },
+        { label: 'Admin at scale', body: 'Fleet managers needed just as much power as cardholders. The admin side was designed to be as intuitive as the consumer-facing experience.' },
+        { label: 'The shipped platform', body: 'Launched in 13 months with a VISA partnership in place. Over 200 businesses converted in the first wave.' },
+      ],
+    },
     summary:
       "I designed and launched Edenred USA's first Fleet Card platform, taking it from concept to live in 13 months. Built with VISA, it enabled real-time spending controls, opened a new market for the company, and converted more than 200 businesses.",
     problemTitle: ['New market.', 'Very short runway'],

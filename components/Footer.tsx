@@ -52,8 +52,8 @@ const elsewhereLinks = [
 export default function Footer() {
   return (
     <footer style={{ borderTop: '1px solid var(--ink)', background: 'var(--ink)', color: 'var(--bone)' }}>
-      <div className="container" style={{ padding: '160px 32px 80px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr', gap: 40 }}>
+      <div className="container sp-footer" style={{ padding: '160px 32px 80px' }}>
+        <div className="r-footer" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr', gap: 40 }}>
           {/* CTA */}
           <div>
             <h2 className="tight" style={{

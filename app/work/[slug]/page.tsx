@@ -1,12 +1,14 @@
 'use client';
 
-import { use, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import { use, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ScrollReveal from '@/components/ScrollReveal';
 import SectionHead from '@/components/SectionHead';
 import { getCaseStudy } from '@/lib/caseStudies';
 import { PROJECTS } from '@/lib/data';
+import heroStyles from '../../page.module.css';
 
 export default function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -21,7 +23,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
   return (
     <main className="page-enter">
       <section style={{ borderBottom: '1px solid var(--ink)', background: 'var(--hero-case)' }}>
-        <ScrollReveal as="div" className="container" style={{ padding: '96px 32px 48px' }}>
+        <div className="container sp-hero" style={{ padding: '66px 32px 88px' }}>
           <div
             className="mono upper"
             style={{
@@ -45,28 +47,17 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
             </span>
           </div>
 
-          <div
-            style={{
-              marginTop: 56,
-              display: 'grid',
-              gridTemplateColumns: '1.4fr 1fr',
-              gap: 56,
-              alignItems: 'start',
-            }}
-          >
+          <div className="r-hero-meta" style={{ marginTop: 56 }}>
             <div>
               <h1
-                className="tight"
+                className={`tight ${heroStyles.heroTitle}`}
                 style={{
-                  margin: 0,
-                  fontSize: 'clamp(40px, 7vw, 120px)',
-                  lineHeight: 0.92,
-                  letterSpacing: '-0.05em',
-                  fontWeight: 700,
+                  fontSize: 'clamp(40px, 7vw, 80px)',
+                  lineHeight: 1.05,
+                  maxWidth: '12ch',
                 }}
               >
-                {p.title}
-                <span className="accent">.</span>
+                {renderAnimatedHeroTitle(p.title)}
               </h1>
               <p
                 style={{
@@ -104,7 +95,14 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
               </div>
               <dl className="meta-col">
                 <dt>Client</dt>
-                <dd>{p.company}</dd>
+                <dd>
+                  {study.images?.logo ? (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <img src={study.images.logo} alt={p.company} style={{ height: 20, width: 'auto', display: 'block' }} />
+                      {p.company}
+                    </span>
+                  ) : p.company}
+                </dd>
                 <dt>Role</dt>
                 <dd>{p.role}</dd>
                 <dt>Team</dt>
@@ -126,12 +124,12 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
               </dl>
             </div>
           </div>
-        </ScrollReveal>
+        </div>
       </section>
 
-      <section style={{ background: 'var(--ink)', color: 'var(--bone)' }}>
+<section style={{ background: 'var(--ink)', color: 'var(--bone)' }}>
         <ScrollReveal as="div" className="container" style={{ padding: '40px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0 }}>
+          <div className="r-outcome">
             <OutcomeColumn label="Friction" title="Pain points for the customer" items={study.outcomes.painPoints} />
             <OutcomeColumn label="My Role" title="What I owned during the process" items={study.outcomes.role} />
             <OutcomeColumn label="Outcome" title="What I shipped" items={study.outcomes.shipped} last />
@@ -139,19 +137,41 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
         </ScrollReveal>
       </section>
 
-      <CSection title={<>The TL;DR<span className="accent">.</span></>}>
+      <CSection eyebrow="Summary" title={<>The TL;DR<span className="accent">.</span></>}>
         <p style={cssCopy()}>{study.summary}</p>
       </CSection>
 
-      <CSection title={renderTitleLines(study.problemTitle)}>
-        <div style={{ display: 'grid', gap: 20 }}>
-          {study.problemBody.map((paragraph, index) => (
-            <p key={`${p.slug}-problem-${index}`} style={cssCopy()}>
-              {paragraph}
-            </p>
-          ))}
+      <section>
+        <div style={{ borderTop: '1px solid var(--ink)' }}>
+          <ScrollReveal as="div" className={`container r-problem-full`} style={{ padding: '80px 32px 160px', gap: '96px' }}>
+            <div>
+              <div className="mono upper" style={{ fontSize: 11, letterSpacing: '0.12em', color: 'var(--accent)', marginBottom: 20 }}>
+                The Problem
+              </div>
+              <h2 className="tight" style={{
+                margin: 0,
+                fontSize: 'clamp(36px, 5vw, 80px)',
+                lineHeight: 1.06,
+                letterSpacing: '-0.04em',
+                fontWeight: 700,
+                maxWidth: '16ch',
+              }}>
+                {renderTitleLines(study.problemTitle)}
+              </h2>
+              <div style={{ display: 'grid', gap: 20, marginTop: 40 }}>
+                {study.problemBody.map((paragraph, index) => (
+                  <p key={`${p.slug}-problem-${index}`} style={cssCopy()}>
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
+            {study.images?.problem && (
+              <ProblemImage src={study.images.problem} />
+            )}
+          </ScrollReveal>
         </div>
-      </CSection>
+      </section>
 
       <KeyDecisionBlock
         question={study.decisionQuestion}
@@ -160,7 +180,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
         answerBody={study.decisionAnswerBody}
       />
 
-      <CSection title={renderTitleLines(study.solutionTitle)}>
+      <CSection eyebrow="The Solution" title={renderTitleLines(study.solutionTitle)}>
         {study.solutionIntro ? <p style={cssCopy()}>{study.solutionIntro}</p> : null}
         <div
           style={{
@@ -180,10 +200,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
                 borderRadius: 'var(--radius)',
               }}
             >
-              <div className="mono" style={{ fontSize: 12, color: 'var(--accent)' }}>
-                {card.n}
-              </div>
-              <div className="tight" style={{ fontSize: 22, fontWeight: 600, marginTop: 18, letterSpacing: '-0.025em' }}>
+              <div className="tight" style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.025em' }}>
                 {card.h}
               </div>
               <p style={{ margin: '12px 0 0', color: 'var(--ink-2)', fontSize: 15, lineHeight: 1.55 }}>{card.b}</p>
@@ -192,74 +209,32 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
         </div>
       </CSection>
 
-      <CSection title={renderTitleLines(study.processTitle)}>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${study.processStats.length}, 1fr)`,
-            gap: 0,
-            border: '1px solid var(--rule)',
-            borderRadius: 'var(--radius)',
-            overflow: 'hidden',
-            marginBottom: 32,
-          }}
-        >
-          {study.processStats.map((stat, index) => (
-            <div
-              key={`${stat.n}-${stat.label}`}
-              style={{
-                padding: '28px 28px',
-                borderRight: index < study.processStats.length - 1 ? '1px solid var(--rule)' : 'none',
-              }}
-            >
-              <div
-                className="tight"
-                style={{
-                  fontSize: 'clamp(36px, 4vw, 64px)',
-                  fontWeight: 700,
-                  letterSpacing: '-0.045em',
-                  lineHeight: 1,
-                }}
-              >
-                {stat.n}
-              </div>
-              <div className="mono upper" style={{ marginTop: 18, fontSize: 11, color: 'var(--sub)', letterSpacing: '0.08em' }}>
-                {stat.label}
-              </div>
-            </div>
-          ))}
-        </div>
+      <CSection eyebrow="The Process" title={renderTitleLines(study.processTitle)}>
+        {study.images?.solution && study.images.solution.length > 0 && (
+          <div style={{ marginBottom: 64 }}>
+            <ThumbnailGallery images={study.images.solution} captions={study.images.solutionCaptions} />
+          </div>
+        )}
 
-        {study.processSteps.map((step, index) => (
-          <ProcessStep
-            key={`${p.slug}-${step.n}`}
-            n={step.n}
-            h={step.h}
-            body={step.body}
-            last={index === study.processSteps.length - 1}
-          />
-        ))}
+        <ProcessTimeline steps={study.processSteps} />
       </CSection>
 
-      <CSection title={<>What worked.<br />What got tricky<span className="accent">.</span></>}>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: 0,
-            border: '1px solid var(--rule)',
-            borderRadius: 'var(--radius)',
-            overflow: 'hidden',
-          }}
-        >
-          <ReflectionColumn title="What went right" items={study.reflection.wins} borderRight />
-          <ReflectionColumn title="Tough spots" items={study.reflection.challenges} />
+      <CSection eyebrow="Reflection" title={<>What worked.<br />What got tricky<span className="accent">.</span></>}>
+        <div className="r-reflect" style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          borderRadius: 'var(--radius-lg)',
+          overflow: 'hidden',
+          border: '1px solid var(--ink)',
+        }}>
+          <ReflectionColumn title="What went right" items={study.reflection.wins} isWins />
+          <ReflectionColumn title="Tough spots" items={study.reflection.challenges} isWins={false} />
         </div>
       </CSection>
 
       <section style={{ borderTop: '1px solid var(--ink)', background: 'var(--paper)' }}>
-        <ScrollReveal as="div" className="container" style={{ padding: '112px 32px 160px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+        <ScrollReveal as="div" className="container sp-case-nav" style={{ padding: '112px 32px 160px' }}>
+          <div className="r-grid-2">
             <NavCard dir="prev" p={prev} />
             <NavCard dir="next" p={next} />
           </div>
@@ -312,7 +287,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
         backgroundSize: '24px 24px',
       }} />
 
-      <ScrollReveal as="div" className="container" style={{ position: 'relative', zIndex: 1, padding: '140px 32px 160px', textAlign: 'center' }}>
+      <ScrollReveal as="div" className="container sp-case-key" style={{ position: 'relative', zIndex: 1, padding: '140px 32px 160px', textAlign: 'center' }}>
         <div style={{ marginBottom: 48, display: 'flex', alignItems: 'center', gap: 16, maxWidth: '800px', margin: '0 auto 48px' }}>
           <div style={{ flex: 1, height: 1, background: 'rgba(225,59,20,0.35)' }} />
           <span className="mono upper" style={{
@@ -433,14 +408,55 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
   );
 }
 
-function CSection({ title, children }: { title: ReactNode; children: ReactNode }) {
+function CSection({ title, eyebrow, children }: { title: ReactNode; eyebrow?: string; children: ReactNode }) {
   return (
     <section>
-      <SectionHead title={title} />
-      <ScrollReveal as="div" className="container" style={{ padding: '0 32px 160px' }}>
+      <SectionHead title={title} eyebrow={eyebrow} />
+      <ScrollReveal as="div" className="container sp-bot-sm" style={{ padding: '0 32px 160px' }}>
         {children}
       </ScrollReveal>
     </section>
+  );
+}
+
+function ProblemImage({ src }: { src: string }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        position: 'relative',
+        borderRadius: 'var(--radius)',
+        overflow: 'hidden',
+        border: '1px solid var(--rule)',
+        cursor: 'zoom-in',
+        transform: hover ? 'scale(1.035) rotate(-1.2deg)' : 'scale(1) rotate(0deg)',
+        boxShadow: hover
+          ? '0 40px 80px -24px rgba(17,17,16,0.38), 0 0 0 1px rgba(225,59,20,0.18)'
+          : '0 8px 24px -12px rgba(17,17,16,0.14)',
+        transition: 'transform 440ms cubic-bezier(.2,.7,.2,1), box-shadow 440ms cubic-bezier(.2,.7,.2,1)',
+      }}
+    >
+      <img
+        src={src}
+        alt=""
+        style={{
+          width: '100%',
+          display: 'block',
+          filter: hover ? 'brightness(1.05) saturate(1.08)' : 'brightness(1) saturate(1)',
+          transition: 'filter 440ms ease',
+        }}
+      />
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.10) 0%, transparent 55%)',
+        opacity: hover ? 1 : 0,
+        transition: 'opacity 440ms ease',
+        pointerEvents: 'none',
+      }} />
+    </div>
   );
 }
 
@@ -457,6 +473,7 @@ function OutcomeColumn({
 }) {
   return (
     <div
+      className="outcome-col"
       style={{
         padding: '40px 28px',
         borderRight: last ? 'none' : '1px solid rgba(236,231,220,0.18)',
@@ -497,34 +514,82 @@ function OutcomeColumn({
 function ReflectionColumn({
   title,
   items,
-  borderRight = false,
+  isWins,
 }: {
   title: string;
   items: string[];
-  borderRight?: boolean;
+  isWins: boolean;
 }) {
   return (
-    <div style={{ padding: 28, borderRight: borderRight ? '1px solid var(--rule)' : 'none' }}>
-      <div className="mono upper" style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.1em' }}>
-        {title}
+    <div style={{
+      background: isWins ? 'var(--ink)' : 'var(--bone)',
+      padding: '40px 36px 52px',
+      borderRight: isWins ? '1px solid rgba(236,231,220,0.12)' : 'none',
+    }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 12,
+        paddingBottom: 28,
+        marginBottom: 28,
+        borderBottom: `1px solid ${isWins ? 'rgba(236,231,220,0.10)' : 'rgba(17,17,16,0.08)'}`,
+      }}>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+          background: isWins ? 'rgba(225,59,20,0.18)' : 'rgba(17,17,16,0.07)',
+          fontSize: 14, color: 'var(--accent)',
+        }}>
+          {isWins ? (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="2,7 5.5,10.5 12,3.5" />
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round">
+              <line x1="3" y1="3" x2="11" y2="11" />
+              <line x1="11" y1="3" x2="3" y2="11" />
+            </svg>
+          )}
+        </span>
+        <span className="mono upper" style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.12em' }}>
+          {title}
+        </span>
       </div>
-      <ul style={{ margin: '16px 0 0', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {items.map((item, index) => (
-          <li
-            key={`${title}-${index}`}
-            style={{
-              fontSize: 15,
-              lineHeight: 1.55,
-              color: 'var(--ink-2)',
-              paddingTop: index > 0 ? 12 : 0,
-              borderTop: index > 0 ? '1px solid var(--rule)' : 'none',
-            }}
-          >
-            {item}
-          </li>
+      <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+        {items.map((item, i) => (
+          <ReflectionItem key={i} item={item} isWins={isWins} last={i === items.length - 1} />
         ))}
       </ul>
     </div>
+  );
+}
+
+function ReflectionItem({ item, isWins, last }: {
+  item: string;
+  isWins: boolean;
+  last: boolean;
+}) {
+  const [hover, setHover] = useState(false);
+  return (
+    <li
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        padding: '20px 0',
+        borderBottom: last ? 'none' : `1px solid ${isWins ? 'rgba(236,231,220,0.08)' : 'rgba(17,17,16,0.07)'}`,
+        transform: hover ? 'translateX(8px)' : 'translateX(0)',
+        transition: 'transform 260ms cubic-bezier(.2,.7,.2,1)',
+        cursor: 'default',
+      }}
+    >
+      <p style={{
+        margin: 0, fontSize: 17, lineHeight: 1.6,
+        color: isWins
+          ? (hover ? 'var(--bone)' : 'rgba(236,231,220,0.72)')
+          : (hover ? 'var(--ink)' : 'var(--ink-2)'),
+        transition: 'color 220ms ease',
+      }}>
+        {item}
+      </p>
+    </li>
   );
 }
 
@@ -552,26 +617,140 @@ function renderTitleLines(lines: string[]) {
   );
 }
 
-function ProcessStep({ n, h, body, last }: { n: string; h: string; body: string; last?: boolean }) {
+function renderAnimatedHeroTitle(title: string) {
+  const words = title.trim().split(/\s+/);
+  const midpoint = words.length > 3 ? Math.ceil(words.length / 2) : words.length;
+  const lines = words.length > 3
+    ? [words.slice(0, midpoint).join(' '), words.slice(midpoint).join(' ')]
+    : [title];
+
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '100px 1fr',
-        gap: 32,
-        padding: '28px 0',
-        borderTop: '1px solid var(--rule)',
-        borderBottom: last ? '1px solid var(--rule)' : 'none',
-      }}
-    >
-      <div className="mono" style={{ fontSize: 13, color: 'var(--accent)' }}>
-        {n}
+    <>
+      {lines.map((line, index) => (
+        <span
+          key={`${line}-${index}`}
+          className={heroStyles.heroLine}
+          style={{ animationDelay: `${index * 100}ms` }}
+        >
+          {line}
+          {index === lines.length - 1 ? <span className="accent">.</span> : null}
+        </span>
+      ))}
+    </>
+  );
+}
+
+function ProcessTimeline({ steps }: { steps: Array<{ n: string; h: string; body: string }> }) {
+  const [active, setActive] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onScroll() {
+      if (!trackRef.current) return;
+      const r = trackRef.current.getBoundingClientRect();
+      const triggerY = window.innerHeight * 0.42;
+      let idx = 0;
+      stepRefs.current.forEach((el, i) => {
+        if (!el) return;
+        if (el.getBoundingClientRect().top <= triggerY) idx = i;
+      });
+      setActive(idx);
+      const passed = triggerY - r.top;
+      setProgress(Math.max(0, Math.min(1, passed / r.height)));
+    }
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, []);
+
+  const current = steps[active];
+
+  return (
+    <div className="r-journey">
+      {/* Sticky scrubber */}
+      <div className="r-journey-sidebar" style={{ position: 'sticky', top: 100, alignSelf: 'start' }}>
+        <div className="tight" style={{
+          fontSize: 88, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1,
+          display: 'flex', alignItems: 'baseline', gap: 2,
+        }}>
+          <span style={{ color: 'var(--accent)' }}>{current.n}</span>
+          <span className="mono" style={{ fontSize: 16, color: 'var(--sub)', letterSpacing: 0, fontWeight: 500 }}>
+            / {String(steps.length).padStart(2, '0')}
+          </span>
+        </div>
+        <div style={{ overflow: 'hidden', marginTop: 20, minHeight: 72 }}>
+          <div key={active} style={{ animation: 'phaseSwap 380ms cubic-bezier(.2,.7,.2,1)' }}>
+            <div className="tight" style={{ fontSize: 20, fontWeight: 600, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+              {current.h}
+            </div>
+          </div>
+        </div>
+        <div style={{ marginTop: 24, display: 'flex', gap: 10, alignItems: 'center' }}>
+          {steps.map((step, i) => (
+            <button
+              key={step.n}
+              onClick={() => {
+                const el = stepRefs.current[i];
+                if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 140, behavior: 'smooth' });
+              }}
+              title={step.h}
+              style={{
+                width: i === active ? 28 : 10, height: 10,
+                borderRadius: 999, padding: 0, border: 'none',
+                background: i <= active ? 'var(--accent)' : 'var(--rule-strong)',
+                transition: 'all 280ms cubic-bezier(.2,.7,.2,1)',
+                cursor: 'pointer',
+              }}
+            />
+          ))}
+        </div>
       </div>
-      <div>
-        <h4 className="tight" style={{ margin: 0, fontSize: 'clamp(22px, 2.4vw, 30px)', fontWeight: 600, letterSpacing: '-0.025em' }}>
-          {h}
-        </h4>
-        <p style={{ margin: '10px 0 0', color: 'var(--ink-2)', fontSize: 16, lineHeight: 1.55, maxWidth: '62ch' }}>{body}</p>
+
+      {/* Timeline track */}
+      <div ref={trackRef} style={{ position: 'relative' }}>
+        <div style={{ position: 'absolute', left: 15, top: 12, bottom: 12, width: 2, background: 'var(--rule)' }} />
+        <div style={{ position: 'absolute', left: 15, top: 12, width: 2, height: `calc((100% - 24px) * ${progress})`, background: 'var(--accent)', transition: 'height 80ms linear' }} />
+        {steps.map((step, i) => {
+          const isActive = i === active;
+          const isPast = i < active;
+          return (
+            <div
+              key={step.n}
+              ref={el => { stepRefs.current[i] = el; }}
+              style={{
+                position: 'relative', paddingLeft: 64, paddingTop: 36, paddingBottom: 36,
+                opacity: isActive ? 1 : isPast ? 0.6 : 0.38,
+                transform: isActive ? 'translateY(0)' : 'translateY(2px)',
+                transition: 'opacity 360ms ease, transform 360ms ease',
+              }}
+            >
+              <div style={{
+                position: 'absolute', left: 5, top: 52, width: 22, height: 22, borderRadius: '50%',
+                background: isActive || isPast ? 'var(--accent)' : 'var(--bone)',
+                border: `2px solid ${isActive || isPast ? 'var(--accent)' : 'var(--rule-strong)'}`,
+                boxShadow: isActive ? '0 0 0 7px rgba(225,59,20,0.16)' : 'none',
+                transition: 'all 280ms cubic-bezier(.2,.7,.2,1)',
+              }}>
+                {isActive && <span style={{ position: 'absolute', inset: 4, borderRadius: '50%', background: 'var(--bone)' }} />}
+              </div>
+              <div className="mono upper" style={{ fontSize: 10, color: 'var(--sub)', letterSpacing: '0.12em' }}>
+                Step {step.n}
+              </div>
+              <h4 className="tight" style={{ margin: '12px 0 0', fontSize: 'clamp(26px, 3vw, 44px)', fontWeight: 600, letterSpacing: '-0.035em', lineHeight: 1.02 }}>
+                {step.h}
+              </h4>
+              <p style={{ margin: '16px 0 0', fontSize: 17, lineHeight: 1.55, color: 'var(--ink-2)', maxWidth: '58ch' }}>
+                {step.body}
+              </p>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -608,5 +787,166 @@ function NavCard({ dir, p }: { dir: 'prev' | 'next'; p: typeof PROJECTS[number] 
         {p.title}
       </div>
     </Link>
+  );
+}
+
+function ThumbnailGallery({ images, captions }: {
+  images: string[];
+  captions?: Array<{ label: string; body: string }>;
+}) {
+  const [modalSrc, setModalSrc] = useState<string | null>(null);
+
+  return (
+    <div>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${images.length}, 1fr)`,
+        gap: 16,
+      }}>
+        {images.map((src, i) => (
+          <ThumbnailItem
+            key={src}
+            src={src}
+            index={i}
+            label={captions?.[i]?.label}
+            onClick={() => setModalSrc(src)}
+          />
+        ))}
+      </div>
+      {modalSrc && <ModalViewer src={modalSrc} onClose={() => setModalSrc(null)} />}
+    </div>
+  );
+}
+
+function ThumbnailItem({ src, index, label, onClick }: {
+  src: string;
+  index: number;
+  label?: string;
+  onClick: () => void;
+}) {
+  const [hover, setHover] = useState(false);
+
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: 'block',
+        position: 'relative',
+        width: '100%',
+        aspectRatio: '16 / 9',
+        overflow: 'hidden',
+        border: '1px solid var(--rule)',
+        borderRadius: 'var(--radius)',
+        cursor: 'zoom-in',
+        padding: 0,
+      }}
+    >
+      <img
+        src={src}
+        alt=""
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          display: 'block',
+          transition: 'transform 300ms ease',
+          transform: hover ? 'scale(1.04)' : 'scale(1)',
+        }}
+      />
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: hover ? 'rgba(10,8,6,0.52)' : 'rgba(10,8,6,0)',
+        transition: 'background 200ms',
+        display: 'flex',
+        alignItems: 'flex-end',
+        padding: '12px 14px',
+      }}>
+        <div style={{
+          opacity: hover ? 1 : 0,
+          transform: hover ? 'translateY(0)' : 'translateY(6px)',
+          transition: 'opacity 200ms, transform 200ms',
+        }}>
+          {label && (
+            <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--bone)' }}>{label}</div>
+          )}
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function ModalViewer({ src, onClose }: { src: string; onClose: () => void }) {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setVisible(true));
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 1000,
+        background: visible ? 'rgba(10,8,6,0.88)' : 'rgba(10,8,6,0)',
+        backdropFilter: visible ? 'blur(14px)' : 'blur(0px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: 'background 320ms ease, backdrop-filter 320ms ease',
+      }}
+    >
+      <img
+        src={src}
+        alt=""
+        onClick={e => e.stopPropagation()}
+        style={{
+          maxWidth: '90vw',
+          maxHeight: '88vh',
+          objectFit: 'contain',
+          borderRadius: 'var(--radius)',
+          boxShadow: '0 48px 96px rgba(0,0,0,0.6)',
+          opacity: visible ? 1 : 0,
+          transform: visible ? 'scale(1)' : 'scale(0.94)',
+          transition: 'opacity 360ms ease, transform 420ms cubic-bezier(.2,.7,.2,1)',
+        }}
+      />
+      <button
+        onClick={onClose}
+        style={{
+          position: 'absolute',
+          top: 24,
+          right: 28,
+          background: 'rgba(236,231,220,0.08)',
+          border: '1px solid rgba(236,231,220,0.2)',
+          color: 'var(--bone)',
+          width: 44,
+          height: 44,
+          borderRadius: '50%',
+          cursor: 'pointer',
+          fontSize: 15,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          opacity: visible ? 1 : 0,
+          transition: 'opacity 280ms ease 80ms, background 160ms',
+        }}
+      >
+        ✕
+      </button>
+    </div>,
+    document.body,
   );
 }

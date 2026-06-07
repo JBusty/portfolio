@@ -1,5 +1,5 @@
 .heroInner {
-  padding: 152px 32px 176px !important;
+  padding: 104px 32px 176px !important;
 }
 
 .heroTitle {
@@ -7,7 +7,7 @@
   font-size: clamp(34px, 6vw, 92px);
   line-height: 0.92;
   letter-spacing: -0.055em;
-  max-width: 11.5ch;
+  max-width: 90%;
   font-weight: 700;
 }
 
@@ -150,7 +150,7 @@
 
 @media (max-width: 640px) {
   .heroInner {
-    padding: 112px 20px 144px !important;
+    padding: 88px 20px 144px !important;
   }
 
   .heroTitle {

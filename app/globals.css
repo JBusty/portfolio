@@ -273,19 +273,159 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
   filter: blur(0);
 }
 
-.stamp-spin {
-  animation: spin 22s linear infinite;
-  transform-origin: 50% 50%;
+.polaroid-draw {
+  animation: polaroidDraw 900ms cubic-bezier(.4, 0, .2, 1) forwards;
+}
+
+@keyframes polaroidDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+.polaroid-photo {
+  animation: polaroidPhoto 1000ms cubic-bezier(.2, 0, .2, 1) both;
+}
+
+@keyframes polaroidPhoto {
+  from { opacity: 0; filter: blur(6px) saturate(0.15); transform: scale(1.05); }
+  to   { opacity: 1; filter: blur(0) saturate(1); transform: scale(1); }
+}
+
+.contact-hero-art,
+.hero-line-art {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline: none;
+}
+
+.contact-draw-stroke,
+.hero-draw-stroke {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: contactDraw 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.contact-draw-fade,
+.hero-draw-fade {
+  opacity: 0;
+  animation: contactFadeIn 360ms ease forwards;
+}
+
+.contact-draw-1, .hero-draw-1 { animation-delay: 40ms; }
+.contact-draw-2, .hero-draw-2 { animation-delay: 180ms; }
+.contact-draw-3, .hero-draw-3 { animation-delay: 320ms; }
+.contact-draw-4, .hero-draw-4 { animation-delay: 460ms; }
+.contact-draw-5, .hero-draw-5 { animation-delay: 600ms; }
+
+@keyframes contactDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes contactFadeIn {
+  to { opacity: 1; }
 }
 
 /* ---- nav links ---- */
 .nav-link { border: 1px solid transparent; }
 .nav-link:not(.nav-link-active):hover { border-color: var(--rule-strong); }
 
+/* ---- responsive grid utilities ---- */
+.r-grid-4  { display: grid; grid-template-columns: repeat(4, 1fr); }
+.r-grid-3  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.r-grid-2  { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.r-journey { display: grid; grid-template-columns: 260px 1fr; gap: 56px; }
+.r-hero-meta   { display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: start; }
+.r-hero-split  { display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; align-items: center; }
+.r-outcome { display: grid; grid-template-columns: repeat(3, 1fr); }
+.r-problem-full { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: 96px; align-items: start; }
+
 /* ---- mobile ---- */
 @media (max-width: 880px) {
-  .container { padding: 0 20px !important; }
+  /* Only override horizontal — vertical padding comes from sp-* classes */
+  .container { padding-left: 20px !important; padding-right: 20px !important; }
   .hide-sm   { display: none !important; }
+
+  .r-grid-4     { grid-template-columns: repeat(2, 1fr); }
+  .r-grid-3     { grid-template-columns: repeat(2, 1fr); }
+  .r-hero-meta  { grid-template-columns: 1fr; gap: 32px; }
+  .r-hero-split { grid-template-columns: 1fr; gap: 32px; }
+  .r-outcome    { grid-template-columns: 1fr; }
+  .r-journey    { grid-template-columns: 1fr; gap: 0; }
+  .r-journey-sidebar { display: none !important; }
+
+  /* Responsive vertical padding — override inline styles */
+  .sp-normal    { padding-top:  64px !important; padding-bottom:  72px !important; }
+  .sp-large     { padding-top:  80px !important; padding-bottom:  96px !important; }
+  .sp-bot-sm    {                                padding-bottom:  80px !important; }
+  .sp-bot-xl    {                                padding-bottom: 120px !important; }
+  .sp-hero      { padding-top:  64px !important; padding-bottom:  32px !important; }
+  .sp-ctct-hero { padding-top:  80px !important; padding-bottom:  80px !important; }
+  .sp-sec-head  { padding-top:  48px !important; padding-bottom:  40px !important; }
+  .sp-case-nav  { padding-top:  64px !important; padding-bottom:  80px !important; }
+  .sp-case-key  { padding-top:  80px !important; padding-bottom:  96px !important; }
+  .sp-footer    { padding-top:  80px !important; padding-bottom:  48px !important; }
+
+  /* Project row: collapse to title + button */
+  .proj-row { grid-template-columns: 1fr auto !important; }
+  .proj-row-blurb, .proj-row-tags { display: none !important; }
+
+  /* Case study: outcome columns stacked, remove right border */
+  .outcome-col { border-right: none !important; padding-right: 28px !important; }
+
+  /* Case study: process stats → 2 cols */
+  .r-process-stats { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* Case study: problem image stacks below copy */
+  .r-problem-full { grid-template-columns: 1fr !important; gap: 40px !important; }
+
+  /* Footer: single column */
+  .r-footer { grid-template-columns: 1fr !important; gap: 48px !important; }
+}
+
+@media (max-width: 640px) {
+  .r-grid-4  { grid-template-columns: 1fr; }
+  .r-grid-3  { grid-template-columns: 1fr; }
+  .r-grid-2  { grid-template-columns: 1fr; }
+
+  /* Vertical padding — xs screens */
+  .sp-normal    { padding-top:  48px !important; padding-bottom:  56px !important; }
+  .sp-large     { padding-top:  56px !important; padding-bottom:  72px !important; }
+  .sp-bot-sm    {                                padding-bottom:  64px !important; }
+  .sp-bot-xl    {                                padding-bottom:  80px !important; }
+  .sp-hero      { padding-top:  48px !important; padding-bottom:  24px !important; }
+  .sp-ctct-hero { padding-top:  56px !important; padding-bottom:  56px !important; }
+  .sp-sec-head  { padding-top:  36px !important; padding-bottom:  32px !important; }
+  .sp-case-nav  { padding-top:  48px !important; padding-bottom:  64px !important; }
+  .sp-case-key  { padding-top:  56px !important; padding-bottom:  72px !important; }
+  .sp-footer    { padding-top:  56px !important; padding-bottom:  36px !important; }
+
+  /* Project row: fully single-column, hide arrow button */
+  .proj-row { grid-template-columns: 1fr !important; gap: 8px !important; }
+  .proj-row-btn { display: none !important; }
+
+  /* Case study: process step → stacked */
+  .r-process-step { grid-template-columns: 1fr !important; gap: 6px !important; }
+
+  /* Case study: reflection columns stacked, clear right border */
+  .r-reflect { grid-template-columns: 1fr !important; }
+
+  /* Contact: stacked availability cards — swap left border for top border */
+  .avail-card { border-left: none !important; border-top: 1px solid var(--rule-strong) !important; padding-top: 20px !important; padding-bottom: 20px !important; }
+  .avail-card:first-child { border-top: none !important; }
+
+  /* TopBar: hide long logo text and LinkedIn button on very small screens */
+  .topbar-logo-text { display: none !important; }
+  .topbar-linkedin  { display: none !important; }
+}
+
+/* stat borders: only first in each row has no left border */
+@media (max-width: 880px) {
+  .r-grid-4 > *:nth-child(odd)  { border-left: none !important; }
+}
+@media (max-width: 640px) {
+  .r-grid-4 > * { border-left: none !important; border-top: 1px solid var(--rule-strong); padding-top: 20px !important; padding-bottom: 20px !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -302,5 +442,34 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;
+  }
+
+  .contact-draw-stroke,
+  .contact-draw-fade,
+  .hero-draw-stroke,
+  .hero-draw-fade,
+  .polaroid-draw,
+  .polaroid-photo {
+    animation: none !important;
+  }
+
+  .polaroid-draw {
+    stroke-dashoffset: 0 !important;
+  }
+
+  .polaroid-photo {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: scale(1) !important;
+  }
+
+  .contact-draw-stroke,
+  .hero-draw-stroke {
+    stroke-dashoffset: 0 !important;
+  }
+
+  .contact-draw-fade,
+  .hero-draw-fade {
+    opacity: 1 !important;
   }
 }

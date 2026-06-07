@@ -30,11 +30,12 @@ function LinkedInButton() {
       rel="noopener noreferrer"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      className="btn"
+      className="btn topbar-linkedin"
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 7,
+        gap: 6,
+        padding: '6px 12px',
         background: hover ? '#0A66C2' : 'transparent',
         borderColor: hover ? '#0A66C2' : 'var(--ink)',
         color: hover ? '#fff' : 'var(--ink)',
@@ -56,26 +57,10 @@ function LinkedInIcon() {
   );
 }
 
-function formatTime(d: Date) {
-  return d.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    timeZone: 'America/New_York',
-  });
-}
-
 export default function TopBar() {
   const pathname = usePathname();
-  const [time, setTime] = useState('');
   const [visible, setVisible] = useState(true);
   const lastY = useRef(0);
-
-  useEffect(() => {
-    setTime(formatTime(new Date()));
-    const id = setInterval(() => setTime(formatTime(new Date())), 30_000);
-    return () => clearInterval(id);
-  }, []);
 
   useEffect(() => {
     function onScroll() {
@@ -114,7 +99,7 @@ export default function TopBar() {
             fontWeight: 600,
             borderRadius: 8,
           }}>J</span>
-          <span className="mono upper" style={{ fontSize: 12, letterSpacing: '0.08em' }}>
+          <span className="mono upper topbar-logo-text" style={{ fontSize: 12, letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>
             Joshua Bussey | Product Designer
           </span>
         </Link>
@@ -122,7 +107,7 @@ export default function TopBar() {
         <span className="grow" />
 
         {/* Nav */}
-        <nav className="hide-sm" style={{ display: 'flex', gap: 6 }}>
+        <nav style={{ display: 'flex', gap: 6 }}>
           {navItems.map(item => {
             const isActive = item.href === '/'
               ? pathname === '/'
@@ -148,21 +133,6 @@ export default function TopBar() {
             );
           })}
         </nav>
-
-        {/* Status + time */}
-        <div className="hide-sm" style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          fontFamily: 'var(--font-jetbrains-mono)',
-          fontSize: 11,
-          color: 'var(--sub)',
-          letterSpacing: '0.04em',
-          textTransform: 'uppercase',
-        }}>
-          <span className="rule-v" style={{ height: 14 }} />
-          {time && <span>{time} Eastern Time</span>}
-        </div>
 
         {/* CTA */}
         <LinkedInButton />
