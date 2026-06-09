@@ -137,7 +137,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
         </ScrollReveal>
       </section>
 
-      <CSection eyebrow="Summary" title={<>The TL;DR<span className="accent">.</span></>}>
+      <CSection eyebrow={<>The TL;DR<span className="accent">.</span></>} title="Summary">
         <p style={cssCopy()}>{study.summary}</p>
       </CSection>
 
@@ -145,18 +145,23 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
         <div style={{ borderTop: '1px solid var(--ink)' }}>
           <ScrollReveal as="div" className={`container r-problem-full`} style={{ padding: '80px 32px 160px', gap: '96px' }}>
             <div>
-              <div className="mono upper" style={{ fontSize: 11, letterSpacing: '0.12em', color: 'var(--accent)', marginBottom: 20 }}>
-                The Problem
+              <div className="mono upper" style={{
+                fontSize: 12,
+                letterSpacing: '0.22em',
+                color: 'var(--accent)',
+                marginBottom: 24,
+              }}>
+                {renderSubTitle(study.problemTitle)}
               </div>
               <h2 className="tight" style={{
                 margin: 0,
                 fontSize: 'clamp(36px, 5vw, 80px)',
-                lineHeight: 1.06,
+                lineHeight: 0.96,
                 letterSpacing: '-0.04em',
                 fontWeight: 700,
                 maxWidth: '16ch',
               }}>
-                {renderTitleLines(study.problemTitle)}
+                The Problem
               </h2>
               <div style={{ display: 'grid', gap: 20, marginTop: 40 }}>
                 {study.problemBody.map((paragraph, index) => (
@@ -180,7 +185,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
         answerBody={study.decisionAnswerBody}
       />
 
-      <CSection eyebrow="The Solution" title={renderTitleLines(study.solutionTitle)}>
+      <CSection eyebrow={renderSubTitle(study.solutionTitle)} title="The Solution">
         {study.solutionIntro ? <p style={cssCopy()}>{study.solutionIntro}</p> : null}
         <div
           style={{
@@ -209,7 +214,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
         </div>
       </CSection>
 
-      <CSection eyebrow="The Process" title={renderTitleLines(study.processTitle)}>
+      <CSection eyebrow={renderSubTitle(study.processTitle)} title="The Process">
         {study.images?.solution && study.images.solution.length > 0 && (
           <div style={{ marginBottom: 64 }}>
             <ThumbnailGallery images={study.images.solution} captions={study.images.solutionCaptions} />
@@ -219,7 +224,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
         <ProcessTimeline steps={study.processSteps} />
       </CSection>
 
-      <CSection eyebrow="Reflection" title={<>What worked.<br />What got tricky<span className="accent">.</span></>}>
+      <CSection eyebrow={<>What worked. What got tricky<span className="accent">.</span></>} title="Reflection">
         <div className="r-reflect" style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
@@ -241,6 +246,21 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
         </ScrollReveal>
       </section>
     </main>
+  );
+}
+
+function LockIcon({ open }: { open: boolean }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" />
+      <g style={{
+        transformOrigin: '7px 11px',
+        transform: open ? 'rotate(-45deg)' : 'rotate(0deg)',
+        transition: 'transform 500ms cubic-bezier(.2,.7,.2,1)',
+      }}>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+      </g>
+    </svg>
   );
 }
 
@@ -376,10 +396,10 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
               borderRadius: '50%',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: revealed ? 'var(--accent)' : 'rgba(236,231,220,0.5)',
-              fontSize: 22,
-              transform: revealed ? 'rotate(45deg)' : 'rotate(0deg)',
               transition: 'all 280ms cubic-bezier(.2,.7,.2,1)',
-            }}>+</div>
+            }}>
+              <LockIcon open={revealed} />
+            </div>
           </div>
 
           {/* Expanded body */}
@@ -399,7 +419,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
 
           {!revealed && (
             <div className="mono upper" style={{ padding: '0 36px 24px', fontSize: 10, color: 'rgba(236,231,220,0.3)', letterSpacing: '0.14em' }}>
-              Click to reveal →
+              Click to unlock →
             </div>
           )}
         </div>
@@ -421,42 +441,50 @@ function CSection({ title, eyebrow, children }: { title: ReactNode; eyebrow?: st
 
 function ProblemImage({ src }: { src: string }) {
   const [hover, setHover] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   return (
-    <div
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{
-        position: 'relative',
-        borderRadius: 'var(--radius)',
-        overflow: 'hidden',
-        border: '1px solid var(--rule)',
-        cursor: 'zoom-in',
-        transform: hover ? 'scale(1.035) rotate(-1.2deg)' : 'scale(1) rotate(0deg)',
-        boxShadow: hover
-          ? '0 40px 80px -24px rgba(17,17,16,0.38), 0 0 0 1px rgba(225,59,20,0.18)'
-          : '0 8px 24px -12px rgba(17,17,16,0.14)',
-        transition: 'transform 440ms cubic-bezier(.2,.7,.2,1), box-shadow 440ms cubic-bezier(.2,.7,.2,1)',
-      }}
-    >
-      <img
-        src={src}
-        alt=""
+    <>
+      <button
+        onClick={() => setModalOpen(true)}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
         style={{
-          width: '100%',
           display: 'block',
-          filter: hover ? 'brightness(1.05) saturate(1.08)' : 'brightness(1) saturate(1)',
-          transition: 'filter 440ms ease',
+          width: '100%',
+          padding: 0,
+          border: 'none',
+          position: 'relative',
+          borderRadius: 'var(--radius)',
+          overflow: 'hidden',
+          cursor: 'zoom-in',
+          transform: hover ? 'scale(1.035) rotate(-1.2deg)' : 'scale(1) rotate(0deg)',
+          boxShadow: hover
+            ? '0 40px 80px -24px rgba(17,17,16,0.38), 0 0 0 1px rgba(225,59,20,0.18)'
+            : '0 8px 24px -12px rgba(17,17,16,0.14)',
+          transition: 'transform 440ms cubic-bezier(.2,.7,.2,1), box-shadow 440ms cubic-bezier(.2,.7,.2,1)',
         }}
-      />
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.10) 0%, transparent 55%)',
-        opacity: hover ? 1 : 0,
-        transition: 'opacity 440ms ease',
-        pointerEvents: 'none',
-      }} />
-    </div>
+      >
+        <img
+          src={src}
+          alt=""
+          style={{
+            width: '100%',
+            display: 'block',
+            filter: hover ? 'brightness(1.05) saturate(1.08)' : 'brightness(1) saturate(1)',
+            transition: 'filter 440ms ease',
+          }}
+        />
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.10) 0%, transparent 55%)',
+          opacity: hover ? 1 : 0,
+          transition: 'opacity 440ms ease',
+          pointerEvents: 'none',
+        }} />
+      </button>
+      {modalOpen && <ModalViewer src={src} onClose={() => setModalOpen(false)} />}
+    </>
   );
 }
 
@@ -603,18 +631,8 @@ function cssCopy(): CSSProperties {
   };
 }
 
-function renderTitleLines(lines: string[]) {
-  return (
-    <>
-      {lines.map((line, index) => (
-        <span key={`${line}-${index}`}>
-          {index > 0 ? <br /> : null}
-          {line}
-        </span>
-      ))}
-      <span className="accent">.</span>
-    </>
-  );
+function renderSubTitle(lines: string[]) {
+  return <>{lines.join(' ')}<span className="accent">.</span></>;
 }
 
 function renderAnimatedHeroTitle(title: string) {
@@ -800,7 +818,7 @@ function ThumbnailGallery({ images, captions }: {
     <div>
       <div style={{
         display: 'grid',
-        gridTemplateColumns: `repeat(${images.length}, 1fr)`,
+        gridTemplateColumns: `repeat(auto-fit, minmax(min(280px, 100%), 1fr))`,
         gap: 16,
       }}>
         {images.map((src, i) => (
@@ -809,6 +827,7 @@ function ThumbnailGallery({ images, captions }: {
             src={src}
             index={i}
             label={captions?.[i]?.label}
+            body={captions?.[i]?.body}
             onClick={() => setModalSrc(src)}
           />
         ))}
@@ -818,63 +837,82 @@ function ThumbnailGallery({ images, captions }: {
   );
 }
 
-function ThumbnailItem({ src, index, label, onClick }: {
+function ThumbnailItem({ src, index, label, body, onClick }: {
   src: string;
   index: number;
   label?: string;
+  body?: string;
   onClick: () => void;
 }) {
   const [hover, setHover] = useState(false);
 
   return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{
-        display: 'block',
-        position: 'relative',
-        width: '100%',
-        aspectRatio: '16 / 9',
-        overflow: 'hidden',
-        border: '1px solid var(--rule)',
-        borderRadius: 'var(--radius)',
-        cursor: 'zoom-in',
-        padding: 0,
-      }}
-    >
-      <img
-        src={src}
-        alt=""
+    <div>
+      <button
+        onClick={onClick}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
         style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
           display: 'block',
-          transition: 'transform 300ms ease',
-          transform: hover ? 'scale(1.04)' : 'scale(1)',
+          position: 'relative',
+          width: '100%',
+          aspectRatio: '16 / 9',
+          overflow: 'hidden',
+          border: '1px solid var(--rule)',
+          borderRadius: 'var(--radius)',
+          cursor: 'zoom-in',
+          padding: 0,
         }}
-      />
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: hover ? 'rgba(10,8,6,0.52)' : 'rgba(10,8,6,0)',
-        transition: 'background 200ms',
-        display: 'flex',
-        alignItems: 'flex-end',
-        padding: '12px 14px',
-      }}>
+      >
+        <img
+          src={src}
+          alt=""
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+            transition: 'transform 300ms ease',
+            transform: hover ? 'scale(1.04)' : 'scale(1)',
+          }}
+        />
         <div style={{
-          opacity: hover ? 1 : 0,
-          transform: hover ? 'translateY(0)' : 'translateY(6px)',
-          transition: 'opacity 200ms, transform 200ms',
+          position: 'absolute',
+          inset: 0,
+          background: hover ? 'rgba(10,8,6,0.28)' : 'rgba(10,8,6,0)',
+          transition: 'background 200ms',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}>
+          <div style={{
+            opacity: hover ? 1 : 0,
+            transition: 'opacity 200ms',
+            fontSize: 11,
+            fontFamily: 'var(--font-jetbrains-mono)',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            color: 'rgba(236,231,220,0.9)',
+          }}>
+            Click to expand
+          </div>
+        </div>
+      </button>
+      {(label || body) && (
+        <div style={{ padding: '12px 2px 4px' }}>
           {label && (
-            <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--bone)' }}>{label}</div>
+            <div className="mono upper" style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.1em', marginBottom: 5 }}>
+              {label}
+            </div>
+          )}
+          {body && (
+            <div style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--ink-2)' }}>
+              {body}
+            </div>
           )}
         </div>
-      </div>
-    </button>
+      )}
+    </div>
   );
 }
 

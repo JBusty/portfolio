@@ -25,8 +25,8 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: 'Josh — Portfolio',
-  description: 'Senior product designer & front-end developer with 12+ years untangling enterprise software.',
+  title: 'Joshua Bussey — Product Designer',
+  description: 'Senior product designer with 12+ years untangling complex enterprise software. Specializes in 0→1 work, design systems, and shipping things that actually work.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -6,9 +6,10 @@ import { Project } from '@/lib/data';
 
 interface ProjectRowProps {
   p: Project;
+  first?: boolean;
 }
 
-export default function ProjectRow({ p }: ProjectRowProps) {
+export default function ProjectRow({ p, first }: ProjectRowProps) {
   const [hover, setHover] = useState(false);
 
   return (
@@ -23,7 +24,7 @@ export default function ProjectRow({ p }: ProjectRowProps) {
         alignItems: 'center',
         gap: 24,
         padding: '32px 24px',
-        borderTop: '1px solid var(--rule)',
+        borderTop: first ? 'none' : '1px solid var(--rule)',
         borderRadius: hover ? 'var(--radius)' : 0,
         background: hover ? 'var(--ink)' : 'transparent',
         color: hover ? 'var(--bone)' : 'var(--ink)',

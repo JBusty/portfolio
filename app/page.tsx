@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import SectionHead from '@/components/SectionHead';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -15,7 +15,6 @@ export default function Home() {
       <HomeStats />
       <HomeValues />
       <HomeJourney />
-      <HomeFeatured />
       <HomeFAQ />
       <HomeCompanies />
     </main>
@@ -150,10 +149,9 @@ function PolaroidStack() {
               key={i}
               style={{
                 position: 'absolute',
-                inset: 'auto 0 0 0',
                 top: 0,
+                left: '8%',
                 width: '84%',
-                margin: '0 auto',
                 background: 'var(--bone)',
                 borderRadius: 'var(--radius)',
                 padding: '14px 14px 12px',
@@ -233,43 +231,60 @@ function parseStatN(n: string): { value: number; suffix: string; fmt: (v: number
 }
 
 function CountUp({ n, delayMs }: { n: string; delayMs: number }) {
-  const { value, suffix, fmt } = parseStatN(n);
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLSpanElement>(null);
+  const stat = useMemo(() => parseStatN(n), [n]);
+  const rootRef = useRef<HTMLSpanElement>(null);
+  const liveRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+    const root = rootRef.current;
+    const live = liveRef.current;
+    if (!root || !live) return;
+
+    const { value, suffix, fmt } = stat;
+    const final = fmt(value) + suffix;
+
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setCount(value);
+      live.textContent = final;
       return;
     }
+
+    let raf: number;
+    let timer: ReturnType<typeof setTimeout>;
+
     const observer = new IntersectionObserver(entries => {
       if (!entries[0].isIntersecting) return;
       observer.disconnect();
-      setTimeout(() => {
-        const duration = 1100;
+      live.textContent = fmt(0) + suffix;
+
+      timer = setTimeout(() => {
+        const duration = 1200;
         const start = performance.now();
         function tick(now: number) {
           const t = Math.min((now - start) / duration, 1);
-          const eased = 1 - Math.pow(1 - t, 3);
-          setCount(Math.round(eased * value));
-          if (t < 1) requestAnimationFrame(tick);
+          // sine in-out: even integer spacing throughout vs. bunching at the start with ease-out
+          const eased = -(Math.cos(Math.PI * t) - 1) / 2;
+          live.textContent = fmt(Math.round(eased * value)) + suffix;
+          if (t < 1) raf = requestAnimationFrame(tick);
+          else live.textContent = final;
         }
-        requestAnimationFrame(tick);
+        raf = requestAnimationFrame(tick);
       }, delayMs);
     }, { threshold: 0.3 });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [value, delayMs]);
 
-  const final = fmt(value) + suffix;
-  const current = fmt(count) + suffix;
+    observer.observe(root);
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+      cancelAnimationFrame(raf);
+    };
+  }, [stat, delayMs]);
+
+  const final = stat.fmt(stat.value) + stat.suffix;
 
   return (
-    <span ref={ref} style={{ position: 'relative', display: 'inline-block', fontVariantNumeric: 'tabular-nums' }}>
+    <span ref={rootRef} style={{ position: 'relative', display: 'inline-block', fontVariantNumeric: 'tabular-nums' }}>
       <span style={{ visibility: 'hidden', display: 'block', pointerEvents: 'none' }} aria-hidden>{final}</span>
-      <span style={{ position: 'absolute', top: 0, left: 0 }} aria-live="off">{current}</span>
+      <span ref={liveRef} style={{ position: 'absolute', top: 0, left: 0 }} aria-live="off">{final}</span>
     </span>
   );
 }
@@ -466,96 +481,6 @@ function ValueGlyph({ kind, hover }: { kind: string; hover: boolean }) {
   );
 }
 
-// ---------- FEATURED WORK ----------
-function HomeFeatured() {
-  const featured = PROJECTS.slice(0, 3);
-  return (
-    <section>
-      <SectionHead title={<>Work that wasn't<br />just a deck<span className="accent">.</span></>} />
-      <div className="container sp-bot-sm" style={{ padding: '0 32px 160px' }}>
-        <div className="r-grid-3">
-          {featured.map(p => <FeaturedCard key={p.slug} p={p} />)}
-        </div>
-        <div style={{
-          marginTop: 24,
-          padding: '20px 24px',
-          border: '1px solid var(--rule)',
-          borderRadius: 'var(--radius-lg)',
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: 16,
-        }}>
-          <span style={{ fontSize: 14, color: 'var(--ink-2)' }}>
-            {PROJECTS.length - 3} more projects — including NDA work, design systems, and a personal build.
-          </span>
-          <Link href="/work" className="btn">
-            View all work <span className="arr">→</span>
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FeaturedCard({ p }: { p: typeof PROJECTS[number] }) {
-  const [hover, setHover] = useState(false);
-  return (
-    <Link
-      href={`/work/${p.slug}`}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{
-        border: '1px solid var(--ink)',
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: 360,
-        borderRadius: 'var(--radius-lg)',
-        overflow: 'hidden',
-        transition: 'transform 200ms, background 200ms',
-        transform: hover ? 'translateY(-4px)' : 'translateY(0)',
-        background: hover ? 'var(--ink)' : 'var(--paper)',
-        color: hover ? 'var(--bone)' : 'var(--ink)',
-      }}
-    >
-      <div className="mono upper" style={{
-        display: 'flex', justifyContent: 'space-between',
-        padding: '16px 20px',
-        borderBottom: hover ? '1px solid rgba(236,231,220,0.2)' : '1px solid var(--rule)',
-        fontSize: 11, letterSpacing: '0.08em',
-        color: hover ? 'rgba(236,231,220,0.65)' : 'var(--sub)',
-      }}>
-        <span>{p.company}</span>
-        <span>{p.quarter}</span>
-      </div>
-
-      <div style={{ padding: '24px 24px 28px', display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
-        <div className="tight" style={{ fontSize: 'clamp(22px, 2vw, 28px)', lineHeight: 1.02, fontWeight: 600, letterSpacing: '-0.035em' }}>
-          {p.title}
-        </div>
-        <div style={{ fontSize: 14, lineHeight: 1.45, color: hover ? 'rgba(236,231,220,0.75)' : 'var(--ink-2)', maxWidth: '44ch' }}>
-          {p.blurb}
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', flexWrap: 'wrap', gap: 12, marginTop: 'auto' }}>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {p.tags.map(t => (
-              <span key={t} className="chip" style={{
-                borderColor: hover ? 'rgba(236,231,220,0.45)' : 'var(--rule-strong)',
-                color: hover ? 'var(--bone)' : 'var(--ink-2)',
-              }}>{t}</span>
-            ))}
-          </div>
-          <span className="mono upper" style={{ fontSize: 11, letterSpacing: '0.1em', color: hover ? 'var(--accent)' : 'var(--ink)' }}>
-            View case →
-          </span>
-        </div>
-      </div>
-    </Link>
-  );
-}
-
 // ---------- JOURNEY ----------
 function HomeJourney() {
   const [active, setActive] = useState(0);
@@ -729,8 +654,7 @@ function HomeFAQ() {
                   transition: 'grid-template-rows 360ms cubic-bezier(.2,.7,.2,1)',
                 }}>
                   <div style={{ overflow: 'hidden' }}>
-                    <div style={{
-                      padding: '0 0 32px 84px', fontSize: 17, lineHeight: 1.6, color: 'var(--ink-2)', maxWidth: '72ch',
+                    <div className="faq-answer" style={{
                       opacity: isOpen ? 1 : 0,
                       transform: isOpen ? 'translateY(0)' : 'translateY(-6px)',
                       transition: 'opacity 280ms ease, transform 360ms cubic-bezier(.2,.7,.2,1)',

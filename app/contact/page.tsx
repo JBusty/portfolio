@@ -16,7 +16,7 @@ const CONTACT_FAQ = [
   },
   {
     q: 'Do you take on freelance or contract work?',
-    a: "Selectively. I'm most useful for 0â†’1 design, design system bootstrapping, or embedded design for an eng team that needs someone who can also read the code. Reach out and we'll figure out if it's a fit.",
+    a: "Selectively. I’m most useful for 0→1 design, design system bootstrapping, or embedded design for an eng team that needs someone who can also read the code. Reach out and we’ll figure out if it’s a fit.",
   },
   {
     q: "What's your availability?",
@@ -30,7 +30,7 @@ const CONTACT_FAQ = [
 
 const CONNECT = [
   { label: 'Email', value: 'jbusseywork@gmail.com', href: 'mailto:jbusseywork@gmail.com', arr: '↗' },
-  { label: 'LinkedIn', value: 'linkedin.com/in/josh', href: '#', arr: '↗' },
+  { label: 'LinkedIn', value: 'linkedin.com/in/joshuabussey', href: 'https://www.linkedin.com/in/joshuabussey/', arr: '↗' },
   { label: 'Resume / CV', value: 'Download PDF', href: 'https://drive.google.com/file/d/17OJanguMKHAdKGfoBDpI_eS_1_a5fZEh/view', arr: '↗' },
 ];
 
@@ -77,7 +77,7 @@ export default function ContactPage() {
             {[
               { label: 'Types of roles', value: 'Senior/Staff', note: 'Product designer roles' },
               { label: 'Location', value: 'Remote', note: 'Farmington NH' },
-              { label: 'Timezone', value: 'Eastern Time', note: 'Flexible on working with teamates in other timezones' },
+              { label: 'Timezone', value: 'Eastern Time', note: 'Flexible on working with teammates in other timezones' },
             ].map((item, i) => (
               <div key={item.label} className="avail-card" style={{ padding: '4px 28px', borderLeft: i === 0 ? 'none' : '1px solid var(--rule-strong)' }}>
                 <div className="mono upper" style={{ fontSize: 11, color: 'var(--sub)', letterSpacing: '0.08em', marginBottom: 8 }}>
@@ -95,7 +95,114 @@ export default function ContactPage() {
         </div>
       </section>
 
+      {/* CONTACT FORM */}
+      <section style={{ borderTop: '1px solid var(--ink)', background: 'var(--paper)' }}>
+        <div className="container sp-normal" style={{ padding: '112px 32px 128px' }}>
+          <ContactForm />
+        </div>
+      </section>
+
     </main>
+  );
+}
+
+function ContactForm() {
+  const [fields, setFields] = useState({ name: '', email: '', message: '' });
+  const [sent, setSent] = useState(false);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const subject = encodeURIComponent(`Portfolio inquiry from ${fields.name}`);
+    const body = encodeURIComponent(`From: ${fields.name} <${fields.email}>\n\n${fields.message}`);
+    window.location.href = `mailto:jbusseywork@gmail.com?subject=${subject}&body=${body}`;
+    setSent(true);
+  }
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '12px 14px',
+    background: 'var(--bone)',
+    border: '1px solid var(--rule-strong)',
+    borderRadius: 'var(--radius-sm)',
+    fontFamily: 'var(--font-inter)',
+    fontSize: 15,
+    color: 'var(--ink)',
+    outline: 'none',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    display: 'block',
+    fontFamily: 'var(--font-jetbrains-mono)',
+    fontSize: 11,
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    color: 'var(--sub)',
+    marginBottom: 8,
+  };
+
+  if (sent) {
+    return (
+      <div style={{ padding: '48px 0' }}>
+        <div className="tight" style={{ fontSize: 28, fontWeight: 600, letterSpacing: '-0.03em' }}>
+          Your email client should be open<span className="accent">.</span>
+        </div>
+        <p style={{ margin: '12px 0 0', fontSize: 15, color: 'var(--ink-2)', lineHeight: 1.55 }}>
+          If nothing opened, email me directly at jbusseywork@gmail.com.
+        </p>
+        <button
+          onClick={() => setSent(false)}
+          className="mono upper"
+          style={{ marginTop: 24, fontSize: 11, letterSpacing: '0.08em', background: 'none', border: 'none', color: 'var(--sub)', cursor: 'pointer', padding: 0 }}
+        >
+          ← Send another
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div className="r-grid-2" style={{ gap: 16 }}>
+        <div>
+          <label style={labelStyle}>Name</label>
+          <input
+            required
+            type="text"
+            placeholder="Your name"
+            value={fields.name}
+            onChange={e => setFields(f => ({ ...f, name: e.target.value }))}
+            style={inputStyle}
+          />
+        </div>
+        <div>
+          <label style={labelStyle}>Email</label>
+          <input
+            required
+            type="email"
+            placeholder="you@company.com"
+            value={fields.email}
+            onChange={e => setFields(f => ({ ...f, email: e.target.value }))}
+            style={inputStyle}
+          />
+        </div>
+      </div>
+      <div>
+        <label style={labelStyle}>Message</label>
+        <textarea
+          required
+          rows={6}
+          placeholder="What are you building?"
+          value={fields.message}
+          onChange={e => setFields(f => ({ ...f, message: e.target.value }))}
+          style={{ ...inputStyle, resize: 'vertical' }}
+        />
+      </div>
+      <div>
+        <button type="submit" className="btn">
+          Send message <span className="arr">→</span>
+        </button>
+      </div>
+    </form>
   );
 }
 
@@ -275,8 +382,7 @@ function ContactFAQ() {
             </button>
             <div style={{ display: 'grid', gridTemplateRows: isOpen ? '1fr' : '0fr', transition: 'grid-template-rows 360ms cubic-bezier(.2,.7,.2,1)' }}>
               <div style={{ overflow: 'hidden' }}>
-                <div style={{
-                  padding: '0 0 32px 84px', fontSize: 17, lineHeight: 1.6, color: 'var(--ink-2)', maxWidth: '72ch',
+                <div className="faq-answer" style={{
                   opacity: isOpen ? 1 : 0,
                   transform: isOpen ? 'translateY(0)' : 'translateY(-6px)',
                   transition: 'opacity 280ms ease, transform 360ms cubic-bezier(.2,.7,.2,1)',

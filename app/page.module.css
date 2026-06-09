@@ -87,7 +87,7 @@
 .polaroidShell {
   position: relative;
   height: 0;
-  padding-bottom: 118%;
+  padding-bottom: 128%;
   perspective: 1200px;
 }
 
@@ -122,7 +122,7 @@
   }
 
   .polaroidShell {
-    padding-bottom: 114%;
+    padding-bottom: 138%;
   }
 
 }
@@ -144,7 +144,7 @@
   }
 
   .polaroidShell {
-    padding-bottom: 110%;
+    padding-bottom: 155%;
   }
 }
 
@@ -180,7 +180,7 @@
   }
 
   .polaroidShell {
-    padding-bottom: 102%;
+    padding-bottom: 138%;
   }
 }
 

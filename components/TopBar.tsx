@@ -21,6 +21,51 @@ function getHeroBg(pathname: string) {
   return heroBgMap[pathname] ?? 'var(--bone)';
 }
 
+function LogoBadge() {
+  const [hover, setHover] = useState(false);
+  const [clicks, setClicks] = useState(0);
+  const spinning = clicks > 0;
+
+  function handleClick() {
+    setClicks(c => c + 1);
+  }
+
+  return (
+    <span
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onClick={handleClick}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 40,
+        height: 40,
+        background: hover ? 'var(--accent)' : 'var(--ink)',
+        color: 'var(--bone)',
+        fontFamily: 'var(--font-jetbrains-mono)',
+        fontSize: 16,
+        fontWeight: 600,
+        borderRadius: 10,
+        transform: spinning
+          ? 'rotate(360deg) scale(1.15)'
+          : hover ? 'rotate(-12deg) scale(1.12)' : 'rotate(0deg) scale(1)',
+        transition: spinning
+          ? 'transform 520ms cubic-bezier(.2,.7,.2,1), background 160ms'
+          : 'transform 280ms cubic-bezier(.2,.7,.2,1), background 160ms',
+        cursor: 'pointer',
+        userSelect: 'none',
+        flexShrink: 0,
+      }}
+      onTransitionEnd={() => {
+        if (spinning) setClicks(0);
+      }}
+    >
+      JB
+    </span>
+  );
+}
+
 function LinkedInButton() {
   const [hover, setHover] = useState(false);
   return (
@@ -86,22 +131,15 @@ export default function TopBar() {
       }}>
         {/* Logo */}
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 28,
-            height: 28,
-            background: 'var(--ink)',
-            color: 'var(--bone)',
-            fontFamily: 'var(--font-jetbrains-mono)',
-            fontSize: 13,
-            fontWeight: 600,
-            borderRadius: 8,
-          }}>J</span>
-          <span className="mono upper topbar-logo-text" style={{ fontSize: 12, letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>
-            Joshua Bussey | Product Designer
-          </span>
+          <LogoBadge />
+          <div className="topbar-logo-text" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em', whiteSpace: 'nowrap', lineHeight: 1 }}>
+              Joshua Bussey
+            </span>
+            <span className="mono upper" style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', whiteSpace: 'nowrap', color: 'var(--sub)', lineHeight: 1 }}>
+              Product Designer
+            </span>
+          </div>
         </Link>
 
         <span className="grow" />

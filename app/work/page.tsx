@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import ProjectRow from '@/components/ProjectRow';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -16,6 +16,20 @@ export default function WorkPage() {
 
   const [activeTag, setActiveTag] = useState('All');
   const [view, setView] = useState<'rows' | 'grid'>('rows');
+  const [topbarVisible, setTopbarVisible] = useState(true);
+  const lastY = useRef(0);
+
+  useEffect(() => {
+    function onScroll() {
+      const y = window.scrollY;
+      if (y < 60) setTopbarVisible(true);
+      else if (y > lastY.current) setTopbarVisible(false);
+      else setTopbarVisible(true);
+      lastY.current = y;
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const list = useMemo(() => {
     if (activeTag === 'All') return PROJECTS;
@@ -65,62 +79,68 @@ export default function WorkPage() {
       </section>
 
       <section>
-        <div className="container sp-bot-sm" style={{ padding: '0 32px 160px' }}>
-          <ScrollReveal
-            as="div"
-            style={{
-              padding: '20px 0 24px',
-              display: 'flex',
-              gap: 10,
-              flexWrap: 'wrap',
-              alignItems: 'center',
-            }}
-          >
-            <span className="mono upper" style={{ fontSize: 11, color: 'var(--sub)', letterSpacing: '0.08em', marginRight: 4 }}>
-              Filter
-            </span>
-            {allTags.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => setActiveTag(tag)}
-                className="chip"
-                style={{
-                  background: activeTag === tag ? 'var(--ink)' : 'transparent',
-                  color: activeTag === tag ? 'var(--bone)' : 'var(--ink-2)',
-                  borderColor: activeTag === tag ? 'var(--ink)' : 'var(--rule-strong)',
-                  cursor: 'pointer',
-                }}
-              >
-                {tag}
-              </button>
-            ))}
-            <span className="grow" />
-            <div style={{ display: 'flex', border: '1px solid var(--rule-strong)', borderRadius: 999, overflow: 'hidden' }}>
-              {(['rows', 'grid'] as const).map((nextView) => (
+        {/* Sticky filter bar */}
+        <div className="work-filter-bar" style={{
+          position: 'sticky',
+          top: topbarVisible ? 57 : 0,
+          zIndex: 40,
+          background: 'var(--ink-2)',
+          borderBottom: '1px solid rgba(236,231,220,0.1)',
+          transition: 'top 280ms ease',
+        }}>
+          <div className="container" style={{ padding: '0 32px' }}>
+            <div style={{ padding: '24px 0', display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+              <span className="mono upper" style={{ fontSize: 11, color: 'rgba(236,231,220,0.35)', letterSpacing: '0.1em', marginRight: 6 }}>
+                Filter
+              </span>
+              {allTags.map((tag) => (
                 <button
-                  key={nextView}
-                  onClick={() => setView(nextView)}
-                  className="mono upper"
+                  key={tag}
+                  onClick={() => setActiveTag(tag)}
+                  className="chip"
                   style={{
-                    padding: '6px 14px',
-                    fontSize: 11,
-                    letterSpacing: '0.08em',
-                    background: view === nextView ? 'var(--ink)' : 'transparent',
-                    color: view === nextView ? 'var(--bone)' : 'var(--ink)',
-                    border: 'none',
+                    background: activeTag === tag ? 'var(--bone)' : 'transparent',
+                    color: activeTag === tag ? 'var(--ink)' : 'rgba(236,231,220,0.6)',
+                    borderColor: activeTag === tag ? 'var(--bone)' : 'rgba(236,231,220,0.18)',
                     cursor: 'pointer',
+                    transition: 'background 160ms, color 160ms, border-color 160ms',
                   }}
                 >
-                  {nextView}
+                  {tag}
                 </button>
               ))}
+              <span className="grow" />
+              <div style={{ display: 'flex', border: '1px solid rgba(236,231,220,0.18)', borderRadius: 999, overflow: 'hidden' }}>
+                {(['rows', 'grid'] as const).map((nextView) => (
+                  <button
+                    key={nextView}
+                    onClick={() => setView(nextView)}
+                    className="mono upper"
+                    style={{
+                      padding: '6px 14px',
+                      fontSize: 11,
+                      letterSpacing: '0.08em',
+                      background: view === nextView ? 'rgba(236,231,220,0.12)' : 'transparent',
+                      color: view === nextView ? 'var(--bone)' : 'rgba(236,231,220,0.45)',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background 160ms, color 160ms',
+                    }}
+                  >
+                    {nextView}
+                  </button>
+                ))}
+              </div>
             </div>
-          </ScrollReveal>
+          </div>
+        </div>
+
+        <div className="container sp-bot-sm" style={{ padding: '24px 32px 160px' }}>
           {view === 'rows' ? (
             <div style={{ borderBottom: '1px solid var(--rule)' }}>
               {list.map((project, index) => (
                 <ScrollReveal key={project.slug} delayMs={Math.min(index * 36, 180)}>
-                  <ProjectRow p={project} />
+                  <ProjectRow p={project} first={index === 0} />
                 </ScrollReveal>
               ))}
             </div>

@@ -652,6 +652,19 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     },
   },
   groundbase: {
+    images: {
+      problem: '/images/groundbase/problem-overview.png',
+      solution: [
+        '/images/groundbase/solution-1.png',
+        '/images/groundbase/solution-2.png',
+        '/images/groundbase/solution-3.png',
+      ],
+      solutionCaptions: [
+        { label: 'Draws and budget tracking', body: 'Every draw is tracked against the budget with funding source breakdowns — no more reconciling across a spreadsheet and a group chat.' },
+        { label: 'Build timeline', body: 'Milestones, contractor events, and draw approvals live in one timeline so nothing falls through the cracks between trades.' },
+        { label: 'Project health at a glance', body: 'Budget status, equity position, and DTI surface together so owner-builders always know where they stand before approving the next draw.' },
+      ],
+    },
     summary:
       'I built Groundbase to solve a problem I kept running into: there are no good tools for managing the financial side of a home build. I designed the product from scratch and wrote all of the code for a platform that helps owner-builders and contractors manage budgets, milestones, and draw requests in one place.',
     problemTitle: ['Home building is still', 'spreadsheet software'],

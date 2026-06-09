@@ -239,6 +239,7 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+
 @keyframes phaseSwap {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -250,8 +251,8 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
 }
 
 @keyframes notedStamp {
-  from { opacity: 0; transform: scale(0.6) rotate(-8deg); }
-  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+  from { opacity: 0; transform: scale(0.6) rotate(-22deg); }
+  to   { opacity: 1; transform: scale(1) rotate(-14deg); }
 }
 
 .scroll-reveal {
@@ -331,6 +332,15 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
 .nav-link { border: 1px solid transparent; }
 .nav-link:not(.nav-link-active):hover { border-color: var(--rule-strong); }
 
+/* ---- faq answer body ---- */
+.faq-answer {
+  padding: 0 0 32px 84px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: 72ch;
+}
+
 /* ---- responsive grid utilities ---- */
 .r-grid-4  { display: grid; grid-template-columns: repeat(4, 1fr); }
 .r-grid-3  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
@@ -382,6 +392,12 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
 
   /* Footer: single column */
   .r-footer { grid-template-columns: 1fr !important; gap: 48px !important; }
+
+  /* Hero split: override inline gap on work/contact hero */
+  .r-hero-split { gap: 32px !important; }
+
+  /* Availability cards: remove left border on odd cells in 2-col grid */
+  .avail-card:nth-child(odd) { border-left: none !important; }
 }
 
 @media (max-width: 640px) {
@@ -418,6 +434,12 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
   /* TopBar: hide long logo text and LinkedIn button on very small screens */
   .topbar-logo-text { display: none !important; }
   .topbar-linkedin  { display: none !important; }
+
+  /* FAQ answer: collapse left indent on small screens */
+  .faq-answer { padding-left: 0 !important; }
+
+  /* Work page: hide filter bar on mobile */
+  .work-filter-bar { display: none !important; }
 }
 
 /* stat borders: only first in each row has no left border */

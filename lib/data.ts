@@ -104,7 +104,7 @@ export const PROJECTS: Project[] = [
     blurb:
       'An expired cert during a live incident eroded customer trust. I designed the surface that surfaces brokenness before customers notice.',
     year: '2025',
-    quarter: '2025',
+    quarter: 'Q1 2025',
     role: 'Senior Designer',
     team: '1 PM · 2 Eng · 1 Designer',
     tags: ['Design advocacy', 'UX loopholes'],
