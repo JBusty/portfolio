@@ -64,7 +64,7 @@ export default function ContactPage() {
             </div>
             </div>
           </div>
-          <div style={{ width: '100%', maxWidth: 440, justifySelf: 'end' }}>
+          <div style={{ width: '100%', maxWidth: 380, justifySelf: 'end' }}>
             <ContactHeroArt />
           </div>
         </div>

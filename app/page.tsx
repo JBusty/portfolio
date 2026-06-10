@@ -12,7 +12,6 @@ export default function Home() {
   return (
     <main className="page-enter">
       <HomeHero />
-      <HomeStats />
       <HomeValues />
       <HomeJourney />
       <HomeFAQ />
@@ -42,10 +41,9 @@ function HomeHero() {
               </span>
               <span className={styles.heroLine} style={{ animationDelay: '100ms' }}>
                 systems that
-              </span>
-              <span className={`${styles.heroLine} ${styles.heroShipLine}`} style={{ animationDelay: '200ms' }}>
-                <span className={styles.heroShip}>ship</span>
-                <span className="accent">.</span>
+                <span className={styles.heroShipWord} style={{ animationDelay: '280ms' }}>
+                  <span className={styles.heroShip}>ship</span><span className="accent">.</span>
+                </span>
               </span>
             </h1>
             {/*
@@ -70,6 +68,17 @@ function HomeHero() {
           <div className={styles.heroStackWrap}>
             <PolaroidStack />
           </div>
+        </div>
+
+        <div className={styles.heroStatStrip}>
+          {STATS.map((s, i) => (
+            <div key={i} className={styles.heroStatItem}>
+              <div className={`tight ${styles.heroStatNum}`}>
+                <CountUp n={s.n} delayMs={500 + i * 80} />
+              </div>
+              <div className={styles.heroStatLabel}>{s.label}</div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -277,42 +286,11 @@ function CountUp({ n, delayMs }: { n: string; delayMs: number }) {
   );
 }
 
-// ---------- STATS ----------
-function HomeStats() {
-  return (
-    <section style={{ background: 'var(--bone)', borderTop: '1px solid var(--ink)' }}>
-      <div className="container sp-normal" style={{ padding: '112px 32px 128px' }}>
-        <div className="r-grid-4" style={{ gap: 0 }}>
-          {STATS.map((s, i) => (
-            <ScrollReveal
-              key={i}
-              delayMs={i * 100}
-              style={{ padding: '4px 28px', borderLeft: i === 0 ? 'none' : '1px solid var(--rule-strong)' }}
-            >
-              <div className="tight" style={{
-                fontSize: 'clamp(44px, 5.5vw, 84px)',
-                lineHeight: 0.95,
-                fontWeight: 700,
-                letterSpacing: '-0.04em',
-              }}>
-                <CountUp n={s.n} delayMs={i * 100} />
-              </div>
-              <div style={{ marginTop: 16, fontSize: 14, color: 'var(--ink-2)', maxWidth: '22ch', lineHeight: 1.45 }}>
-                {s.label}
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 // ---------- VALUES ----------
 function HomeValues() {
   return (
     <section style={{ background: 'var(--ink)', color: 'var(--bone)', overflow: 'hidden' }}>
-      <div className="container sp-large" style={{ padding: '160px 32px 208px' }}>
+      <div className="container sp-large" style={{ padding: '120px 32px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 32, flexWrap: 'wrap', marginBottom: 64 }}>
           <div>
             <h2 className="tight" style={{

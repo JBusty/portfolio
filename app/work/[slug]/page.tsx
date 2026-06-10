@@ -4,11 +4,22 @@ import { createPortal } from 'react-dom';
 import { use, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDraftingCompass, faFlag } from '@fortawesome/free-solid-svg-icons';
 import ScrollReveal from '@/components/ScrollReveal';
 import SectionHead from '@/components/SectionHead';
 import { getCaseStudy } from '@/lib/caseStudies';
 import { PROJECTS } from '@/lib/data';
 import heroStyles from '../../page.module.css';
+
+type EnhancedStep = {
+  n: string;
+  h: string;
+  body: string;
+  isBookend?: boolean;
+  images?: string[];
+  captions?: Array<{ label: string; body: string }>;
+};
 
 export default function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -19,6 +30,29 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
   const idx = PROJECTS.indexOf(p);
   const next = PROJECTS[(idx + 1) % PROJECTS.length];
   const prev = PROJECTS[(idx - 1 + PROJECTS.length) % PROJECTS.length];
+
+  const hasWireframes = (study.images?.wireframes?.length ?? 0) > 0;
+  const hasSolution = (study.images?.solution?.length ?? 0) > 0;
+
+  const timelineSteps: EnhancedStep[] = [
+    ...(hasWireframes ? [{
+      n: '↗',
+      h: 'Exploration',
+      body: 'Low-fidelity wireframes mapped the core layout and key interactions before any visual decisions were locked in.',
+      isBookend: true,
+      images: study.images!.wireframes,
+      captions: study.images!.wireframeCaptions,
+    }] : []),
+    ...study.processSteps,
+    ...(hasSolution ? [{
+      n: '✓',
+      h: 'Shipped',
+      body: 'The final experience, tested with customers and validated through iteration.',
+      isBookend: true,
+      images: study.images!.solution,
+      captions: study.images!.solutionCaptions,
+    }] : []),
+  ];
 
   return (
     <main className="page-enter">
@@ -215,13 +249,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
       </CSection>
 
       <CSection eyebrow={renderSubTitle(study.processTitle)} title="The Process">
-        {study.images?.solution && study.images.solution.length > 0 && (
-          <div style={{ marginBottom: 64 }}>
-            <ThumbnailGallery images={study.images.solution} captions={study.images.solutionCaptions} />
-          </div>
-        )}
-
-        <ProcessTimeline steps={study.processSteps} />
+        <ProcessTimeline steps={timelineSteps} />
       </CSection>
 
       <CSection eyebrow={<>What worked. What got tricky<span className="accent">.</span></>} title="Reflection">
@@ -658,9 +686,10 @@ function renderAnimatedHeroTitle(title: string) {
   );
 }
 
-function ProcessTimeline({ steps }: { steps: Array<{ n: string; h: string; body: string }> }) {
+function ProcessTimeline({ steps }: { steps: EnhancedStep[] }) {
   const [active, setActive] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [modalSrc, setModalSrc] = useState<string | null>(null);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -690,87 +719,127 @@ function ProcessTimeline({ steps }: { steps: Array<{ n: string; h: string; body:
   const current = steps[active];
 
   return (
-    <div className="r-journey">
-      {/* Sticky scrubber */}
-      <div className="r-journey-sidebar" style={{ position: 'sticky', top: 100, alignSelf: 'start' }}>
-        <div className="tight" style={{
-          fontSize: 88, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1,
-          display: 'flex', alignItems: 'baseline', gap: 2,
-        }}>
-          <span style={{ color: 'var(--accent)' }}>{current.n}</span>
-          <span className="mono" style={{ fontSize: 16, color: 'var(--sub)', letterSpacing: 0, fontWeight: 500 }}>
-            / {String(steps.length).padStart(2, '0')}
-          </span>
-        </div>
-        <div style={{ overflow: 'hidden', marginTop: 20, minHeight: 72 }}>
-          <div key={active} style={{ animation: 'phaseSwap 380ms cubic-bezier(.2,.7,.2,1)' }}>
-            <div className="tight" style={{ fontSize: 20, fontWeight: 600, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
-              {current.h}
+    <>
+      <div className="r-journey">
+        {/* Sticky scrubber */}
+        <div className="r-journey-sidebar" style={{ position: 'sticky', top: 100, alignSelf: 'start' }}>
+          {current.isBookend ? (
+            <FontAwesomeIcon
+              icon={current.n === '↗' ? faDraftingCompass : faFlag}
+              style={{ width: 48, height: 48, color: 'var(--accent)' }}
+            />
+          ) : (
+            <div className="tight" style={{
+              fontSize: 88, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1,
+              display: 'flex', alignItems: 'baseline', gap: 2,
+            }}>
+              <span style={{ color: 'var(--accent)' }}>{current.n}</span>
+              <span className="mono" style={{ fontSize: 16, color: 'var(--sub)', letterSpacing: 0, fontWeight: 500 }}>
+                / {String(steps.length).padStart(2, '0')}
+              </span>
+            </div>
+          )}
+          <div style={{ overflow: 'hidden', marginTop: 20, minHeight: 72 }}>
+            <div key={active} style={{ animation: 'phaseSwap 380ms cubic-bezier(.2,.7,.2,1)' }}>
+              <div className="tight" style={{ fontSize: 20, fontWeight: 600, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+                {current.h}
+              </div>
             </div>
           </div>
+          <div style={{ marginTop: 24, display: 'flex', gap: 10, alignItems: 'center' }}>
+            {steps.map((step, i) => (
+              <button
+                key={`${step.n}-${i}`}
+                onClick={() => {
+                  const el = stepRefs.current[i];
+                  if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 140, behavior: 'smooth' });
+                }}
+                title={step.h}
+                style={{
+                  width: i === active ? 28 : 10, height: 10,
+                  borderRadius: 999, padding: 0, border: 'none',
+                  background: i <= active ? 'var(--accent)' : 'var(--rule-strong)',
+                  transition: 'all 280ms cubic-bezier(.2,.7,.2,1)',
+                  cursor: 'pointer',
+                }}
+              />
+            ))}
+          </div>
         </div>
-        <div style={{ marginTop: 24, display: 'flex', gap: 10, alignItems: 'center' }}>
-          {steps.map((step, i) => (
-            <button
-              key={step.n}
-              onClick={() => {
-                const el = stepRefs.current[i];
-                if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 140, behavior: 'smooth' });
-              }}
-              title={step.h}
-              style={{
-                width: i === active ? 28 : 10, height: 10,
-                borderRadius: 999, padding: 0, border: 'none',
-                background: i <= active ? 'var(--accent)' : 'var(--rule-strong)',
-                transition: 'all 280ms cubic-bezier(.2,.7,.2,1)',
-                cursor: 'pointer',
-              }}
-            />
-          ))}
-        </div>
-      </div>
 
-      {/* Timeline track */}
-      <div ref={trackRef} style={{ position: 'relative' }}>
-        <div style={{ position: 'absolute', left: 15, top: 12, bottom: 12, width: 2, background: 'var(--rule)' }} />
-        <div style={{ position: 'absolute', left: 15, top: 12, width: 2, height: `calc((100% - 24px) * ${progress})`, background: 'var(--accent)', transition: 'height 80ms linear' }} />
-        {steps.map((step, i) => {
-          const isActive = i === active;
-          const isPast = i < active;
-          return (
-            <div
-              key={step.n}
-              ref={el => { stepRefs.current[i] = el; }}
-              style={{
-                position: 'relative', paddingLeft: 64, paddingTop: 36, paddingBottom: 36,
-                opacity: isActive ? 1 : isPast ? 0.6 : 0.38,
-                transform: isActive ? 'translateY(0)' : 'translateY(2px)',
-                transition: 'opacity 360ms ease, transform 360ms ease',
-              }}
-            >
-              <div style={{
-                position: 'absolute', left: 5, top: 52, width: 22, height: 22, borderRadius: '50%',
-                background: isActive || isPast ? 'var(--accent)' : 'var(--bone)',
-                border: `2px solid ${isActive || isPast ? 'var(--accent)' : 'var(--rule-strong)'}`,
-                boxShadow: isActive ? '0 0 0 7px rgba(225,59,20,0.16)' : 'none',
-                transition: 'all 280ms cubic-bezier(.2,.7,.2,1)',
-              }}>
-                {isActive && <span style={{ position: 'absolute', inset: 4, borderRadius: '50%', background: 'var(--bone)' }} />}
+        {/* Timeline track */}
+        <div ref={trackRef} style={{ position: 'relative' }}>
+          <div style={{ position: 'absolute', left: 15, top: 12, bottom: 12, width: 2, background: 'var(--rule)' }} />
+          <div style={{ position: 'absolute', left: 15, top: 12, width: 2, height: `calc((100% - 24px) * ${progress})`, background: 'var(--accent)', transition: 'height 80ms linear' }} />
+          {steps.map((step, i) => {
+            const isActive = i === active;
+            const isPast = i < active;
+            return (
+              <div
+                key={`${step.n}-${i}`}
+                ref={el => { stepRefs.current[i] = el; }}
+                style={{
+                  position: 'relative', paddingLeft: 64, paddingTop: 36, paddingBottom: 36,
+                  opacity: isActive ? 1 : isPast ? 0.6 : 0.38,
+                  transform: isActive ? 'translateY(0)' : 'translateY(2px)',
+                  transition: 'opacity 360ms ease, transform 360ms ease',
+                }}
+              >
+                <div style={{
+                  position: 'absolute', left: 5, top: 52, width: 22, height: 22, borderRadius: '50%',
+                  background: isActive || isPast ? 'var(--accent)' : 'var(--bone)',
+                  border: `2px solid ${isActive || isPast ? 'var(--accent)' : 'var(--rule-strong)'}`,
+                  boxShadow: isActive ? '0 0 0 7px rgba(225,59,20,0.16)' : 'none',
+                  transition: 'all 280ms cubic-bezier(.2,.7,.2,1)',
+                }}>
+                  {isActive && <span style={{ position: 'absolute', inset: 4, borderRadius: '50%', background: 'var(--bone)' }} />}
+                </div>
+                {!step.isBookend && (
+                  <div className="mono upper" style={{ fontSize: 10, color: 'var(--sub)', letterSpacing: '0.12em' }}>
+                    Step {step.n}
+                  </div>
+                )}
+                <h4 className="tight" style={{ margin: step.isBookend ? '0' : '12px 0 0', fontSize: 'clamp(26px, 3vw, 44px)', fontWeight: 600, letterSpacing: '-0.035em', lineHeight: 1.02 }}>
+                  {step.h}
+                </h4>
+                <p style={{ margin: '16px 0 0', fontSize: 17, lineHeight: 1.55, color: 'var(--ink-2)', maxWidth: '58ch' }}>
+                  {step.body}
+                </p>
+                {step.images && step.images.length > 0 && (
+                  <div style={{
+                    marginTop: 28,
+                    display: 'grid',
+                    gridTemplateColumns: step.n === '↗'
+                      ? 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))'
+                      : 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))',
+                    gap: step.n === '↗' ? 16 : 28,
+                    maxWidth: step.n === '↗' ? 480 : undefined,
+                  }}>
+                    {step.images.map((src, idx) => (
+                      <div key={src}>
+                        <button
+                          onClick={() => setModalSrc(src)}
+                          style={{ display: 'block', width: '100%', aspectRatio: '16 / 9', overflow: 'hidden', border: '1px solid var(--rule)', borderRadius: 'var(--radius)', cursor: 'zoom-in', padding: 0, background: 'var(--paper)' }}
+                        >
+                          <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        </button>
+                        {step.captions?.[idx] && (
+                          <div style={{ padding: '10px 2px 4px' }}>
+                            <div className="mono upper" style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.1em', marginBottom: 4 }}>{step.captions[idx].label}</div>
+                            <div style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--ink-2)' }}>{step.captions[idx].body}</div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-              <div className="mono upper" style={{ fontSize: 10, color: 'var(--sub)', letterSpacing: '0.12em' }}>
-                Step {step.n}
-              </div>
-              <h4 className="tight" style={{ margin: '12px 0 0', fontSize: 'clamp(26px, 3vw, 44px)', fontWeight: 600, letterSpacing: '-0.035em', lineHeight: 1.02 }}>
-                {step.h}
-              </h4>
-              <p style={{ margin: '16px 0 0', fontSize: 17, lineHeight: 1.55, color: 'var(--ink-2)', maxWidth: '58ch' }}>
-                {step.body}
-              </p>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-    </div>
+      {modalSrc && <ModalViewer src={modalSrc} onClose={() => setModalSrc(null)} />}
+    </>
   );
 }
 

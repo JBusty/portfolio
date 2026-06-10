@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 
 const navItems = [
   { href: '/', label: 'Home' },
-  { href: '/work', label: 'Work' },
+  { href: '/work', label: 'Case Studies' },
   { href: '/contact', label: 'Contact' },
 ];
 
@@ -23,45 +23,42 @@ function getHeroBg(pathname: string) {
 
 function LogoBadge() {
   const [hover, setHover] = useState(false);
-  const [clicks, setClicks] = useState(0);
-  const spinning = clicks > 0;
-
-  function handleClick() {
-    setClicks(c => c + 1);
-  }
+  const [pressing, setPressing] = useState(false);
 
   return (
     <span
       onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      onClick={handleClick}
+      onMouseLeave={() => { setHover(false); setPressing(false); }}
+      onMouseDown={() => setPressing(true)}
+      onMouseUp={() => setPressing(false)}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        width: 40,
-        height: 40,
-        background: hover ? 'var(--accent)' : 'var(--ink)',
-        color: 'var(--bone)',
         fontFamily: 'var(--font-jetbrains-mono)',
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: 600,
-        borderRadius: 10,
-        transform: spinning
-          ? 'rotate(360deg) scale(1.15)'
-          : hover ? 'rotate(-12deg) scale(1.12)' : 'rotate(0deg) scale(1)',
-        transition: spinning
-          ? 'transform 520ms cubic-bezier(.2,.7,.2,1), background 160ms'
-          : 'transform 280ms cubic-bezier(.2,.7,.2,1), background 160ms',
         cursor: 'pointer',
         userSelect: 'none',
         flexShrink: 0,
-      }}
-      onTransitionEnd={() => {
-        if (spinning) setClicks(0);
+        letterSpacing: '-0.01em',
+        transform: pressing ? 'scale(0.93)' : hover ? 'scale(1.07)' : 'scale(1)',
+        transition: `transform ${pressing ? '60ms' : '220ms'} cubic-bezier(.2,.8,.2,1)`,
       }}
     >
-      JB
+      <span style={{
+        display: 'inline-block',
+        color: hover ? 'var(--accent)' : 'rgba(17,17,16,0.35)',
+        transform: hover ? 'translateX(-3px)' : 'translateX(0)',
+        transition: 'transform 240ms cubic-bezier(.2,.8,.2,1), color 180ms',
+      }}>&lt;</span>
+      <span style={{ color: 'var(--ink)' }}>JB</span>
+      <span style={{
+        display: 'inline-block',
+        color: hover ? 'var(--accent)' : 'rgba(17,17,16,0.35)',
+        transform: hover ? 'translateX(3px)' : 'translateX(0)',
+        transition: 'transform 240ms cubic-bezier(.2,.8,.2,1), color 180ms',
+        fontSize: 17,
+      }}>&nbsp;/&gt;</span>
     </span>
   );
 }
@@ -130,7 +127,7 @@ export default function TopBar() {
         padding: '14px 32px',
       }}>
         {/* Logo */}
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <LogoBadge />
           <div className="topbar-logo-text" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em', whiteSpace: 'nowrap', lineHeight: 1 }}>
@@ -162,7 +159,6 @@ export default function TopBar() {
                   borderRadius: 999,
                   color: isActive ? 'var(--bone)' : 'var(--ink)',
                   background: isActive ? 'var(--ink)' : 'transparent',
-                  transition: 'background 120ms, border-color 120ms',
                 }}
               >
                 <span style={{ marginRight: 6, color: 'var(--accent)' }}>·</span>

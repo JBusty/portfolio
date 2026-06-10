@@ -25,6 +25,8 @@ export interface CaseStudyCaption {
 export interface CaseStudyImages {
   logo?: string;
   problem?: string;
+  wireframes?: string[];
+  wireframeCaptions?: CaseStudyCaption[];
   solution?: string[];
   solutionCaptions?: CaseStudyCaption[];
 }
@@ -60,6 +62,10 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     images: {
       logo: '/images/shared/red-canary-hero.png',
       problem: '/images/identity-profiles/problem-overview.png',
+      wireframes: ['/images/identity-profiles/wireframe-1.svg'],
+      wireframeCaptions: [
+        { label: 'Early structure', body: 'Wireframes focused on the two-column behavioral split — consistent signals left, anomalies right — before any visual polish was added.' },
+      ],
       solution: [
         '/images/identity-profiles/solution-1.png',
         '/images/identity-profiles/solution-2.png',
@@ -161,6 +167,10 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     images: {
       logo: '/images/shared/red-canary-hero.png',
       problem: '/images/security-data-lake/problem-overview.png',
+      wireframes: ['/images/security-data-lake/wireframe-1.svg'],
+      wireframeCaptions: [
+        { label: 'Query tool skeleton', body: 'Early wireframes established the split between the schema browser and the SQL editor before tackling the quota visibility and results display.' },
+      ],
       solution: [
         '/images/security-data-lake/solution-1.png',
         '/images/security-data-lake/solution-2.png',
@@ -262,6 +272,10 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     images: {
       logo: '/images/shared/red-canary-hero.png',
       problem: '/images/unified-onboarding/problem-overview.png',
+      wireframes: ['/images/unified-onboarding/wireframe-1.svg'],
+      wireframeCaptions: [
+        { label: 'The accordion shell', body: 'Wireframes validated the numbered step structure and the idea of one expanded active step before any integration-specific content was added.' },
+      ],
       solution: [
         '/images/unified-onboarding/solution-1.png',
         '/images/unified-onboarding/solution-2.png',
@@ -358,6 +372,10 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
   'status-checks': {
     images: {
       logo: '/images/shared/red-canary-hero.png',
+      wireframes: ['/images/status-checks/wireframe-1.svg'],
+      wireframeCaptions: [
+        { label: 'Badge placement in context', body: 'Wireframes explored where the health badge lived in the integration list and what a failing-checks tooltip would need to communicate at a glance.' },
+      ],
       solution: [
         '/images/status-checks/carousel-1.png',
         '/images/status-checks/carousel-2.png',
@@ -455,6 +473,10 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     images: {
       logo: '/images/shared/edenred-hero.png',
       problem: '/images/commuter-benefits/problem-overview.png',
+      wireframes: ['/images/commuter-benefits/wireframe-1.svg'],
+      wireframeCaptions: [
+        { label: 'Participant detail skeleton', body: 'The wireframe nailed down the tab layout, benefit balance chips, and right-panel card info before the visual system was applied.' },
+      ],
       solution: [
         '/images/commuter-benefits/carousel-2.png',
         '/images/commuter-benefits/carousel-3.png',
@@ -556,6 +578,10 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     images: {
       logo: '/images/shared/edenred-hero.png',
       problem: '/images/fleet-card/problem-overview.png',
+      wireframes: ['/images/fleet-card/wireframe-1.svg'],
+      wireframeCaptions: [
+        { label: 'Cards list with status states', body: 'Early wireframes mapped out all card status variants — Active, Frozen, Pending, Fraud — to confirm the table could communicate health without becoming cluttered.' },
+      ],
       solution: [
         '/images/fleet-card/solution-1.png',
         '/images/fleet-card/solution-2.png',
@@ -654,6 +680,10 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
   groundbase: {
     images: {
       problem: '/images/groundbase/problem-overview.png',
+      wireframes: ['/images/groundbase/wireframe-1.svg'],
+      wireframeCaptions: [
+        { label: 'Build timeline structure', body: 'Wireframes established the dark sidebar, chronological milestone feed, and right-panel budget summary before a single component was coded.' },
+      ],
       solution: [
         '/images/groundbase/solution-1.png',
         '/images/groundbase/solution-2.png',

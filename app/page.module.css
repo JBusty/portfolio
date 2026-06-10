@@ -1,11 +1,47 @@
 .heroInner {
-  padding: 80px 32px !important;
+  padding: 80px 32px 0 !important;
+}
+
+.heroStatStrip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--rule-strong);
+  margin-top: 48px;
+  padding-top: 24px;
+  padding-bottom: 52px;
+}
+
+.heroStatItem {
+  padding: 0 20px;
+}
+
+.heroStatItem:first-child {
+  padding-left: 0;
+}
+
+.heroStatItem:not(:first-child) {
+  border-left: 1px solid var(--rule-strong);
+}
+
+.heroStatNum {
+  font-size: clamp(22px, 2.6vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.heroStatLabel {
+  margin-top: 7px;
+  font-size: 12px;
+  color: var(--sub);
+  line-height: 1.4;
+  max-width: 20ch;
 }
 
 .heroTitle {
   margin: 0;
   font-size: clamp(34px, 6vw, 92px);
-  line-height: 0.92;
+  line-height: 1.18;
   letter-spacing: -0.055em;
   max-width: 90%;
   font-weight: 700;
@@ -23,6 +59,13 @@
   display: flex;
   align-items: baseline;
   gap: 0.04em;
+}
+
+.heroShipWord {
+  display: inline;
+  opacity: 0;
+  margin-left: 0.22em;
+  animation: heroReadIn 720ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .heroShip {
@@ -58,7 +101,7 @@
 .heroGrid {
   margin-top: 8px;
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 460px);
+  grid-template-columns: minmax(0, 1.1fr) minmax(240px, 360px);
   gap: 20px;
   align-items: start;
 }
@@ -81,7 +124,7 @@
   width: 100%;
   justify-self: end;
   align-self: center;
-  max-width: 440px;
+  max-width: 340px;
 }
 
 .polaroidShell {
@@ -150,7 +193,35 @@
 
 @media (max-width: 640px) {
   .heroInner {
-    padding: 88px 20px 144px !important;
+    padding: 88px 20px 0 !important;
+  }
+
+  .heroStatStrip {
+    grid-template-columns: 1fr 1fr;
+    margin-top: 36px;
+    padding-bottom: 56px;
+  }
+
+  .heroStatItem {
+    padding: 0 14px;
+  }
+
+  .heroStatItem:not(:first-child) {
+    border-left: none;
+  }
+
+  .heroStatItem:nth-child(odd) {
+    padding-left: 0;
+  }
+
+  .heroStatItem:nth-child(even) {
+    border-left: 1px solid var(--rule-strong);
+  }
+
+  .heroStatItem:nth-child(n+3) {
+    border-top: 1px solid var(--rule-strong);
+    padding-top: 20px;
+    margin-top: 20px;
   }
 
   .heroTitle {

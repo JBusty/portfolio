@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
+  <!-- Dark background -->
+  <rect width="960" height="540" fill="#121212"/>
+  <!-- Left sidebar -->
+  <rect x="0" y="0" width="148" height="540" fill="#0E0E0E" stroke="#1E1E1E" stroke-width="0.5"/>
+  <!-- Logo area -->
+  <rect x="12" y="14" width="30" height="30" rx="6" fill="#1E1E1E"/>
+  <rect x="16" y="18" width="22" height="22" rx="4" fill="#5A5A5A"/>
+  <rect x="48" y="18" width="80" height="10" rx="2" fill="#888"/>
+  <rect x="48" y="30" width="60" height="7" rx="2" fill="#444"/>
+  <!-- Collapse arrow -->
+  <circle cx="136" cy="26" r="8" fill="#2A2A2A"/>
+  <rect x="133" y="23" width="6" height="6" rx="1" fill="#555"/>
+  <!-- Nav items -->
+  <rect x="10" y="58" width="128" height="32" rx="4" fill="#1E1E1E"/>
+  <rect x="22" y="66" width="14" height="14" rx="3" fill="#444"/>
+  <rect x="42" y="69" width="60" height="7" rx="2" fill="#888"/>
+  <rect x="10" y="96" width="128" height="32" rx="4" fill="#1E1E1E"/>
+  <rect x="22" y="104" width="14" height="14" rx="3" fill="#444"/>
+  <rect x="42" y="107" width="44" height="7" rx="2" fill="#888"/>
+  <!-- Timeline (active) -->
+  <rect x="10" y="134" width="128" height="32" rx="4" fill="#3A3030"/>
+  <rect x="22" y="142" width="14" height="14" rx="3" fill="#B87050" opacity="0.8"/>
+  <rect x="42" y="145" width="58" height="7" rx="2" fill="#D0907070"/>
+  <rect x="42" y="145" width="58" height="7" rx="2" fill="#DDBBAA"/>
+  <rect x="10" y="172" width="128" height="32" rx="4" fill="#1E1E1E"/>
+  <rect x="22" y="180" width="14" height="14" rx="3" fill="#444"/>
+  <rect x="42" y="183" width="56" height="7" rx="2" fill="#888"/>
+  <rect x="10" y="210" width="128" height="32" rx="4" fill="#1E1E1E"/>
+  <rect x="22" y="218" width="14" height="14" rx="3" fill="#444"/>
+  <rect x="42" y="221" width="50" height="7" rx="2" fill="#888"/>
+  <!-- Bottom nav items -->
+  <rect x="10" y="380" width="128" height="32" rx="4" fill="#1E1E1E"/>
+  <rect x="22" y="388" width="14" height="14" rx="3" fill="#444"/>
+  <rect x="42" y="391" width="70" height="7" rx="2" fill="#888"/>
+  <rect x="10" y="418" width="128" height="32" rx="4" fill="#1E1E1E"/>
+  <rect x="22" y="426" width="14" height="14" rx="3" fill="#444"/>
+  <rect x="42" y="429" width="60" height="7" rx="2" fill="#888"/>
+  <rect x="10" y="456" width="128" height="32" rx="4" fill="#1E1E1E"/>
+  <rect x="22" y="464" width="14" height="14" rx="3" fill="#444"/>
+  <rect x="42" y="467" width="80" height="7" rx="2" fill="#888"/>
+  <!-- Disclaimer text -->
+  <rect x="10" y="502" width="128" height="5" rx="2" fill="#2A2A2A"/>
+  <rect x="10" y="511" width="110" height="5" rx="2" fill="#2A2A2A"/>
+  <!-- Top header bar -->
+  <rect x="148" y="0" width="812" height="46" fill="#1A1A1A" stroke="#2A2A2A" stroke-width="0.5"/>
+  <!-- Breadcrumb with project name -->
+  <rect x="162" y="14" width="140" height="18" rx="4" fill="#2E2E2E"/>
+  <rect x="172" y="19" width="120" height="8" rx="2" fill="#888"/>
+  <rect x="312" y="18" width="16" height="10" rx="2" fill="#3E3E3E"/>
+  <!-- Right side header icons -->
+  <circle cx="880" cy="23" r="11" fill="#2E2E2E"/>
+  <rect x="856" y="15" width="18" height="16" rx="3" fill="#2E2E2E"/>
+  <rect x="832" y="15" width="18" height="16" rx="3" fill="#2E2E2E"/>
+  <circle cx="940" cy="23" r="11" fill="#3A3A3A"/>
+  <!-- Tab navigation -->
+  <rect x="148" y="46" width="812" height="44" fill="#161616" stroke="#2A2A2A" stroke-width="0.5"/>
+  <!-- Tab: Timeline (active) -->
+  <rect x="162" y="56" width="106" height="26" rx="4" fill="#B87050" opacity="0.25"/>
+  <rect x="162" y="56" width="106" height="26" rx="4" fill="none" stroke="#B87050" stroke-width="1"/>
+  <rect x="176" y="64" width="16" height="10" rx="2" fill="#B87050"/>
+  <rect x="198" y="66" width="58" height="7" rx="2" fill="#D0A080"/>
+  <!-- Tab: Changelog -->
+  <rect x="278" y="58" width="106" height="22" rx="4" fill="#2A2A2A"/>
+  <rect x="292" y="65" width="16" height="10" rx="2" fill="#666"/>
+  <rect x="314" y="67" width="56" height="7" rx="2" fill="#888"/>
+  <!-- Main content area + right sidebar -->
+  <!-- Timeline list area -->
+  <rect x="148" y="90" width="570" height="450" fill="#161616"/>
+  <!-- Build milestones header + sort -->
+  <rect x="162" y="104" width="140" height="8" rx="2" fill="#555"/>
+  <rect x="520" y="102" width="100" height="18" rx="4" fill="#2A2A2A"/>
+  <rect x="528" y="107" width="84" height="7" rx="2" fill="#666"/>
+  <rect x="630" y="102" width="88" height="18" rx="4" fill="#B87050" opacity="0.9"/>
+  <rect x="638" y="107" width="72" height="7" rx="2" fill="#FFF"/>
+  <!-- Month label June 2026 -->
+  <rect x="162" y="130" width="80" height="18" rx="3" fill="#2A2A2A"/>
+  <rect x="170" y="136" width="64" height="7" rx="2" fill="#666"/>
+  <!-- Timeline item 1 - custom event -->
+  <circle cx="172" cy="172" r="6" fill="#D4B84A" opacity="0.8"/>
+  <rect x="188" y="156" width="390" height="44" rx="6" fill="#1E1E1E" stroke="#2E2E2E" stroke-width="1"/>
+  <rect x="202" y="164" width="180" height="9" rx="2" fill="#D0D0D0"/>
+  <rect x="202" y="178" width="140" height="7" rx="2" fill="#666"/>
+  <rect x="202" y="190" width="80" height="14" rx="7" fill="#3A3A3A"/>
+  <rect x="210" y="194" width="64" height="6" rx="2" fill="#888"/>
+  <rect x="508" y="160" width="64" height="7" rx="2" fill="#555"/>
+  <!-- Timeline item 2 - approved draw -->
+  <circle cx="172" cy="228" r="6" fill="#4A8A4A" opacity="0.8"/>
+  <rect x="188" y="214" width="390" height="56" rx="6" fill="#1E1E1E" stroke="#2E2E2E" stroke-width="1"/>
+  <rect x="202" y="222" width="220" height="9" rx="2" fill="#D0D0D0"/>
+  <rect x="202" y="236" width="160" height="7" rx="2" fill="#666"/>
+  <rect x="202" y="250" width="100" height="14" rx="7" fill="#2E4A2E"/>
+  <rect x="210" y="254" width="84" height="6" rx="2" fill="#4A9A4A"/>
+  <rect x="312" y="250" width="80" height="14" rx="7" fill="#2A3A2A"/>
+  <rect x="320" y="254" width="64" height="6" rx="2" fill="#70B070"/>
+  <rect x="402" y="250" width="80" height="14" rx="7" fill="#2A3A2A"/>
+  <rect x="410" y="254" width="64" height="6" rx="2" fill="#70B070"/>
+  <rect x="508" y="218" width="64" height="7" rx="2" fill="#555"/>
+  <!-- Month label May 2026 -->
+  <rect x="162" y="288" width="80" height="18" rx="3" fill="#2A2A2A"/>
+  <rect x="170" y="294" width="64" height="7" rx="2" fill="#666"/>
+  <!-- Timeline item 3 -->
+  <circle cx="172" cy="326" r="6" fill="#D4B84A" opacity="0.8"/>
+  <rect x="188" y="312" width="390" height="44" rx="6" fill="#1E1E1E" stroke="#2E2E2E" stroke-width="1"/>
+  <rect x="202" y="320" width="200" height="9" rx="2" fill="#D0D0D0"/>
+  <rect x="202" y="334" width="150" height="7" rx="2" fill="#666"/>
+  <rect x="202" y="346" width="80" height="14" rx="7" fill="#3A3A3A"/>
+  <rect x="210" y="350" width="64" height="6" rx="2" fill="#888"/>
+  <rect x="508" y="316" width="64" height="7" rx="2" fill="#555"/>
+  <!-- Timeline item 4 -->
+  <circle cx="172" cy="380" r="6" fill="#D04040" opacity="0.6"/>
+  <rect x="188" y="366" width="390" height="44" rx="6" fill="#1E1E1E" stroke="#2E2E2E" stroke-width="1"/>
+  <rect x="202" y="374" width="230" height="9" rx="2" fill="#D0D0D0"/>
+  <rect x="202" y="388" width="180" height="7" rx="2" fill="#666"/>
+  <rect x="508" y="370" width="64" height="7" rx="2" fill="#555"/>
+  <!-- Right sidebar -->
+  <rect x="718" y="90" width="242" height="450" fill="#141414" stroke="#2A2A2A" stroke-width="0.5"/>
+  <!-- Section: Uninstalled Work -->
+  <rect x="730" y="104" width="218" height="8" rx="2" fill="#555"/>
+  <rect x="730" y="118" width="218" height="7" rx="2" fill="#3A3A3A"/>
+  <!-- Progress bar -->
+  <rect x="730" y="132" width="218" height="8" rx="4" fill="#2A2A2A"/>
+  <rect x="730" y="132" width="140" height="8" rx="4" fill="#B87050" opacity="0.7"/>
+  <!-- Section: Allowances -->
+  <rect x="730" y="154" width="80" height="7" rx="2" fill="#555"/>
+  <!-- Allowance items -->
+  <rect x="730" y="168" width="218" height="44" rx="4" fill="#1E1E1E" stroke="#2A2A2A" stroke-width="1"/>
+  <rect x="742" y="178" width="100" height="8" rx="2" fill="#D0D0D0"/>
+  <rect x="742" y="192" width="80" height="6" rx="2" fill="#666"/>
+  <rect x="890" y="174" width="50" height="22" rx="11" fill="#2A3A2A"/>
+  <rect x="898" y="180" width="34" height="8" rx="2" fill="#4A9A4A"/>
+  <rect x="730" y="218" width="218" height="44" rx="4" fill="#1E1E1E" stroke="#2A2A2A" stroke-width="1"/>
+  <rect x="742" y="228" width="80" height="8" rx="2" fill="#D0D0D0"/>
+  <rect x="742" y="242" width="70" height="6" rx="2" fill="#666"/>
+  <rect x="890" y="224" width="50" height="22" rx="11" fill="#2A3A2A"/>
+  <rect x="898" y="230" width="34" height="8" rx="2" fill="#4A9A4A"/>
+  <!-- Section: Change Orders -->
+  <rect x="730" y="276" width="100" height="7" rx="2" fill="#555"/>
+  <rect x="730" y="290" width="218" height="44" rx="4" fill="#1E1E1E" stroke="#2A2A2A" stroke-width="1"/>
+  <rect x="742" y="300" width="80" height="8" rx="2" fill="#D0D0D0"/>
+  <rect x="742" y="314" width="94" height="6" rx="2" fill="#666"/>
+  <rect x="890" y="296" width="50" height="22" rx="11" fill="#2A3A2A"/>
+  <rect x="898" y="302" width="34" height="8" rx="2" fill="#4A9A4A"/>
+  <rect x="730" y="340" width="218" height="44" rx="4" fill="#1E1E1E" stroke="#2A2A2A" stroke-width="1"/>
+  <rect x="742" y="350" width="60" height="8" rx="2" fill="#D0D0D0"/>
+  <rect x="742" y="364" width="100" height="6" rx="2" fill="#666"/>
+  <rect x="890" y="346" width="50" height="22" rx="11" fill="#2A3A2A"/>
+  <rect x="898" y="352" width="34" height="8" rx="2" fill="#4A9A4A"/>
+  <!-- Label -->
+  <rect x="862" y="512" width="90" height="20" rx="4" fill="#3A3A3A" opacity="0.9"/>
+  <text x="872" y="525" font-family="Arial, sans-serif" font-size="9" fill="#AAA" letter-spacing="0.6">Lo-fi Wireframe</text>
+
+  <!-- Region labels -->
+  <text x="152" y="100" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#666" letter-spacing="1.0">BUILD EVENT LOG</text>
+  <text x="722" y="100" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#666" letter-spacing="1.0">PROJECT CONTEXT</text>
+
+  <!-- Tab labels -->
+  <text x="178" y="67" font-family="Arial, sans-serif" font-size="11" fill="#D0A080" font-weight="600">Timeline</text>
+  <text x="294" y="67" font-family="Arial, sans-serif" font-size="11" fill="#888">Changelog</text>
+
+  <!-- Sidebar section labels -->
+  <text x="730" y="152" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#888" letter-spacing="0.8">UNINSTALLED WORK</text>
+  <text x="730" y="272" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#888" letter-spacing="0.8">CHANGE ORDERS</text>
+
+  <!-- Timeline event annotation -->
+  <rect x="590" y="152" width="120" height="80" rx="6" fill="#1E1E1E" stroke="#B87050" stroke-width="1"/>
+  <text x="600" y="168" font-family="Arial, sans-serif" font-size="11" fill="#D0D0D0">Event types</text>
+  <text x="600" y="183" font-family="Arial, sans-serif" font-size="11" fill="#D0D0D0">by dot color:</text>
+  <circle cx="602" cy="198" r="5" fill="#D4B84A" opacity="0.8"/>
+  <text x="612" y="202" font-family="Arial, sans-serif" font-size="10" fill="#AAA">Milestone</text>
+  <circle cx="602" cy="216" r="5" fill="#4A8A4A" opacity="0.8"/>
+  <text x="612" y="220" font-family="Arial, sans-serif" font-size="10" fill="#AAA">Draw approved</text>
+  <line x1="590" y1="172" x2="582" y2="172" stroke="#B87050" stroke-width="1" stroke-dasharray="3,2"/>
+  <circle cx="582" cy="172" r="3" fill="#B87050"/>
+
+  <!-- Right sidebar — allowance labels -->
+  <text x="742" y="178" font-family="Arial, sans-serif" font-size="11" fill="#D0D0D0">Labor allowance</text>
+  <text x="742" y="228" font-family="Arial, sans-serif" font-size="11" fill="#D0D0D0">Material allowance</text>
+  <text x="742" y="302" font-family="Arial, sans-serif" font-size="11" fill="#D0D0D0">Change order #1</text>
+  <text x="742" y="352" font-family="Arial, sans-serif" font-size="11" fill="#D0D0D0">Change order #2</text>
+</svg>

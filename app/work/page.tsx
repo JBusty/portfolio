@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
 import ProjectRow from '@/components/ProjectRow';
 import ScrollReveal from '@/components/ScrollReveal';
 import { PROJECTS } from '@/lib/data';
@@ -15,7 +14,6 @@ export default function WorkPage() {
   }, []);
 
   const [activeTag, setActiveTag] = useState('All');
-  const [view, setView] = useState<'rows' | 'grid'>('rows');
   const [topbarVisible, setTopbarVisible] = useState(true);
   const lastY = useRef(0);
 
@@ -109,56 +107,18 @@ export default function WorkPage() {
                   {tag}
                 </button>
               ))}
-              <span className="grow" />
-              <div style={{ display: 'flex', border: '1px solid rgba(236,231,220,0.18)', borderRadius: 999, overflow: 'hidden' }}>
-                {(['rows', 'grid'] as const).map((nextView) => (
-                  <button
-                    key={nextView}
-                    onClick={() => setView(nextView)}
-                    className="mono upper"
-                    style={{
-                      padding: '6px 14px',
-                      fontSize: 11,
-                      letterSpacing: '0.08em',
-                      background: view === nextView ? 'rgba(236,231,220,0.12)' : 'transparent',
-                      color: view === nextView ? 'var(--bone)' : 'rgba(236,231,220,0.45)',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'background 160ms, color 160ms',
-                    }}
-                  >
-                    {nextView}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
         </div>
 
         <div className="container sp-bot-sm" style={{ padding: '24px 32px 160px' }}>
-          {view === 'rows' ? (
-            <div style={{ borderBottom: '1px solid var(--rule)' }}>
-              {list.map((project, index) => (
-                <ScrollReveal key={project.slug} delayMs={Math.min(index * 36, 180)}>
-                  <ProjectRow p={project} first={index === 0} />
-                </ScrollReveal>
-              ))}
-            </div>
-          ) : (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(min(360px, 100%), 1fr))',
-                gap: 24,
-              }}
-            >
-              {list.map((project, index) => (
-                <ScrollReveal key={project.slug} delayMs={Math.min(index * 40, 200)}>
-                  <WorkGridCard p={project} />
-                </ScrollReveal>
-              ))}
-            </div>
-          )}
+          <div style={{ borderBottom: '1px solid var(--rule)' }}>
+            {list.map((project, index) => (
+              <ScrollReveal key={project.slug} delayMs={Math.min(index * 36, 180)}>
+                <ProjectRow p={project} first={index === 0} />
+              </ScrollReveal>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -382,91 +342,3 @@ function WorkHeroArt() {
   );
 }
 
-function WorkGridCard({ p }: { p: typeof PROJECTS[number] }) {
-  const [hover, setHover] = useState(false);
-
-  return (
-    <Link
-      href={`/work/${p.slug}`}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{
-        border: '1px solid var(--ink)',
-        background: hover ? 'var(--ink)' : 'var(--paper)',
-        color: hover ? 'var(--bone)' : 'var(--ink)',
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: 360,
-        borderRadius: 'var(--radius-lg)',
-        overflow: 'hidden',
-        transition: 'background 160ms, color 160ms',
-      }}
-    >
-      <div
-        className="mono upper"
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          padding: '14px 18px',
-          borderBottom: '1px solid',
-          borderColor: hover ? 'rgba(236,231,220,0.2)' : 'var(--rule)',
-          fontSize: 11,
-          color: hover ? 'rgba(236,231,220,0.65)' : 'var(--sub)',
-          letterSpacing: '0.08em',
-        }}
-      >
-        <span>
-          {p.num} - {p.company}
-        </span>
-        <span>{p.year}</span>
-      </div>
-      <div style={{ padding: '22px 22px 26px', display: 'flex', flexDirection: 'column', gap: 14, flex: 1 }}>
-        <div
-          className="tight"
-          style={{
-            fontSize: 'clamp(22px, 2vw, 28px)',
-            fontWeight: 600,
-            letterSpacing: '-0.03em',
-            lineHeight: 1.05,
-          }}
-        >
-          {p.title}
-        </div>
-        <div style={{ fontSize: 14, lineHeight: 1.5, color: hover ? 'rgba(236,231,220,0.78)' : 'var(--ink-2)' }}>
-          {p.blurb}
-        </div>
-        <div
-          style={{
-            marginTop: 'auto',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'end',
-            gap: 12,
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {p.tags.map((tag) => (
-              <span
-                key={tag}
-                className="chip"
-                style={{
-                  borderColor: hover ? 'rgba(236,231,220,0.45)' : 'var(--rule-strong)',
-                  color: hover ? 'var(--bone)' : 'var(--ink-2)',
-                }}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-          <span
-            className="mono upper"
-            style={{ fontSize: 11, letterSpacing: '0.1em', color: hover ? 'var(--accent)' : 'var(--ink)' }}
-          >
-            {hover ? 'Open ->' : 'View ->'}
-          </span>
-        </div>
-      </div>
-    </Link>
-  );
-}

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
+  <rect width="960" height="540" fill="#EFEFEE"/>
+  <!-- Top nav -->
+  <rect width="960" height="46" fill="#E6E6E5" stroke="#CCCCCC" stroke-width="0.5"/>
+  <rect x="12" y="11" width="90" height="24" rx="3" fill="#C2C2C2"/>
+  <rect x="148" y="12" width="230" height="22" rx="11" fill="#FAFAFA" stroke="#C8C8C8" stroke-width="1"/>
+  <rect x="158" y="20" width="80" height="6" rx="2" fill="#C8C8C8"/>
+  <rect x="750" y="15" width="18" height="16" rx="3" fill="#C2C2C2"/>
+  <rect x="776" y="15" width="18" height="16" rx="3" fill="#C2C2C2"/>
+  <rect x="802" y="15" width="18" height="16" rx="3" fill="#C2C2C2"/>
+  <circle cx="836" cy="23" r="11" fill="#C2C2C2"/>
+  <!-- Left sidebar -->
+  <rect x="0" y="46" width="130" height="494" fill="#E2E2E1" stroke="#CCCCCC" stroke-width="0.5"/>
+  <rect x="10" y="58" width="110" height="26" rx="4" fill="#DDDDDD"/>
+  <rect x="22" y="67" width="44" height="7" rx="2" fill="#999"/>
+  <rect x="22" y="96" width="60" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="22" y="118" width="70" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="22" y="140" width="50" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="22" y="162" width="64" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="12" y="186" width="76" height="5" rx="2" fill="#C8C8C8"/>
+  <rect x="22" y="202" width="56" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="22" y="224" width="46" height="7" rx="2" fill="#AAAAAA"/>
+  <!-- Security Data Lake active group -->
+  <rect x="10" y="242" width="110" height="26" rx="4" fill="#D0DCE8"/>
+  <rect x="22" y="251" width="86" height="7" rx="2" fill="#8FA8C0"/>
+  <rect x="22" y="278" width="46" height="7" rx="2" fill="#8FA8C0" opacity="0.9"/>
+  <rect x="22" y="298" width="64" height="7" rx="2" fill="#AAAAAA"/>
+  <!-- Main content -->
+  <!-- Page title + quota ring -->
+  <rect x="148" y="60" width="220" height="20" rx="3" fill="#444"/>
+  <rect x="148" y="89" width="580" height="6" rx="2" fill="#C8C8C8"/>
+  <!-- Daily quota ring -->
+  <circle cx="900" cy="78" r="26" fill="none" stroke="#E2E2E0" stroke-width="6"/>
+  <circle cx="900" cy="78" r="26" fill="none" stroke="#8FA8C0" stroke-width="6" stroke-dasharray="60 104" stroke-dashoffset="26" stroke-linecap="round"/>
+  <rect x="876" y="106" width="50" height="14" rx="3" fill="#444"/>
+  <rect x="882" y="112" width="38" height="6" rx="2" fill="#999"/>
+  <!-- Tab bar -->
+  <rect x="148" y="110" width="800" height="36" fill="#FFF" stroke="#D0D0D0" stroke-width="1"/>
+  <rect x="156" y="119" width="70" height="18" rx="3" fill="#8FA8C0"/>
+  <rect x="164" y="124" width="54" height="7" rx="2" fill="#FFF"/>
+  <rect x="236" y="119" width="80" height="18" rx="3" fill="#F0F0F0"/>
+  <rect x="244" y="124" width="64" height="7" rx="2" fill="#999"/>
+  <rect x="332" y="120" width="24" height="16" rx="3" fill="#DDDDDD"/>
+  <rect x="363" y="122" width="20" height="12" rx="2" fill="#DDDDDD"/>
+  <!-- Left schema panel + SQL editor -->
+  <rect x="148" y="146" width="210" height="360" fill="#F8F8F8" stroke="#D0D0D0" stroke-width="1"/>
+  <!-- Schema tree -->
+  <rect x="160" y="158" width="130" height="10" rx="2" fill="#484848"/>
+  <rect x="164" y="180" width="16" height="16" rx="2" fill="#C8C8C8"/>
+  <rect x="186" y="184" width="90" height="7" rx="2" fill="#888"/>
+  <rect x="164" y="206" width="16" height="16" rx="2" fill="#C8C8C8"/>
+  <rect x="186" y="210" width="82" height="7" rx="2" fill="#888"/>
+  <rect x="164" y="232" width="16" height="16" rx="2" fill="#C8C8C8"/>
+  <rect x="186" y="236" width="96" height="7" rx="2" fill="#888"/>
+  <rect x="164" y="258" width="16" height="16" rx="2" fill="#C8C8C8"/>
+  <rect x="186" y="262" width="88" height="7" rx="2" fill="#888"/>
+  <!-- Arrow collapse -->
+  <circle cx="349" cy="226" r="12" fill="#E2E2E0" stroke="#C8C8C8" stroke-width="1"/>
+  <rect x="345" y="222" width="8" height="8" rx="1" fill="#888"/>
+  <!-- SQL editor area -->
+  <rect x="358" y="146" width="590" height="360" fill="#FFF" stroke="#D0D0D0" stroke-width="1"/>
+  <!-- Datetime range bar -->
+  <rect x="370" y="158" width="220" height="24" rx="4" fill="#F0F0F0" stroke="#D0D0D0" stroke-width="1"/>
+  <rect x="382" y="166" width="14" height="10" rx="2" fill="#C2C2C2"/>
+  <rect x="402" y="167" width="140" height="8" rx="2" fill="#888"/>
+  <rect x="560" y="164" width="24" height="16" rx="3" fill="#DDDDDD"/>
+  <!-- Code area -->
+  <rect x="370" y="192" width="566" height="234" rx="4" fill="#F8F8F8" stroke="#E0E0E0" stroke-width="1"/>
+  <!-- Code lines with varying widths -->
+  <rect x="382" y="204" width="20" height="6" rx="1" fill="#D0D0D0"/>
+  <rect x="406" y="204" width="24" height="6" rx="1" fill="#BFD4B8"/>
+  <rect x="382" y="218" width="300" height="6" rx="1" fill="#D8D8D8"/>
+  <rect x="382" y="232" width="0" height="6" rx="1" fill="#D8D8D8"/>
+  <rect x="382" y="246" width="440" height="6" rx="1" fill="#D8D8D8"/>
+  <rect x="382" y="260" width="380" height="6" rx="1" fill="#D8D8D8"/>
+  <rect x="382" y="274" width="460" height="6" rx="1" fill="#D8D8D8"/>
+  <rect x="382" y="288" width="420" height="6" rx="1" fill="#D8D8D8"/>
+  <rect x="382" y="302" width="340" height="6" rx="1" fill="#D8D8D8"/>
+  <rect x="382" y="316" width="400" height="6" rx="1" fill="#D8D8D8"/>
+  <rect x="382" y="330" width="320" height="6" rx="1" fill="#D8D8D8"/>
+  <rect x="382" y="344" width="24" height="6" rx="1" fill="#D8D8D8"/>
+  <!-- Action bar -->
+  <rect x="370" y="436" width="566" height="56" fill="#FAFAFA" stroke="#E0E0E0" stroke-width="1"/>
+  <rect x="382" y="450" width="70" height="22" rx="4" fill="#8FA8C0"/>
+  <rect x="390" y="457" width="54" height="7" rx="2" fill="#FFF"/>
+  <rect x="462" y="450" width="54" height="22" rx="4" fill="#EEEEEE" stroke="#D0D0D0" stroke-width="1"/>
+  <rect x="470" y="457" width="38" height="7" rx="2" fill="#888"/>
+  <!-- Found rows note -->
+  <rect x="690" y="451" width="240" height="20" rx="3" fill="#F0F0F0"/>
+  <rect x="700" y="457" width="190" height="7" rx="2" fill="#AAAAAA"/>
+  <!-- Label -->
+  <rect x="862" y="512" width="90" height="20" rx="4" fill="#404040" opacity="0.8"/>
+  <text x="872" y="525" font-family="Arial, sans-serif" font-size="9" fill="#FFF" letter-spacing="0.6">Lo-fi Wireframe</text>
+
+  <!-- Region labels -->
+  <text x="152" y="156" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#8888BB" letter-spacing="1.0">SCHEMA BROWSER</text>
+  <text x="362" y="156" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#8888BB" letter-spacing="1.0">SQL EDITOR</text>
+
+  <!-- Schema panel annotation callout -->
+  <rect x="148" y="400" width="200" height="66" rx="6" fill="#FFFCEE" stroke="#DCC060" stroke-width="1.5"/>
+  <text x="162" y="416" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">Click table name to</text>
+  <text x="162" y="431" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">insert into query</text>
+  <text x="162" y="447" font-family="Arial, sans-serif" font-size="11" fill="#A08030">Collapsible, resizable panel</text>
+  <text x="162" y="460" font-family="Arial, sans-serif" font-size="11" fill="#A08030">— drag edge to resize</text>
+  <line x1="220" y1="400" x2="240" y2="330" stroke="#DCC060" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <circle cx="240" cy="330" r="4" fill="#DCC060"/>
+
+  <!-- Query quota annotation -->
+  <rect x="780" y="58" width="210" height="50" rx="6" fill="#FFFCEE" stroke="#DCC060" stroke-width="1.5"/>
+  <text x="794" y="74" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">Daily quota ring — GB scanned</text>
+  <text x="794" y="89" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">vs. org limit</text>
+  <text x="794" y="103" font-family="Arial, sans-serif" font-size="11" fill="#A08030">Refills at midnight UTC</text>
+  <line x1="870" y1="108" x2="900" y2="104" stroke="#DCC060" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <circle cx="900" cy="104" r="4" fill="#DCC060"/>
+
+  <!-- Tab labels -->
+  <text x="158" y="122" font-family="Arial, sans-serif" font-size="10" fill="#FFF">Ad-hoc query</text>
+  <text x="238" y="122" font-family="Arial, sans-serif" font-size="10" fill="#999">Saved queries</text>
+</svg>

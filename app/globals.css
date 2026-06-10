@@ -250,6 +250,12 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
   to   { transform: rotate(360deg); }
 }
 
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.cursor-blink { animation: cursorBlink 1s step-end infinite; }
+
 @keyframes notedStamp {
   from { opacity: 0; transform: scale(0.6) rotate(-22deg); }
   to   { opacity: 1; transform: scale(1) rotate(-14deg); }
@@ -329,8 +335,33 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
 }
 
 /* ---- nav links ---- */
-.nav-link { border: 1px solid transparent; }
-.nav-link:not(.nav-link-active):hover { border-color: var(--rule-strong); }
+.nav-link {
+  border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 240ms ease, border-color 160ms ease;
+}
+
+.nav-link:not(.nav-link-active)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: -1;
+}
+
+.nav-link:not(.nav-link-active):hover::before {
+  transform: scaleX(1);
+}
+
+.nav-link:not(.nav-link-active):hover {
+  color: var(--bone) !important;
+  border-color: var(--ink) !important;
+}
 
 /* ---- faq answer body ---- */
 .faq-answer {

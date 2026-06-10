@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
+  <rect width="960" height="540" fill="#EFEFEE"/>
+  <!-- Top nav -->
+  <rect width="960" height="46" fill="#E6E6E5" stroke="#CCCCCC" stroke-width="0.5"/>
+  <rect x="12" y="11" width="90" height="24" rx="3" fill="#C2C2C2"/>
+  <rect x="148" y="12" width="230" height="22" rx="11" fill="#FAFAFA" stroke="#C8C8C8" stroke-width="1"/>
+  <rect x="158" y="20" width="80" height="6" rx="2" fill="#C8C8C8"/>
+  <rect x="750" y="15" width="18" height="16" rx="3" fill="#C2C2C2"/>
+  <rect x="776" y="15" width="18" height="16" rx="3" fill="#C2C2C2"/>
+  <rect x="802" y="15" width="18" height="16" rx="3" fill="#C2C2C2"/>
+  <circle cx="836" cy="23" r="11" fill="#C2C2C2"/>
+  <!-- Left sidebar -->
+  <rect x="0" y="46" width="130" height="494" fill="#E2E2E1" stroke="#CCCCCC" stroke-width="0.5"/>
+  <rect x="10" y="58" width="110" height="26" rx="4" fill="#8FA8C0"/>
+  <rect x="22" y="67" width="44" height="7" rx="2" fill="#FFF" opacity="0.9"/>
+  <rect x="22" y="96" width="60" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="22" y="118" width="70" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="22" y="140" width="50" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="22" y="162" width="64" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="12" y="186" width="76" height="5" rx="2" fill="#C8C8C8"/>
+  <rect x="22" y="202" width="56" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="22" y="224" width="46" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="10" y="242" width="110" height="26" rx="4" fill="#D0DCE8"/>
+  <rect x="22" y="251" width="54" height="7" rx="2" fill="#8FA8C0"/>
+  <rect x="22" y="278" width="76" height="7" rx="2" fill="#AAAAAA"/>
+  <!-- Main: breadcrumb -->
+  <rect x="148" y="57" width="10" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="164" y="57" width="44" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="212" y="57" width="4" height="7" rx="1" fill="#CCCCCC"/>
+  <rect x="220" y="57" width="130" height="7" rx="2" fill="#AAAAAA"/>
+  <!-- Page title block -->
+  <rect x="148" y="78" width="260" height="20" rx="3" fill="#444"/>
+  <rect x="148" y="108" width="370" height="6" rx="2" fill="#C8C8C8"/>
+  <rect x="148" y="119" width="310" height="6" rx="2" fill="#C8C8C8"/>
+  <!-- Behavioral Insights card -->
+  <rect x="148" y="140" width="800" height="112" rx="6" fill="#FFF" stroke="#D0D0D0" stroke-width="1"/>
+  <rect x="164" y="154" width="148" height="10" rx="2" fill="#484848"/>
+  <circle cx="320" cy="159" r="7" fill="#D4B84A" opacity="0.8"/>
+  <!-- Left positive -->
+  <circle cx="172" cy="187" r="8" fill="#7BA87B" opacity="0.85"/>
+  <rect x="188" y="183" width="175" height="7" rx="2" fill="#BBBBBB"/>
+  <circle cx="172" cy="207" r="8" fill="#7BA87B" opacity="0.85"/>
+  <rect x="188" y="203" width="158" height="7" rx="2" fill="#BBBBBB"/>
+  <circle cx="172" cy="227" r="8" fill="#7BA87B" opacity="0.85"/>
+  <rect x="188" y="223" width="136" height="7" rx="2" fill="#BBBBBB"/>
+  <!-- Right anomalous -->
+  <circle cx="486" cy="187" r="8" fill="#BF8A60" opacity="0.85"/>
+  <rect x="502" y="183" width="212" height="7" rx="2" fill="#BBBBBB"/>
+  <circle cx="486" cy="207" r="8" fill="#BF8A60" opacity="0.85"/>
+  <rect x="502" y="203" width="186" height="7" rx="2" fill="#BBBBBB"/>
+  <circle cx="486" cy="227" r="8" fill="#BF8A60" opacity="0.85"/>
+  <rect x="502" y="223" width="196" height="7" rx="2" fill="#BBBBBB"/>
+  <!-- Annotation callout -->
+  <rect x="650" y="145" width="240" height="54" rx="6" fill="#FFFCEE" stroke="#DCC060" stroke-width="1.5"/>
+  <text x="663" y="160" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">Amber = anomalous signal,</text>
+  <text x="663" y="175" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">not a confirmed threat</text>
+  <text x="663" y="190" font-family="Arial, sans-serif" font-size="11" fill="#A08030">Distinct from green (stable) scoring</text>
+  <line x1="650" y1="172" x2="502" y2="207" stroke="#DCC060" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <circle cx="502" cy="207" r="4" fill="#DCC060"/>
+  <!-- Tabs -->
+  <rect x="148" y="262" width="800" height="34" fill="#FFF" stroke="#D0D0D0" stroke-width="1"/>
+  <rect x="156" y="270" width="78" height="18" rx="3" fill="#F0F0F0"/>
+  <rect x="164" y="275" width="62" height="7" rx="2" fill="#999"/>
+  <rect x="244" y="270" width="78" height="18" rx="3" fill="#F0F0F0"/>
+  <rect x="252" y="275" width="62" height="7" rx="2" fill="#999"/>
+  <rect x="332" y="270" width="98" height="18" rx="3" fill="#8FA8C0"/>
+  <rect x="342" y="275" width="78" height="7" rx="2" fill="#FFF"/>
+  <rect x="738" y="271" width="74" height="16" rx="3" fill="#8FA8C0"/>
+  <rect x="820" y="271" width="74" height="16" rx="3" fill="#EEEEEE"/>
+  <rect x="746" y="276" width="58" height="6" rx="2" fill="#FFF"/>
+  <!-- Table header -->
+  <rect x="148" y="296" width="800" height="26" fill="#F2F2F2" stroke="#D0D0D0" stroke-width="1"/>
+  <rect x="160" y="308" width="78" height="6" rx="2" fill="#888"/>
+  <rect x="448" y="308" width="108" height="6" rx="2" fill="#888"/>
+  <rect x="720" y="308" width="88" height="6" rx="2" fill="#888"/>
+  <!-- Row 1 -->
+  <rect x="148" y="322" width="800" height="40" fill="#FFF" stroke="#EEEEEE" stroke-width="1"/>
+  <rect x="160" y="337" width="178" height="7" rx="2" fill="#888"/>
+  <rect x="436" y="334" width="165" height="14" rx="3" fill="#D0E8D0"/>
+  <rect x="436" y="334" width="165" height="14" rx="3" fill="none" stroke="#B0D0B0" stroke-width="1"/>
+  <rect x="596" y="335" width="34" height="12" rx="2" fill="#3E723E" opacity="0.7"/>
+  <rect x="700" y="334" width="100" height="14" rx="3" fill="#E8D4D0"/>
+  <rect x="700" y="334" width="100" height="14" rx="3" fill="none" stroke="#D0B8B0" stroke-width="1"/>
+  <rect x="794" y="335" width="28" height="12" rx="2" fill="#723E3E" opacity="0.6"/>
+  <!-- Row 2 -->
+  <rect x="148" y="362" width="800" height="38" fill="#F9F9F9" stroke="#EEEEEE" stroke-width="1"/>
+  <rect x="160" y="377" width="126" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="436" y="378" width="26" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="700" y="378" width="26" height="7" rx="2" fill="#AAAAAA"/>
+  <!-- Row 3 -->
+  <rect x="148" y="400" width="800" height="38" fill="#FFF" stroke="#EEEEEE" stroke-width="1"/>
+  <rect x="160" y="415" width="148" height="7" rx="2" fill="#AAAAAA"/>
+  <rect x="436" y="413" width="108" height="12" rx="3" fill="#E8DDD0" opacity="0.7"/>
+  <rect x="700" y="413" width="88" height="12" rx="3" fill="#E8D4D0" opacity="0.6"/>
+  <!-- Show more -->
+  <rect x="160" y="454" width="68" height="8" rx="2" fill="#8FA8C0"/>
+  <!-- Disclaimer lines -->
+  <rect x="148" y="488" width="590" height="5" rx="2" fill="#DDDDD8"/>
+  <rect x="148" y="498" width="490" height="5" rx="2" fill="#DDDDD8"/>
+  <rect x="148" y="508" width="540" height="5" rx="2" fill="#DDDDD8"/>
+  <!-- Label -->
+  <rect x="862" y="512" width="90" height="20" rx="4" fill="#404040" opacity="0.8"/>
+  <text x="872" y="525" font-family="Arial, sans-serif" font-size="9" fill="#FFF" letter-spacing="0.6">Lo-fi Wireframe</text>
+
+  <!-- Region annotations -->
+  <text x="8" y="55" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#8888BB" letter-spacing="1.0">ENTITY NAV</text>
+
+  <text x="164" y="170" font-family="Arial, sans-serif" font-size="11" font-weight="600" fill="#5A8A5A">← consistent signals</text>
+  <text x="484" y="170" font-family="Arial, sans-serif" font-size="11" font-weight="600" fill="#A07040">anomalous signals →</text>
+
+  <text x="152" y="261" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#8888BB" letter-spacing="1.0">TIMELINE VIEWS</text>
+
+  <text x="152" y="294" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#8888BB" letter-spacing="1.0">BEHAVIOR TABLE  ·  per identity per period</text>
+
+  <!-- New annotation: active sidebar item -->
+  <rect x="132" y="58" width="1.5" height="26" fill="#8FA8C0"/>
+  <line x1="133" y1="71" x2="148" y2="71" stroke="#8FA8C0" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="150" y="75" font-family="Arial, sans-serif" font-size="11" fill="#6888A8">Active entity</text>
+</svg>

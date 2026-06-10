@@ -231,8 +231,8 @@ export const COMPANIES: Company[] = [
 
 export const STATS: Stat[] = [
   { n: '12+', label: 'Years building things people use', unit: 'yrs' },
-  { n: '1M+', label: 'Humans touched by work I shipped', unit: 'ppl' },
-  { n: '3', label: 'Disciplines crossed — code, design, lead', unit: 'hats' },
+  { n: '1M+', label: 'Humans impacted by work I shipped', unit: 'ppl' },
+  { n: '3', label: 'Disciplines crossed — code, design, leadership', unit: 'hats' },
   { n: '1,000+', label: 'Rounds of feedback survived', unit: 'loops' },
 ];
 
