@@ -171,13 +171,40 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
         </ScrollReveal>
       </section>
 
-      <CSection eyebrow={<>The TL;DR<span className="accent">.</span></>} title="Summary">
-        <p style={cssCopy()}>{study.summary}</p>
-      </CSection>
+      <section>
+        <div style={{ borderTop: '1px solid var(--ink)' }}>
+          <ScrollReveal as="div" className="container r-problem-full" style={{ padding: '80px 32px 160px', gap: '96px' }}>
+            <div>
+              <div className="mono upper" style={{
+                fontSize: 12,
+                letterSpacing: '0.22em',
+                color: 'var(--accent)',
+                marginBottom: 24,
+              }}>
+                The TL;DR<span className="accent">.</span>
+              </div>
+              <h2 className="tight" style={{
+                margin: 0,
+                fontSize: 'clamp(36px, 5vw, 80px)',
+                lineHeight: 0.96,
+                letterSpacing: '-0.04em',
+                fontWeight: 700,
+                maxWidth: '16ch',
+              }}>
+                Summary
+              </h2>
+              <p style={{ ...cssCopy(), marginTop: 40 }}>
+                {study.summary}
+              </p>
+            </div>
+            {study.images?.problem && <ProblemImage src={study.images.problem} />}
+          </ScrollReveal>
+        </div>
+      </section>
 
       <section>
         <div style={{ borderTop: '1px solid var(--ink)' }}>
-          <ScrollReveal as="div" className={`container r-problem-full`} style={{ padding: '80px 32px 160px', gap: '96px' }}>
+          <ScrollReveal as="div" className="container" style={{ padding: '80px 32px 160px' }}>
             <div>
               <div className="mono upper" style={{
                 fontSize: 12,
@@ -205,9 +232,6 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
                 ))}
               </div>
             </div>
-            {study.images?.problem && (
-              <ProblemImage src={study.images.problem} />
-            )}
           </ScrollReveal>
         </div>
       </section>
@@ -260,8 +284,8 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
           overflow: 'hidden',
           border: '1px solid var(--ink)',
         }}>
-          <ReflectionColumn title="What went right" items={study.reflection.wins} isWins />
           <ReflectionColumn title="Tough spots" items={study.reflection.challenges} isWins={false} />
+          <ReflectionColumn title="What went right" items={study.reflection.wins} isWins />
         </div>
       </CSection>
 
@@ -811,25 +835,23 @@ function ProcessTimeline({ steps }: { steps: EnhancedStep[] }) {
                     display: 'grid',
                     gridTemplateColumns: step.n === '↗'
                       ? 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))'
-                      : 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))',
-                    gap: step.n === '↗' ? 16 : 28,
-                    maxWidth: step.n === '↗' ? 480 : undefined,
+                      : step.n === '✓'
+                        ? 'repeat(auto-fit, minmax(min(250px, 100%), 1fr))'
+                        : 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))',
+                    gap: step.n === '↗' ? 16 : step.n === '✓' ? 36 : 28,
+                    maxWidth: step.n === '↗'
+                      ? 480
+                      : step.n === '✓'
+                        ? 822
+                        : undefined,
                   }}>
                     {step.images.map((src, idx) => (
-                      <div key={src}>
-                        <button
-                          onClick={() => setModalSrc(src)}
-                          style={{ display: 'block', width: '100%', aspectRatio: '16 / 9', overflow: 'hidden', border: '1px solid var(--rule)', borderRadius: 'var(--radius)', cursor: 'zoom-in', padding: 0, background: 'var(--paper)' }}
-                        >
-                          <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                        </button>
-                        {step.captions?.[idx] && (
-                          <div style={{ padding: '10px 2px 4px' }}>
-                            <div className="mono upper" style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.1em', marginBottom: 4 }}>{step.captions[idx].label}</div>
-                            <div style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--ink-2)' }}>{step.captions[idx].body}</div>
-                          </div>
-                        )}
-                      </div>
+                      <TimelineGalleryItem
+                        key={src}
+                        src={src}
+                        caption={step.captions?.[idx]}
+                        onClick={() => setModalSrc(src)}
+                      />
                     ))}
                   </div>
                 )}
@@ -840,6 +862,117 @@ function ProcessTimeline({ steps }: { steps: EnhancedStep[] }) {
       </div>
       {modalSrc && <ModalViewer src={modalSrc} onClose={() => setModalSrc(null)} />}
     </>
+  );
+}
+
+function TimelineGalleryItem({
+  src,
+  caption,
+  onClick,
+}: {
+  src: string;
+  caption?: { label: string; body: string };
+  onClick: () => void;
+}) {
+  const [hover, setHover] = useState(false);
+
+  return (
+    <div>
+      <button
+        onClick={onClick}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          display: 'block',
+          position: 'relative',
+          width: '100%',
+          aspectRatio: '16 / 9',
+          overflow: 'hidden',
+          border: `1px solid ${hover ? 'rgba(225,59,20,0.32)' : 'var(--rule)'}`,
+          borderRadius: 'var(--radius)',
+          cursor: 'pointer',
+          padding: 0,
+          background: 'var(--paper)',
+          transform: hover ? 'translateY(-4px)' : 'translateY(0)',
+          boxShadow: hover
+            ? '0 24px 48px -24px rgba(17,17,16,0.28)'
+            : '0 10px 24px -20px rgba(17,17,16,0.16)',
+          transition: 'transform 240ms cubic-bezier(.2,.7,.2,1), box-shadow 240ms cubic-bezier(.2,.7,.2,1), border-color 180ms ease',
+        }}
+      >
+        <img
+          src={src}
+          alt=""
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+            transform: hover ? 'scale(1.035)' : 'scale(1)',
+            filter: hover ? 'brightness(1.02) saturate(1.04)' : 'brightness(1) saturate(1)',
+            transition: 'transform 280ms cubic-bezier(.2,.7,.2,1), filter 200ms ease',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'space-between',
+            padding: '12px 14px',
+            background: hover
+              ? 'linear-gradient(180deg, rgba(10,8,6,0) 28%, rgba(10,8,6,0.42) 100%)'
+              : 'linear-gradient(180deg, rgba(10,8,6,0) 42%, rgba(10,8,6,0.12) 100%)',
+            transition: 'background 200ms ease',
+            pointerEvents: 'none',
+          }}
+        >
+          <span
+            className="mono upper"
+            style={{
+              fontSize: 10,
+              letterSpacing: '0.12em',
+              color: 'rgba(236,231,220,0.92)',
+              opacity: hover ? 1 : 0.72,
+              transform: hover ? 'translateY(0)' : 'translateY(2px)',
+              transition: 'opacity 180ms ease, transform 180ms ease',
+            }}
+          >
+            Open image
+          </span>
+          <span
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: '50%',
+              border: '1px solid rgba(236,231,220,0.26)',
+              background: hover ? 'rgba(236,231,220,0.18)' : 'rgba(236,231,220,0.08)',
+              color: 'var(--bone)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 14,
+              opacity: hover ? 1 : 0.82,
+              transform: hover ? 'translateX(0)' : 'translateX(-2px)',
+              transition: 'background 180ms ease, opacity 180ms ease, transform 180ms ease',
+            }}
+          >
+            +
+          </span>
+        </div>
+      </button>
+      {caption && (
+        <div style={{ padding: '10px 2px 4px' }}>
+          <div className="mono upper" style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.1em', marginBottom: 4 }}>
+            {caption.label}
+          </div>
+          <div style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--ink-2)' }}>
+            {caption.body}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -1057,3 +1190,5 @@ function ModalViewer({ src, onClose }: { src: string; onClose: () => void }) {
     document.body,
   );
 }
+
+

@@ -1,12 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { CSSProperties, useState } from 'react';
 import Link from 'next/link';
 import { Project } from '@/lib/data';
 
 interface ProjectRowProps {
   p: Project;
   first?: boolean;
+}
+
+const TAG_CHIP_STYLES: CSSProperties[] = [
+  { background: 'rgba(110, 129, 97, 0.12)', borderColor: 'rgba(110, 129, 97, 0.22)', color: '#3E4A38' },
+  { background: 'rgba(179, 116, 70, 0.12)', borderColor: 'rgba(179, 116, 70, 0.22)', color: '#6B4630' },
+  { background: 'rgba(76, 112, 138, 0.12)', borderColor: 'rgba(76, 112, 138, 0.22)', color: '#36566A' },
+  { background: 'rgba(156, 101, 125, 0.12)', borderColor: 'rgba(156, 101, 125, 0.22)', color: '#674354' },
+  { background: 'rgba(162, 136, 72, 0.12)', borderColor: 'rgba(162, 136, 72, 0.22)', color: '#66552C' },
+  { background: 'rgba(94, 120, 116, 0.12)', borderColor: 'rgba(94, 120, 116, 0.22)', color: '#3D514E' },
+];
+
+function getTagChipStyle(tag: string): CSSProperties {
+  const styleIndex = Array.from(tag).reduce((sum, char) => sum + char.charCodeAt(0), 0) % TAG_CHIP_STYLES.length;
+  return TAG_CHIP_STYLES[styleIndex];
 }
 
 export default function ProjectRow({ p, first }: ProjectRowProps) {
@@ -71,9 +85,19 @@ export default function ProjectRow({ p, first }: ProjectRowProps) {
       </div>
 
       <div className="proj-row-tags" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-        <span className="chip">{p.year}</span>
+        <span
+          className="chip"
+          style={{
+            background: 'rgba(17, 17, 16, 0.04)',
+            borderColor: 'rgba(17, 17, 16, 0.12)',
+          }}
+        >
+          {p.year}
+        </span>
         {p.tags.slice(0, 2).map(t => (
-          <span key={t} className="chip">{t}</span>
+          <span key={t} className="chip" style={getTagChipStyle(t)}>
+            {t}
+          </span>
         ))}
       </div>
 

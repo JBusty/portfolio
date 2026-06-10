@@ -24,7 +24,7 @@ const CONTACT_FAQ = [
   },
   {
     q: 'Can you sign an NDA before a conversation?',
-    a: "Of course. Most of my best work is behind one. Send it over.",
+    a: 'Of course. Most of my best work is behind one. Send it over.',
   },
 ];
 
@@ -37,31 +37,41 @@ const CONNECT = [
 export default function ContactPage() {
   return (
     <main className="page-enter">
-      {/* HERO */}
       <section style={{ borderBottom: '1px solid var(--ink)', background: 'var(--hero-contact)' }}>
         <div className="container r-hero-split sp-ctct-hero" style={{ padding: '80px 32px', gap: 56 }}>
           <div>
-            <h1 className="tight" style={{
-            margin: 0,
-            fontSize: 'clamp(52px, 11vw, 98px)',
-            lineHeight: 0.88,
-            letterSpacing: '-0.055em',
-            fontWeight: 700,
-          }}>
-            Let's talk<span className="accent">.</span>
+            <h1
+              className="tight"
+              style={{
+                margin: 0,
+                fontSize: 'clamp(52px, 11vw, 98px)',
+                lineHeight: 0.88,
+                letterSpacing: '-0.055em',
+                fontWeight: 700,
+              }}
+            >
+              Let&apos;s talk<span className="accent">.</span>
             </h1>
             <div style={{ marginTop: 48, maxWidth: '82ch' }}>
-            <p style={{ margin: 0, fontSize: 'clamp(18px, 1.5vw, 22px)', lineHeight: 1.45, color: 'var(--ink-2)', maxWidth: '52ch' }}>
-              I enjoy working on products that are genuinely hard to design well, the kind with complex workflows, technical users, and a lot of moving pieces. If you're building something in that space, I'd be happy to connect.
-            </p>
-            <div style={{ marginTop: 24, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <a href="mailto:jbusseywork@gmail.com" className="btn">
-                jbusseywork@gmail.com <span className="arr">↗</span>
-              </a>
-              <a href="https://drive.google.com/file/d/17OJanguMKHAdKGfoBDpI_eS_1_a5fZEh/view" className="btn ghost">
-                Resume / CV <span className="arr">↗</span>
-              </a>
-            </div>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: 'clamp(18px, 1.5vw, 22px)',
+                  lineHeight: 1.45,
+                  color: 'var(--ink-2)',
+                  maxWidth: '52ch',
+                }}
+              >
+                I enjoy working on products that are genuinely hard to design well, the kind with complex workflows, technical users, and a lot of moving pieces. If you&apos;re building something in that space, I&apos;d be happy to connect.
+              </p>
+              <div style={{ marginTop: 24, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <a href="mailto:jbusseywork@gmail.com" className="btn">
+                  jbusseywork@gmail.com <span className="arr">↗</span>
+                </a>
+                <a href="https://drive.google.com/file/d/17OJanguMKHAdKGfoBDpI_eS_1_a5fZEh/view" className="btn ghost">
+                  Resume / CV <span className="arr">↗</span>
+                </a>
+              </div>
             </div>
           </div>
           <div style={{ width: '100%', maxWidth: 380, justifySelf: 'end' }}>
@@ -70,7 +80,6 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* AVAILABILITY CARD */}
       <section style={{ background: 'var(--bone)', borderTop: '1px solid var(--ink)' }}>
         <div className="container sp-normal" style={{ padding: '112px 32px 128px' }}>
           <div className="r-grid-3" style={{ gap: 0 }}>
@@ -95,27 +104,48 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* CONTACT FORM */}
       <section style={{ borderTop: '1px solid var(--ink)', background: 'var(--paper)' }}>
         <div className="container sp-normal" style={{ padding: '112px 32px 128px' }}>
           <ContactForm />
         </div>
       </section>
-
     </main>
   );
 }
 
 function ContactForm() {
   const [fields, setFields] = useState({ name: '', email: '', message: '' });
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const subject = encodeURIComponent(`Portfolio inquiry from ${fields.name}`);
-    const body = encodeURIComponent(`From: ${fields.name} <${fields.email}>\n\n${fields.message}`);
-    window.location.href = `mailto:jbusseywork@gmail.com?subject=${subject}&body=${body}`;
-    setSent(true);
+    setStatus('submitting');
+    setErrorMessage('');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(fields),
+      });
+
+      const payload = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(payload?.error ?? 'Something went wrong while sending your message.');
+      }
+
+      setFields({ name: '', email: '', message: '' });
+      setStatus('success');
+    } catch (error) {
+      setStatus('error');
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Something went wrong while sending your message.'
+      );
+    }
   }
 
   const inputStyle: React.CSSProperties = {
@@ -140,21 +170,24 @@ function ContactForm() {
     marginBottom: 8,
   };
 
-  if (sent) {
+  if (status === 'success') {
     return (
       <div style={{ padding: '48px 0' }}>
         <div className="tight" style={{ fontSize: 28, fontWeight: 600, letterSpacing: '-0.03em' }}>
-          Your email client should be open<span className="accent">.</span>
+          Message sent<span className="accent">.</span>
         </div>
         <p style={{ margin: '12px 0 0', fontSize: 15, color: 'var(--ink-2)', lineHeight: 1.55 }}>
-          If nothing opened, email me directly at jbusseywork@gmail.com.
+          Thanks for reaching out. I&apos;ll get back to you soon. If you need to follow up, email me directly at jbusseywork@gmail.com.
         </p>
         <button
-          onClick={() => setSent(false)}
+          onClick={() => {
+            setStatus('idle');
+            setErrorMessage('');
+          }}
           className="mono upper"
           style={{ marginTop: 24, fontSize: 11, letterSpacing: '0.08em', background: 'none', border: 'none', color: 'var(--sub)', cursor: 'pointer', padding: 0 }}
         >
-          ← Send another
+          Send another
         </button>
       </div>
     );
@@ -168,10 +201,12 @@ function ContactForm() {
           <input
             required
             type="text"
+            name="name"
             placeholder="Your name"
             value={fields.name}
             onChange={e => setFields(f => ({ ...f, name: e.target.value }))}
             style={inputStyle}
+            disabled={status === 'submitting'}
           />
         </div>
         <div>
@@ -179,10 +214,12 @@ function ContactForm() {
           <input
             required
             type="email"
+            name="email"
             placeholder="you@company.com"
             value={fields.email}
             onChange={e => setFields(f => ({ ...f, email: e.target.value }))}
             style={inputStyle}
+            disabled={status === 'submitting'}
           />
         </div>
       </div>
@@ -190,16 +227,23 @@ function ContactForm() {
         <label style={labelStyle}>Message</label>
         <textarea
           required
+          name="message"
           rows={6}
           placeholder="What are you building?"
           value={fields.message}
           onChange={e => setFields(f => ({ ...f, message: e.target.value }))}
           style={{ ...inputStyle, resize: 'vertical' }}
+          disabled={status === 'submitting'}
         />
       </div>
+      {status === 'error' ? (
+        <p style={{ margin: 0, fontSize: 14, color: '#B12C0C', lineHeight: 1.5 }}>
+          {errorMessage}
+        </p>
+      ) : null}
       <div>
-        <button type="submit" className="btn">
-          Send message <span className="arr">→</span>
+        <button type="submit" className="btn" disabled={status === 'submitting'}>
+          {status === 'submitting' ? 'Sending...' : 'Send message'} <span className="arr">→</span>
         </button>
       </div>
     </form>

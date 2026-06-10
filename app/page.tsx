@@ -57,10 +57,10 @@ function HomeHero() {
             </p>
             <div className={styles.heroActions}>
               <Link href="/work" className="btn">
-                View selected work <span className="arr">→</span>
+                View case studies <span className="arr">→</span>
               </Link>
               <Link href="/work/identity-profiles" className="btn ghost">
-                Read a case study <span className="arr">↗</span>
+                Jump right in <span className="arr">↗</span>
               </Link>
             </div>
           </div>
@@ -697,3 +697,4 @@ function CompanyCard({ c, i }: { c: typeof COMPANIES[number]; i: number }) {
     </a>
   );
 }
+
