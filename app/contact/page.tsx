@@ -39,7 +39,7 @@ export default function ContactPage() {
     <main className="page-enter">
       {/* HERO */}
       <section style={{ borderBottom: '1px solid var(--ink)', background: 'var(--hero-contact)' }}>
-        <div className="container r-hero-split sp-ctct-hero" style={{ padding: '128px 32px 144px', gap: 56 }}>
+        <div className="container r-hero-split sp-ctct-hero" style={{ padding: '80px 32px', gap: 56 }}>
           <div>
             <h1 className="tight" style={{
             margin: 0,

@@ -1,5 +1,5 @@
 .heroInner {
-  padding: 104px 32px 176px !important;
+  padding: 80px 32px !important;
 }
 
 .heroTitle {
@@ -81,7 +81,7 @@
   width: 100%;
   justify-self: end;
   align-self: center;
-  max-width: 520px;
+  max-width: 440px;
 }
 
 .polaroidShell {

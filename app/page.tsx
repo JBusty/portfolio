@@ -151,7 +151,7 @@ function PolaroidStack() {
                 position: 'absolute',
                 top: 0,
                 left: '8%',
-                width: '84%',
+                width: '76%',
                 background: 'var(--bone)',
                 borderRadius: 'var(--radius)',
                 padding: '14px 14px 12px',
