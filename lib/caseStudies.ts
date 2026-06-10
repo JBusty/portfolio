@@ -1,4 +1,4 @@
-import type { Project } from './data';
+﻿import type { Project } from './data';
 
 export interface CaseStudyCard {
   n: string;

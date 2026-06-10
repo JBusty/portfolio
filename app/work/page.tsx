@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ProjectRow from '@/components/ProjectRow';
@@ -77,18 +77,29 @@ export default function WorkPage() {
       </section>
 
       <section>
-        {/* Sticky filter bar */}
-        <div className="work-filter-bar" style={{
-          position: 'sticky',
-          top: topbarVisible ? 57 : 0,
-          zIndex: 40,
-          background: 'var(--ink-2)',
-          borderBottom: '1px solid rgba(236,231,220,0.1)',
-          transition: 'top 280ms ease',
-        }}>
-          <div className="container" style={{ padding: '0 32px' }}>
-            <div style={{ padding: '24px 0', display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-              <span className="mono upper" style={{ fontSize: 11, color: 'rgba(236,231,220,0.35)', letterSpacing: '0.1em', marginRight: 6 }}>
+        <div className="container sp-bot-sm" style={{ padding: '24px 32px 160px' }}>
+          <div className="work-filter-bar" style={{
+            position: 'sticky',
+            top: topbarVisible ? 73 : 16,
+            zIndex: 40,
+            display: 'flex',
+            justifyContent: 'flex-start',
+            paddingBottom: 18,
+            transition: 'top 280ms ease',
+          }}>
+            <div style={{
+              display: 'flex',
+              width: '100%',
+              gap: 6,
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              padding: '14px 16px',
+              border: '1px solid rgba(17,17,16,0.12)',
+              borderRadius: 18,
+              background: 'rgba(245,241,230,0.92)',
+              backdropFilter: 'saturate(160%) blur(12px)',
+            }}>
+              <span className="mono upper" style={{ fontSize: 11, color: 'var(--sub)', letterSpacing: '0.1em', marginRight: 6 }}>
                 Filter
               </span>
               {allTags.map((tag) => (
@@ -97,9 +108,9 @@ export default function WorkPage() {
                   onClick={() => setActiveTag(tag)}
                   className="chip"
                   style={{
-                    background: activeTag === tag ? 'var(--bone)' : 'transparent',
-                    color: activeTag === tag ? 'var(--ink)' : 'rgba(236,231,220,0.6)',
-                    borderColor: activeTag === tag ? 'var(--bone)' : 'rgba(236,231,220,0.18)',
+                    background: activeTag === tag ? 'var(--ink)' : 'rgba(17,17,16,0.03)',
+                    color: activeTag === tag ? 'var(--bone)' : 'var(--ink-2)',
+                    borderColor: activeTag === tag ? 'var(--ink)' : 'rgba(17,17,16,0.12)',
                     cursor: 'pointer',
                     transition: 'background 160ms, color 160ms, border-color 160ms',
                   }}
@@ -109,9 +120,7 @@ export default function WorkPage() {
               ))}
             </div>
           </div>
-        </div>
 
-        <div className="container sp-bot-sm" style={{ padding: '24px 32px 160px' }}>
           <div style={{ borderBottom: '1px solid var(--rule)' }}>
             {list.map((project, index) => (
               <ScrollReveal key={project.slug} delayMs={Math.min(index * 36, 180)}>
@@ -341,4 +350,5 @@ function WorkHeroArt() {
     </svg>
   );
 }
+
 

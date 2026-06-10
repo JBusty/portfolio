@@ -1,4 +1,4 @@
-export interface Project {
+﻿export interface Project {
   slug: string;
   num: string;
   company: string;
@@ -280,3 +280,4 @@ export const CREW: CrewMember[] = [
     img: 'https://framerusercontent.com/images/hcFB78uQ64NAhoDDNKBiPdG1Dg.jpg',
   },
 ];
+

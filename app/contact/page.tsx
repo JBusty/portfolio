@@ -1,9 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import SectionHead from '@/components/SectionHead';
-import { FAQ } from '@/lib/data';
 
 const CONTACT_FAQ = [
   {
@@ -16,11 +13,11 @@ const CONTACT_FAQ = [
   },
   {
     q: 'Do you take on freelance or contract work?',
-    a: "Selectively. I’m most useful for 0→1 design, design system bootstrapping, or embedded design for an eng team that needs someone who can also read the code. Reach out and we’ll figure out if it’s a fit.",
+    a: "Selectively. I'm most useful for 0→1 design, design system bootstrapping, or embedded design for an eng team that needs someone who can also read the code. Reach out and we'll figure out if it's a fit.",
   },
   {
     q: "What's your availability?",
-    a: "Available Q3 2026. US East Coast timezone (Eastern Time). I overlap well with EU mornings and West Coast afternoons.",
+    a: 'Available Q3 2026. US East Coast timezone (Eastern Time). I overlap well with EU mornings and West Coast afternoons.',
   },
   {
     q: 'Can you sign an NDA before a conversation?',
@@ -32,6 +29,28 @@ const CONNECT = [
   { label: 'Email', value: 'jbusseywork@gmail.com', href: 'mailto:jbusseywork@gmail.com', arr: '↗' },
   { label: 'LinkedIn', value: 'linkedin.com/in/joshuabussey', href: 'https://www.linkedin.com/in/joshuabussey/', arr: '↗' },
   { label: 'Resume / CV', value: 'Download PDF', href: 'https://drive.google.com/file/d/17OJanguMKHAdKGfoBDpI_eS_1_a5fZEh/view', arr: '↗' },
+];
+
+const WHAT_TO_SEND = [
+  'A quick note on what your team is building',
+  'Why now is the right moment to bring in design help',
+  'What kind of role or engagement you have in mind',
+  'Any links, screenshots, or product context that will help me get oriented',
+];
+
+const BEST_FIT = [
+  {
+    title: 'Complex product work',
+    body: 'B2B tools, internal platforms, workflow-heavy products, and software where UX decisions need to hold up under real operational pressure.',
+  },
+  {
+    title: 'Early systems thinking',
+    body: '0→1 product definition, IA, interaction patterns, and the first passes at a design system that can survive real growth.',
+  },
+  {
+    title: 'Design with engineering fluency',
+    body: 'Teams that move faster when design can read the code, reason about constraints, and collaborate closely with implementation.',
+  },
 ];
 
 export default function ContactPage() {
@@ -106,147 +125,129 @@ export default function ContactPage() {
 
       <section style={{ borderTop: '1px solid var(--ink)', background: 'var(--paper)' }}>
         <div className="container sp-normal" style={{ padding: '112px 32px 128px' }}>
-          <ContactForm />
+          <ContactPlaybook />
+        </div>
+      </section>
+
+      <section style={{ borderTop: '1px solid var(--ink)', background: 'var(--bone)' }}>
+        <div className="container sp-normal" style={{ padding: '112px 32px 128px' }}>
+          <div className="r-grid-2" style={{ gap: 28, alignItems: 'start' }}>
+            <div>
+              <div className="mono upper" style={{ fontSize: 11, color: 'var(--sub)', letterSpacing: '0.1em' }}>
+                Ways To Reach Me
+              </div>
+              <h2 className="tight" style={{ margin: '14px 0 0', fontSize: 'clamp(34px, 5vw, 54px)', lineHeight: 0.95, letterSpacing: '-0.04em' }}>
+                Pick the channel that matches the conversation.
+              </h2>
+            </div>
+            <div className="r-grid-3" style={{ gap: 16 }}>
+              {CONNECT.map(item => (
+                <ConnectCard key={item.label} item={item} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ borderTop: '1px solid var(--ink)', background: 'var(--paper)' }}>
+        <div className="container sp-normal" style={{ padding: '112px 32px 128px' }}>
+          <div className="r-grid-2" style={{ gap: 40, alignItems: 'start' }}>
+            <div>
+              <div className="mono upper" style={{ fontSize: 11, color: 'var(--sub)', letterSpacing: '0.1em' }}>
+                Common Questions
+              </div>
+              <h2 className="tight" style={{ margin: '14px 0 0', fontSize: 'clamp(34px, 5vw, 54px)', lineHeight: 0.95, letterSpacing: '-0.04em' }}>
+                A few quick answers before you reach out.
+              </h2>
+            </div>
+            <ContactFAQ />
+          </div>
         </div>
       </section>
     </main>
   );
 }
 
-function ContactForm() {
-  const [fields, setFields] = useState({ name: '', email: '', message: '' });
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setStatus('submitting');
-    setErrorMessage('');
-
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(fields),
-      });
-
-      const payload = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(payload?.error ?? 'Something went wrong while sending your message.');
-      }
-
-      setFields({ name: '', email: '', message: '' });
-      setStatus('success');
-    } catch (error) {
-      setStatus('error');
-      setErrorMessage(
-        error instanceof Error ? error.message : 'Something went wrong while sending your message.'
-      );
-    }
-  }
-
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '12px 14px',
-    background: 'var(--bone)',
-    border: '1px solid var(--rule-strong)',
-    borderRadius: 'var(--radius-sm)',
-    fontFamily: 'var(--font-inter)',
-    fontSize: 15,
-    color: 'var(--ink)',
-    outline: 'none',
-  };
-
-  const labelStyle: React.CSSProperties = {
-    display: 'block',
-    fontFamily: 'var(--font-jetbrains-mono)',
-    fontSize: 11,
-    textTransform: 'uppercase',
-    letterSpacing: '0.08em',
-    color: 'var(--sub)',
-    marginBottom: 8,
-  };
-
-  if (status === 'success') {
-    return (
-      <div style={{ padding: '48px 0' }}>
-        <div className="tight" style={{ fontSize: 28, fontWeight: 600, letterSpacing: '-0.03em' }}>
-          Message sent<span className="accent">.</span>
-        </div>
-        <p style={{ margin: '12px 0 0', fontSize: 15, color: 'var(--ink-2)', lineHeight: 1.55 }}>
-          Thanks for reaching out. I&apos;ll get back to you soon. If you need to follow up, email me directly at jbusseywork@gmail.com.
-        </p>
-        <button
-          onClick={() => {
-            setStatus('idle');
-            setErrorMessage('');
-          }}
-          className="mono upper"
-          style={{ marginTop: 24, fontSize: 11, letterSpacing: '0.08em', background: 'none', border: 'none', color: 'var(--sub)', cursor: 'pointer', padding: 0 }}
-        >
-          Send another
-        </button>
-      </div>
-    );
-  }
-
+function ContactPlaybook() {
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      <div className="r-grid-2" style={{ gap: 16 }}>
-        <div>
-          <label style={labelStyle}>Name</label>
-          <input
-            required
-            type="text"
-            name="name"
-            placeholder="Your name"
-            value={fields.name}
-            onChange={e => setFields(f => ({ ...f, name: e.target.value }))}
-            style={inputStyle}
-            disabled={status === 'submitting'}
-          />
+    <div className="r-grid-2" style={{ gap: 32, alignItems: 'start' }}>
+      <div
+        style={{
+          padding: '32px',
+          border: '1px solid var(--ink)',
+          borderRadius: 'var(--radius-lg)',
+          background: 'linear-gradient(180deg, rgba(225,59,20,0.06), rgba(245,241,230,0.9))',
+        }}
+      >
+        <div className="mono upper" style={{ fontSize: 11, color: 'var(--sub)', letterSpacing: '0.1em' }}>
+          Best First Note
         </div>
-        <div>
-          <label style={labelStyle}>Email</label>
-          <input
-            required
-            type="email"
-            name="email"
-            placeholder="you@company.com"
-            value={fields.email}
-            onChange={e => setFields(f => ({ ...f, email: e.target.value }))}
-            style={inputStyle}
-            disabled={status === 'submitting'}
-          />
-        </div>
-      </div>
-      <div>
-        <label style={labelStyle}>Message</label>
-        <textarea
-          required
-          name="message"
-          rows={6}
-          placeholder="What are you building?"
-          value={fields.message}
-          onChange={e => setFields(f => ({ ...f, message: e.target.value }))}
-          style={{ ...inputStyle, resize: 'vertical' }}
-          disabled={status === 'submitting'}
-        />
-      </div>
-      {status === 'error' ? (
-        <p style={{ margin: 0, fontSize: 14, color: '#B12C0C', lineHeight: 1.5 }}>
-          {errorMessage}
+        <h2 className="tight" style={{ margin: '18px 0 0', fontSize: 'clamp(34px, 5vw, 56px)', lineHeight: 0.95, letterSpacing: '-0.04em' }}>
+          Skip the form. Send the real version.
+        </h2>
+        <p style={{ margin: '18px 0 0', fontSize: 16, color: 'var(--ink-2)', lineHeight: 1.65, maxWidth: '44ch' }}>
+          A short, direct email is more useful than a generic intake flow. If we might be a fit, a little context up front helps me give you a thoughtful reply instead of a canned one.
         </p>
-      ) : null}
-      <div>
-        <button type="submit" className="btn" disabled={status === 'submitting'}>
-          {status === 'submitting' ? 'Sending...' : 'Send message'} <span className="arr">→</span>
-        </button>
+        <div style={{ marginTop: 26, display: 'grid', gap: 14 }}>
+          {WHAT_TO_SEND.map(item => (
+            <div
+              key={item}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '28px 1fr',
+                gap: 12,
+                alignItems: 'start',
+                padding: '14px 0',
+                borderTop: '1px solid rgba(17,17,16,0.12)',
+              }}
+            >
+              <div
+                aria-hidden="true"
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 999,
+                  border: '1px solid var(--accent)',
+                  color: 'var(--accent)',
+                  display: 'grid',
+                  placeItems: 'center',
+                  fontSize: 12,
+                  lineHeight: 1,
+                  marginTop: 1,
+                }}
+              >
+                +
+              </div>
+              <div style={{ fontSize: 15, lineHeight: 1.55, color: 'var(--ink)' }}>{item}</div>
+            </div>
+          ))}
+        </div>
       </div>
-    </form>
+
+      <div style={{ display: 'grid', gap: 16 }}>
+        {BEST_FIT.map(item => (
+          <div
+            key={item.title}
+            style={{
+              padding: '28px 24px',
+              border: '1px solid var(--rule-strong)',
+              borderRadius: 'var(--radius)',
+              background: 'var(--bone)',
+            }}
+          >
+            <div className="mono upper" style={{ fontSize: 11, color: 'var(--sub)', letterSpacing: '0.1em' }}>
+              Good Fit
+            </div>
+            <div className="tight" style={{ marginTop: 10, fontSize: 'clamp(24px, 2.7vw, 32px)', lineHeight: 1, letterSpacing: '-0.03em', fontWeight: 600 }}>
+              {item.title}
+            </div>
+            <p style={{ margin: '12px 0 0', fontSize: 15, lineHeight: 1.6, color: 'var(--ink-2)' }}>
+              {item.body}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -376,8 +377,12 @@ function ConnectCard({ item }: { item: typeof CONNECT[number] }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-        padding: '28px 24px', border: '1px solid var(--rule)', borderRadius: 'var(--radius)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        padding: '28px 24px',
+        border: '1px solid var(--rule)',
+        borderRadius: 'var(--radius)',
         minHeight: 140,
         background: hover ? 'var(--ink)' : 'var(--bone)',
         color: hover ? 'var(--bone)' : 'var(--ink)',
@@ -385,12 +390,16 @@ function ConnectCard({ item }: { item: typeof CONNECT[number] }) {
         transition: 'background 160ms, color 160ms, border-color 160ms',
       }}
     >
-      <div className="mono upper" style={{ fontSize: 10, opacity: 0.55, letterSpacing: '0.1em' }}>{item.label}</div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end' }}>
+      <div className="mono upper" style={{ fontSize: 10, opacity: 0.55, letterSpacing: '0.1em' }}>
+        {item.label}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 12 }}>
         <div className="tight" style={{ fontSize: 'clamp(18px, 1.8vw, 24px)', fontWeight: 600, letterSpacing: '-0.025em' }}>
           {item.value}
         </div>
-        <span className="mono" style={{ fontSize: 18, color: hover ? 'var(--accent)' : 'var(--sub)' }}>{item.arr}</span>
+        <span className="mono" style={{ fontSize: 18, color: hover ? 'var(--accent)' : 'var(--sub)' }}>
+          {item.arr}
+        </span>
       </div>
     </a>
   );
@@ -403,35 +412,54 @@ function ContactFAQ() {
       {CONTACT_FAQ.map((it, i) => {
         const isOpen = i === openIdx;
         return (
-          <div key={i} style={{ borderBottom: '1px solid var(--rule)' }}>
+          <div key={it.q} style={{ borderBottom: '1px solid var(--rule)' }}>
             <button
               onClick={() => setOpenIdx(isOpen ? -1 : i)}
               style={{
-                width: '100%', display: 'grid', gridTemplateColumns: '60px 1fr 40px',
-                gap: 24, alignItems: 'center', padding: '28px 0',
-                background: 'transparent', border: 'none', textAlign: 'left',
+                width: '100%',
+                display: 'grid',
+                gridTemplateColumns: '60px 1fr 40px',
+                gap: 24,
+                alignItems: 'center',
+                padding: '28px 0',
+                background: 'transparent',
+                border: 'none',
+                textAlign: 'left',
               }}
             >
-              <span className="mono" style={{ fontSize: 12, color: 'var(--sub)' }}>Q.0{i + 1}</span>
+              <span className="mono" style={{ fontSize: 12, color: 'var(--sub)' }}>
+                Q.0{i + 1}
+              </span>
               <span className="tight" style={{ fontSize: 'clamp(20px, 2.2vw, 30px)', fontWeight: 600, letterSpacing: '-0.025em', color: isOpen ? 'var(--accent)' : 'var(--ink)' }}>
                 {it.q}
               </span>
-              <span className="mono" style={{
-                fontSize: 22, textAlign: 'right',
-                transform: isOpen ? 'rotate(45deg)' : 'rotate(0)',
-                transition: 'transform 220ms',
-                color: isOpen ? 'var(--accent)' : 'var(--ink)',
-                display: 'inline-block',
-              }}>+</span>
+              <span
+                className="mono"
+                style={{
+                  fontSize: 22,
+                  textAlign: 'right',
+                  transform: isOpen ? 'rotate(45deg)' : 'rotate(0)',
+                  transition: 'transform 220ms',
+                  color: isOpen ? 'var(--accent)' : 'var(--ink)',
+                  display: 'inline-block',
+                }}
+              >
+                +
+              </span>
             </button>
             <div style={{ display: 'grid', gridTemplateRows: isOpen ? '1fr' : '0fr', transition: 'grid-template-rows 360ms cubic-bezier(.2,.7,.2,1)' }}>
               <div style={{ overflow: 'hidden' }}>
-                <div className="faq-answer" style={{
-                  opacity: isOpen ? 1 : 0,
-                  transform: isOpen ? 'translateY(0)' : 'translateY(-6px)',
-                  transition: 'opacity 280ms ease, transform 360ms cubic-bezier(.2,.7,.2,1)',
-                  transitionDelay: isOpen ? '120ms' : '0ms',
-                }}>{it.a}</div>
+                <div
+                  className="faq-answer"
+                  style={{
+                    opacity: isOpen ? 1 : 0,
+                    transform: isOpen ? 'translateY(0)' : 'translateY(-6px)',
+                    transition: 'opacity 280ms ease, transform 360ms cubic-bezier(.2,.7,.2,1)',
+                    transitionDelay: isOpen ? '120ms' : '0ms',
+                  }}
+                >
+                  {it.a}
+                </div>
               </div>
             </div>
           </div>
