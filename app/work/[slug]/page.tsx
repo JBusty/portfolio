@@ -428,7 +428,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
   );
 }
 
-function CSection({ title, eyebrow, children }: { title: ReactNode; eyebrow?: string; children: ReactNode }) {
+function CSection({ title, eyebrow, children }: { title: ReactNode; eyebrow?: ReactNode; children: ReactNode }) {
   return (
     <section>
       <SectionHead title={title} eyebrow={eyebrow} />

@@ -38,7 +38,8 @@
       "Bash(cp \"C:/Users/jbuss/Downloads/product-hero3.png\" \"C:/dev/portfolio/public/images/groundbase/problem-overview.png\")",
       "Bash(cp \"C:/Users/jbuss/Downloads/hero3.png\" \"C:/dev/portfolio/public/images/groundbase/solution-1.png\")",
       "Bash(cp \"C:/Users/jbuss/Downloads/hero4.png\" \"C:/dev/portfolio/public/images/groundbase/solution-2.png\")",
-      "Bash(cp \"C:/Users/jbuss/Downloads/product-hero2.png\" \"C:/dev/portfolio/public/images/groundbase/solution-3.png\")"
+      "Bash(cp \"C:/Users/jbuss/Downloads/product-hero2.png\" \"C:/dev/portfolio/public/images/groundbase/solution-3.png\")",
+      "Bash(git *)"
     ]
   }
 }
