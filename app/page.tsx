@@ -201,18 +201,6 @@ function PolaroidStack() {
           );
         })}
 
-        {/* Hint */}
-        <div className="mono upper" style={{
-          position: 'absolute', left: 0, right: 0, bottom: -36,
-          textAlign: 'center', fontSize: 11, color: 'var(--sub)', letterSpacing: '0.12em',
-          display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8,
-        }}>
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 18, height: 18, border: '1px solid var(--rule-strong)', borderRadius: '50%', fontSize: 11,
-          }}>↻</span>
-          Click the top card to shuffle · {order[0] + 1} / {CREW.length}
-        </div>
       </div>
     </div>
   );
@@ -254,7 +242,7 @@ function CountUp({ n, delayMs }: { n: string; delayMs: number }) {
     const observer = new IntersectionObserver(entries => {
       if (!entries[0].isIntersecting) return;
       observer.disconnect();
-      live.textContent = fmt(0) + suffix;
+      live!.textContent = fmt(0) + suffix;
 
       timer = setTimeout(() => {
         const duration = 1200;
@@ -263,9 +251,9 @@ function CountUp({ n, delayMs }: { n: string; delayMs: number }) {
           const t = Math.min((now - start) / duration, 1);
           // sine in-out: even integer spacing throughout vs. bunching at the start with ease-out
           const eased = -(Math.cos(Math.PI * t) - 1) / 2;
-          live.textContent = fmt(Math.round(eased * value)) + suffix;
+          live!.textContent = fmt(Math.round(eased * value)) + suffix;
           if (t < 1) raf = requestAnimationFrame(tick);
-          else live.textContent = final;
+          else live!.textContent = final;
         }
         raf = requestAnimationFrame(tick);
       }, delayMs);

@@ -60,7 +60,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(300px, 460px);
   gap: 20px;
-  align-items: center;
+  align-items: start;
 }
 
 .heroCopy {
