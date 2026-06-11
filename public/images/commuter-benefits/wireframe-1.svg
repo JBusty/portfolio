@@ -1,171 +1,105 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
-  <rect width="960" height="540" fill="#EFEFEE"/>
+  <defs>
+    <marker id="tip" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,8 L8,4 z" fill="#DCC060"/>
+    </marker>
+  </defs>
+  <rect width="960" height="540" fill="#F0EFEE"/>
+
   <!-- Dark left sidebar -->
-  <rect x="0" y="0" width="190" height="540" fill="#1C1C1C" stroke="#2E2E2E" stroke-width="0.5"/>
-  <!-- Logo area -->
-  <rect x="14" y="16" width="60" height="24" rx="3" fill="#D04040" opacity="0.9"/>
-  <rect x="80" y="20" width="92" height="14" rx="2" fill="#555"/>
-  <rect x="80" y="36" width="72" height="8" rx="2" fill="#444"/>
-  <!-- Nav items -->
-  <rect x="14" y="72" width="162" height="30" rx="4" fill="#2E2E2E"/>
-  <rect x="28" y="82" width="16" height="10" rx="2" fill="#8FA8C0"/>
-  <rect x="50" y="84" width="70" height="7" rx="2" fill="#CCCCCC"/>
-  <!-- Participants (active) -->
-  <rect x="14" y="110" width="162" height="30" rx="4" fill="#8FA8C0" opacity="0.25"/>
-  <rect x="28" y="120" width="16" height="10" rx="2" fill="#8FA8C0"/>
-  <rect x="50" y="122" width="80" height="7" rx="2" fill="#FFFFFF"/>
-  <rect x="14" y="148" width="162" height="30" rx="4" fill="#2E2E2E"/>
-  <rect x="28" y="158" width="16" height="10" rx="2" fill="#666"/>
-  <rect x="50" y="160" width="50" height="7" rx="2" fill="#888"/>
-  <rect x="14" y="186" width="162" height="30" rx="4" fill="#2E2E2E"/>
-  <rect x="28" y="196" width="16" height="10" rx="2" fill="#666"/>
-  <rect x="50" y="198" width="64" height="7" rx="2" fill="#888"/>
-  <rect x="14" y="224" width="162" height="30" rx="4" fill="#2E2E2E"/>
-  <rect x="28" y="234" width="16" height="10" rx="2" fill="#666"/>
-  <rect x="50" y="236" width="54" height="7" rx="2" fill="#888"/>
-  <rect x="14" y="262" width="162" height="30" rx="4" fill="#2E2E2E"/>
-  <rect x="28" y="272" width="16" height="10" rx="2" fill="#666"/>
-  <rect x="50" y="274" width="58" height="7" rx="2" fill="#888"/>
-  <rect x="14" y="300" width="162" height="30" rx="4" fill="#2E2E2E"/>
-  <rect x="28" y="310" width="16" height="10" rx="2" fill="#666"/>
-  <rect x="50" y="312" width="90" height="7" rx="2" fill="#888"/>
-  <!-- Org label at bottom of sidebar -->
-  <rect x="14" y="490" width="162" height="38" rx="4" fill="#2A2A2A" stroke="#383838" stroke-width="1"/>
-  <rect x="24" y="500" width="80" height="7" rx="2" fill="#888"/>
-  <rect x="24" y="512" width="120" height="7" rx="2" fill="#666"/>
+  <rect x="0" y="0" width="190" height="540" fill="#1C1C1C"/>
+  <rect x="14" y="16" width="56" height="22" rx="3" fill="#D04040" opacity="0.9"/>
+  <text x="76" y="31" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#CCCCCC">Forma</text>
+  <text x="14" y="65" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#555" letter-spacing="1">PRODUCT NAV</text>
+  <rect x="14" y="72" width="162" height="28" rx="4" fill="#2E2E2E"/>
+  <text x="44" y="89" font-family="Arial, sans-serif" font-size="11" fill="#AAAAAA">Dashboard</text>
+  <rect x="14" y="108" width="162" height="28" rx="4" fill="#8FA8C0" opacity="0.25"/>
+  <text x="44" y="125" font-family="Arial, sans-serif" font-size="11" font-weight="600" fill="#FFF">Participants</text>
+  <rect x="14" y="144" width="162" height="28" rx="4" fill="#2E2E2E"/>
+  <text x="44" y="161" font-family="Arial, sans-serif" font-size="11" fill="#888">Benefits</text>
+  <rect x="14" y="180" width="162" height="28" rx="4" fill="#2E2E2E"/>
+  <text x="44" y="197" font-family="Arial, sans-serif" font-size="11" fill="#888">Transactions</text>
+  <rect x="14" y="216" width="162" height="28" rx="4" fill="#2E2E2E"/>
+  <text x="44" y="233" font-family="Arial, sans-serif" font-size="11" fill="#888">Reports</text>
+  <rect x="14" y="252" width="162" height="28" rx="4" fill="#2E2E2E"/>
+  <text x="44" y="269" font-family="Arial, sans-serif" font-size="11" fill="#888">Settings</text>
+
   <!-- Top header bar -->
-  <rect x="190" y="0" width="770" height="46" fill="#FFF" stroke="#D4D4D4" stroke-width="0.5"/>
-  <!-- Right side of top bar -->
-  <rect x="600" y="13" width="120" height="20" rx="4" fill="#F0F0F0"/>
-  <rect x="612" y="19" width="96" height="7" rx="2" fill="#AAAAAA"/>
-  <rect x="730" y="13" width="100" height="20" rx="4" fill="#F0F0F0"/>
-  <rect x="742" y="19" width="76" height="7" rx="2" fill="#AAAAAA"/>
-  <circle cx="926" cy="23" r="12" fill="#C2C2C2"/>
-  <!-- Main content area -->
-  <!-- Back nav -->
-  <rect x="208" y="56" width="10" height="8" rx="1" fill="#8FA8C0"/>
-  <rect x="224" y="58" width="40" height="6" rx="2" fill="#8FA8C0"/>
-  <!-- User name + status -->
-  <rect x="208" y="78" width="160" height="20" rx="3" fill="#444"/>
-  <rect x="376" y="82" width="52" height="14" rx="7" fill="#7AB07A"/>
-  <rect x="384" y="86" width="36" height="6" rx="2" fill="#FFF"/>
-  <rect x="440" y="82" width="18" height="14" rx="2" fill="#D4B84A" opacity="0.8"/>
-  <rect x="464" y="84" width="80" height="9" rx="2" fill="#888"/>
-  <!-- Impersonate button -->
-  <rect x="860" y="78" width="90" height="28" rx="4" fill="#FFF" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="874" y="87" width="62" height="7" rx="2" fill="#888"/>
+  <rect x="190" y="0" width="770" height="46" fill="#FFF" stroke="#E0E0E0" stroke-width="0.5"/>
+  <text x="730" y="28" font-family="Arial, sans-serif" font-size="11" fill="#AAAAAA">Org: Acme Corp  ▾</text>
+  <circle cx="940" cy="23" r="12" fill="#CCCCCC"/>
+
+  <!-- Back nav + participant header -->
+  <text x="208" y="64" font-family="Arial, sans-serif" font-size="11" fill="#8FA8C0">← Participants</text>
+  <text x="208" y="90" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#333">Emily Nakamura</text>
+  <rect x="378" y="76" width="52" height="20" rx="10" fill="#7AB07A"/>
+  <text x="388" y="89" font-family="Arial, sans-serif" font-size="10" fill="#FFF">Active</text>
+  <text x="208" y="110" font-family="Arial, sans-serif" font-size="11" fill="#AAAAAA">emily.nakamura@acmecorp.com · Enrolled 3 programs</text>
+
   <!-- Tab bar -->
-  <rect x="208" y="116" width="742" height="36" fill="#FFF" stroke="#D0D0D0" stroke-width="1"/>
-  <!-- Tabs -->
-  <rect x="216" y="124" width="66" height="20" rx="0" fill="none"/>
-  <rect x="216" y="132" width="66" height="7" rx="2" fill="#484848"/>
-  <rect x="216" y="144" width="66" height="3" fill="#D04040"/>
-  <rect x="292" y="132" width="56" height="7" rx="2" fill="#AAAAAA"/>
-  <rect x="358" y="132" width="90" height="7" rx="2" fill="#AAAAAA"/>
-  <rect x="458" y="132" width="64" height="7" rx="2" fill="#AAAAAA"/>
-  <rect x="532" y="132" width="52" height="7" rx="2" fill="#AAAAAA"/>
-  <rect x="594" y="132" width="54" height="7" rx="2" fill="#AAAAAA"/>
-  <!-- Active Election section -->
-  <rect x="208" y="162" width="742" height="80" rx="6" fill="#F0F4FA" stroke="#D0D8E8" stroke-width="1"/>
-  <rect x="222" y="174" width="110" height="9" rx="2" fill="#484848"/>
-  <!-- Election data grid -->
-  <rect x="222" y="196" width="74" height="6" rx="2" fill="#AAAAAA"/>
-  <rect x="308" y="196" width="74" height="6" rx="2" fill="#AAAAAA"/>
-  <rect x="394" y="196" width="74" height="6" rx="2" fill="#AAAAAA"/>
-  <rect x="480" y="196" width="74" height="6" rx="2" fill="#AAAAAA"/>
-  <rect x="566" y="196" width="74" height="6" rx="2" fill="#AAAAAA"/>
-  <rect x="652" y="196" width="74" height="6" rx="2" fill="#AAAAAA"/>
-  <rect x="222" y="208" width="68" height="7" rx="2" fill="#484848"/>
-  <rect x="308" y="208" width="54" height="7" rx="2" fill="#484848"/>
-  <rect x="394" y="208" width="26" height="7" rx="2" fill="#484848"/>
-  <rect x="480" y="208" width="46" height="7" rx="2" fill="#484848"/>
-  <rect x="566" y="208" width="52" height="7" rx="2" fill="#484848"/>
-  <rect x="652" y="208" width="46" height="7" rx="2" fill="#484848"/>
-  <!-- View button -->
-  <rect x="860" y="199" width="60" height="22" rx="4" fill="#FFF" stroke="#8FA8C0" stroke-width="1.5"/>
-  <rect x="873" y="205" width="34" height="7" rx="2" fill="#8FA8C0"/>
-  <!-- Benefit Info section -->
-  <rect x="208" y="252" width="490" height="246" rx="6" fill="#FFF" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="222" y="266" width="90" height="9" rx="2" fill="#484848"/>
-  <!-- Programs -->
-  <rect x="222" y="286" width="60" height="6" rx="2" fill="#888"/>
-  <rect x="222" y="298" width="80" height="22" rx="11" fill="#E8E8E8" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="234" y="304" width="56" height="7" rx="2" fill="#888"/>
-  <rect x="312" y="298" width="110" height="22" rx="11" fill="#E8E8E8" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="324" y="304" width="86" height="7" rx="2" fill="#888"/>
-  <rect x="432" y="298" width="74" height="22" rx="11" fill="#8FA8C0" opacity="0.3" stroke="#8FA8C0" stroke-width="1"/>
-  <rect x="440" y="304" width="58" height="7" rx="2" fill="#6888A8"/>
-  <!-- Subsidies -->
-  <rect x="222" y="332" width="60" height="6" rx="2" fill="#888"/>
-  <rect x="222" y="344" width="460" height="6" rx="2" fill="#C8C8C8"/>
-  <!-- Balances chips row -->
-  <rect x="222" y="362" width="6" height="6" rx="2" fill="#888"/>
-  <rect x="234" y="360" width="60" height="6" rx="2" fill="#AAAAAA"/>
-  <rect x="222" y="380" width="90" height="36" rx="18" fill="#C8B8D8" opacity="0.7"/>
-  <rect x="236" y="390" width="62" height="7" rx="2" fill="#6A5A7A"/>
-  <rect x="236" y="400" width="36" height="8" rx="2" fill="#6A5A7A"/>
-  <rect x="322" y="380" width="90" height="36" rx="18" fill="#D8C8A8" opacity="0.7"/>
-  <rect x="338" y="390" width="58" height="7" rx="2" fill="#7A6A4A"/>
-  <rect x="338" y="400" width="36" height="8" rx="2" fill="#7A6A4A"/>
-  <rect x="422" y="380" width="90" height="36" rx="18" fill="#A8C8C8" opacity="0.7"/>
-  <rect x="436" y="390" width="62" height="7" rx="2" fill="#3A6A6A"/>
-  <rect x="436" y="400" width="36" height="8" rx="2" fill="#3A6A6A"/>
-  <rect x="522" y="380" width="90" height="36" rx="18" fill="#A8B8D8" opacity="0.7"/>
-  <rect x="536" y="390" width="62" height="7" rx="2" fill="#3A4A7A"/>
-  <rect x="536" y="400" width="36" height="8" rx="2" fill="#3A4A7A"/>
-  <!-- Contact info -->
-  <rect x="222" y="432" width="86" height="9" rx="2" fill="#484848"/>
-  <rect x="222" y="450" width="60" height="6" rx="2" fill="#AAAAAA"/>
-  <rect x="380" y="450" width="60" height="6" rx="2" fill="#AAAAAA"/>
-  <rect x="540" y="450" width="60" height="6" rx="2" fill="#AAAAAA"/>
-  <rect x="222" y="462" width="90" height="7" rx="2" fill="#888"/>
-  <rect x="380" y="462" width="100" height="7" rx="2" fill="#888"/>
-  <rect x="540" y="462" width="76" height="7" rx="2" fill="#888"/>
-  <!-- Right: Card info card -->
-  <rect x="710" y="252" width="240" height="148" rx="6" fill="#FFF" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="724" y="266" width="100" height="9" rx="2" fill="#484848"/>
-  <rect x="854" y="262" width="52" height="18" rx="9" fill="#7AB07A"/>
-  <rect x="863" y="268" width="34" height="6" rx="2" fill="#FFF"/>
-  <rect x="724" y="284" width="140" height="6" rx="2" fill="#C8C8C8"/>
-  <rect x="724" y="298" width="100" height="7" rx="2" fill="#AAAAAA"/>
-  <rect x="724" y="316" width="120" height="28" rx="3" fill="#444"/>
-  <rect x="736" y="324" width="96" height="12" rx="2" fill="#CCC"/>
-  <rect x="724" y="354" width="80" height="6" rx="2" fill="#AAAAAA"/>
-  <rect x="724" y="366" width="90" height="6" rx="2" fill="#C8C8C8"/>
-  <rect x="724" y="378" width="100" height="6" rx="2" fill="#C8C8C8"/>
-  <!-- Right: Spend by Category -->
-  <rect x="710" y="412" width="240" height="86" rx="6" fill="#FFF" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="724" y="424" width="110" height="9" rx="2" fill="#484848"/>
-  <!-- Legend dots -->
-  <circle cx="728" cy="444" r="5" fill="#E8A840"/>
-  <rect x="738" y="441" width="130" height="6" rx="2" fill="#C8C8C8"/>
-  <circle cx="728" cy="458" r="5" fill="#D04040"/>
-  <rect x="738" y="455" width="150" height="6" rx="2" fill="#C8C8C8"/>
-  <circle cx="728" cy="472" r="5" fill="#60A8A8"/>
-  <rect x="738" y="469" width="120" height="6" rx="2" fill="#C8C8C8"/>
-  <!-- Label -->
-  <rect x="862" y="512" width="90" height="20" rx="4" fill="#404040" opacity="0.8"/>
-  <text x="872" y="525" font-family="Arial, sans-serif" font-size="9" fill="#FFF" letter-spacing="0.6">Lo-fi Wireframe</text>
+  <rect x="208" y="122" width="740" height="32" fill="#FFF" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="218" y="142" font-family="Arial, sans-serif" font-size="11" font-weight="600" fill="#333">Overview</text>
+  <rect x="218" y="152" width="58" height="2" fill="#D04040"/>
+  <text x="290" y="142" font-family="Arial, sans-serif" font-size="11" fill="#AAAAAA">Transactions</text>
+  <text x="378" y="142" font-family="Arial, sans-serif" font-size="11" fill="#AAAAAA">Contributions</text>
+  <text x="472" y="142" font-family="Arial, sans-serif" font-size="11" fill="#AAAAAA">Documents</text>
 
-  <!-- Region labels -->
-  <text x="14" y="68" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#888" letter-spacing="1.0">PRODUCT NAV</text>
-  <text x="210" y="160" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#8888BB" letter-spacing="1.0">ACTIVE ELECTION PERIOD</text>
-  <text x="210" y="250" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#8888BB" letter-spacing="1.0">PARTICIPANT DETAIL</text>
-  <text x="712" y="250" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#8888BB" letter-spacing="1.0">TRANSIT CARD</text>
+  <!-- Active election card -->
+  <text x="212" y="170" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#9999BB" letter-spacing="1">ACTIVE ELECTION PERIOD</text>
+  <rect x="208" y="176" width="740" height="72" rx="6" fill="#EEF2FA" stroke="#D0D8E8" stroke-width="1"/>
+  <text x="222" y="196" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#444">2025 Benefits Election</text>
+  <text x="222" y="216" font-family="Arial, sans-serif" font-size="11" fill="#AAAAAA">Effective Jan 1 – Dec 31, 2025</text>
+  <text x="400" y="216" font-family="Arial, sans-serif" font-size="11" fill="#AAAAAA">Annual contribution: $3,200</text>
+  <text x="600" y="216" font-family="Arial, sans-serif" font-size="11" fill="#AAAAAA">Remaining: $1,840</text>
+  <rect x="870" y="190" width="56" height="22" rx="4" fill="#FFF" stroke="#8FA8C0" stroke-width="1.5"/>
+  <text x="882" y="204" font-family="Arial, sans-serif" font-size="10" fill="#5A7A9A">View</text>
+  <text x="222" y="237" font-family="Arial, sans-serif" font-size="10" fill="#8888AA">Transit · Parking · Bike share</text>
 
-  <!-- Balance chips annotation -->
-  <rect x="520" y="355" width="220" height="62" rx="6" fill="#FFFCEE" stroke="#DCC060" stroke-width="1.5"/>
-  <text x="534" y="371" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">Pre-tax balance chips — one</text>
-  <text x="534" y="386" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">per enrolled benefit program</text>
-  <text x="534" y="401" font-family="Arial, sans-serif" font-size="11" fill="#A08030">Transit, parking, bike, vanpool</text>
-  <text x="534" y="414" font-family="Arial, sans-serif" font-size="11" fill="#A08030">amounts shown separately</text>
-  <line x1="520" y1="383" x2="422" y2="390" stroke="#DCC060" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <circle cx="422" cy="390" r="4" fill="#DCC060"/>
+  <!-- Benefit detail panel -->
+  <text x="212" y="264" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#9999BB" letter-spacing="1">PARTICIPANT DETAIL</text>
+  <rect x="208" y="270" width="488" height="238" rx="6" fill="#FFF" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="222" y="292" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#444">Benefit enrollment</text>
 
-  <!-- Tab labels -->
-  <text x="216" y="134" font-family="Arial, sans-serif" font-size="11" fill="#484848" font-weight="600">Overview</text>
-  <text x="292" y="134" font-family="Arial, sans-serif" font-size="11" fill="#AAAAAA">Transactions</text>
-  <text x="358" y="134" font-family="Arial, sans-serif" font-size="11" fill="#AAAAAA">Contributions</text>
-  <text x="458" y="134" font-family="Arial, sans-serif" font-size="11" fill="#AAAAAA">Documents</text>
+  <!-- Program chips -->
+  <text x="222" y="314" font-family="Arial, sans-serif" font-size="10" fill="#AAAAAA">Programs</text>
+  <rect x="222" y="322" width="80" height="22" rx="11" fill="#E8E8E8" stroke="#D0D0D0" stroke-width="1"/>
+  <text x="234" y="336" font-family="Arial, sans-serif" font-size="10" fill="#888">Transit</text>
+  <rect x="312" y="322" width="110" height="22" rx="11" fill="#E8E8E8" stroke="#D0D0D0" stroke-width="1"/>
+  <text x="324" y="336" font-family="Arial, sans-serif" font-size="10" fill="#888">Parking</text>
+  <rect x="432" y="322" width="96" height="22" rx="11" fill="#8FA8C0" opacity="0.3" stroke="#8FA8C0" stroke-width="1"/>
+  <text x="444" y="336" font-family="Arial, sans-serif" font-size="10" fill="#4A6A8A">Bike share</text>
+
+  <!-- Balance chips -->
+  <text x="222" y="362" font-family="Arial, sans-serif" font-size="10" fill="#AAAAAA">Pre-tax balances</text>
+  <rect x="222" y="372" width="96" height="40" rx="20" fill="#C8B8D8" opacity="0.7"/>
+  <text x="238" y="388" font-family="Arial, sans-serif" font-size="10" fill="#5A4A6A">Transit</text>
+  <text x="238" y="402" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#5A4A6A">$580</text>
+  <rect x="328" y="372" width="96" height="40" rx="20" fill="#D8C8A8" opacity="0.7"/>
+  <text x="344" y="388" font-family="Arial, sans-serif" font-size="10" fill="#6A5A3A">Parking</text>
+  <text x="344" y="402" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#6A5A3A">$320</text>
+  <rect x="434" y="372" width="96" height="40" rx="20" fill="#A8C8C8" opacity="0.7"/>
+  <text x="446" y="388" font-family="Arial, sans-serif" font-size="10" fill="#2A5A5A">Bike</text>
+  <text x="446" y="402" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#2A5A5A">$120</text>
+
+  <!-- Balance annotation -->
+  <rect x="548" y="368" width="130" height="56" rx="6" fill="#FFFCEE" stroke="#DCC060" stroke-width="1.5"/>
+  <text x="560" y="384" font-family="Arial, sans-serif" font-size="11" fill="#7A5A00">One chip per</text>
+  <text x="560" y="399" font-family="Arial, sans-serif" font-size="11" fill="#7A5A00">enrolled program</text>
+  <text x="560" y="414" font-family="Arial, sans-serif" font-size="10" fill="#A08030">Pre-tax balance</text>
+  <line x1="548" y1="390" x2="434" y2="390" stroke="#DCC060" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#tip)"/>
+
+  <!-- Right column — card details -->
+  <text x="708" y="264" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#9999BB" letter-spacing="1">TRANSIT CARD</text>
+  <rect x="706" y="270" width="242" height="238" rx="6" fill="#FFF" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="720" y="292" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#444">Card details</text>
+  <rect x="854" y="278" width="52" height="18" rx="9" fill="#7AB07A"/>
+  <text x="863" y="290" font-family="Arial, sans-serif" font-size="10" fill="#FFF">Active</text>
+  <text x="720" y="314" font-family="Arial, sans-serif" font-size="10" fill="#AAAAAA">Card number</text>
+  <rect x="720" y="320" width="200" height="30" rx="4" fill="#444"/>
+  <text x="732" y="339" font-family="Arial, sans-serif" font-size="11" fill="#DDDDDD">•••• •••• •••• 4821</text>
+  <text x="720" y="366" font-family="Arial, sans-serif" font-size="10" fill="#AAAAAA">Last used: 2 days ago</text>
+  <text x="720" y="384" font-family="Arial, sans-serif" font-size="10" fill="#AAAAAA">Balance: $580.00</text>
+  <text x="720" y="402" font-family="Arial, sans-serif" font-size="10" fill="#AAAAAA">Monthly limit: $315</text>
+
 </svg>

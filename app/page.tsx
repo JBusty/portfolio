@@ -1,11 +1,15 @@
 ﻿'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, type CSSProperties } from 'react';
 import Link from 'next/link';
 import SectionHead from '@/components/SectionHead';
 import ScrollReveal from '@/components/ScrollReveal';
 import { PROJECTS, STATS, VALUES, CREW, JOURNEY, FAQ, COMPANIES } from '@/lib/data';
 import styles from './page.module.css';
+
+function splitStatCharacters(value: string) {
+  return Array.from(value);
+}
 
 // ---------- HOME ----------
 export default function Home() {
@@ -72,9 +76,25 @@ function HomeHero() {
 
         <div className={styles.heroStatStrip}>
           {STATS.map((s, i) => (
-            <div key={i} className={styles.heroStatItem}>
-              <div className={`tight ${styles.heroStatNum}`}>
-                <CountUp n={s.n} delayMs={500 + i * 80} />
+            <div
+              key={i}
+              className={styles.heroStatItem}
+              style={{ '--stat-delay': `${500 + i * 80}ms` } as CSSProperties}
+            >
+              <div className={`tight ${styles.heroStatNum}`} aria-label={s.n}>
+                <span className={styles.heroStatNumInner} aria-hidden="true">
+                  {splitStatCharacters(s.n).map((char, charIndex) => (
+                    <span
+                      key={`${s.n}-${charIndex}`}
+                      className={styles.heroStatChar}
+                      style={{ '--char-delay': `${charIndex * 90}ms` } as CSSProperties}
+                    >
+                      <span className={styles.heroStatCharFace}>
+                        {char === ' ' ? '\u00A0' : char}
+                      </span>
+                    </span>
+                  ))}
+                </span>
               </div>
               <div className={styles.heroStatLabel}>{s.label}</div>
             </div>
@@ -212,77 +232,6 @@ function PolaroidStack() {
 
       </div>
     </div>
-  );
-}
-
-// ---------- COUNT UP ----------
-function parseStatN(n: string): { value: number; suffix: string; fmt: (v: number) => string } {
-  if (n.includes('M')) {
-    const value = parseInt(n);
-    return { value, suffix: 'M+', fmt: v => String(v) };
-  }
-  const suffix = n.endsWith('+') ? '+' : '';
-  const value = parseInt(n.replace(/[^0-9]/g, ''));
-  const needsComma = value >= 1000;
-  return { value, suffix, fmt: v => needsComma ? v.toLocaleString('en-US') : String(v) };
-}
-
-function CountUp({ n, delayMs }: { n: string; delayMs: number }) {
-  const stat = useMemo(() => parseStatN(n), [n]);
-  const rootRef = useRef<HTMLSpanElement>(null);
-  const liveRef = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    const root = rootRef.current;
-    const live = liveRef.current;
-    if (!root || !live) return;
-
-    const { value, suffix, fmt } = stat;
-    const final = fmt(value) + suffix;
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      live.textContent = final;
-      return;
-    }
-
-    let raf: number;
-    let timer: ReturnType<typeof setTimeout>;
-
-    const observer = new IntersectionObserver(entries => {
-      if (!entries[0].isIntersecting) return;
-      observer.disconnect();
-      live!.textContent = fmt(0) + suffix;
-
-      timer = setTimeout(() => {
-        const duration = 1200;
-        const start = performance.now();
-        function tick(now: number) {
-          const t = Math.min((now - start) / duration, 1);
-          // sine in-out: even integer spacing throughout vs. bunching at the start with ease-out
-          const eased = -(Math.cos(Math.PI * t) - 1) / 2;
-          live!.textContent = fmt(Math.round(eased * value)) + suffix;
-          if (t < 1) raf = requestAnimationFrame(tick);
-          else live!.textContent = final;
-        }
-        raf = requestAnimationFrame(tick);
-      }, delayMs);
-    }, { threshold: 0.3 });
-
-    observer.observe(root);
-    return () => {
-      observer.disconnect();
-      clearTimeout(timer);
-      cancelAnimationFrame(raf);
-    };
-  }, [stat, delayMs]);
-
-  const final = stat.fmt(stat.value) + stat.suffix;
-
-  return (
-    <span ref={rootRef} style={{ position: 'relative', display: 'inline-block', fontVariantNumeric: 'tabular-nums' }}>
-      <span style={{ visibility: 'hidden', display: 'block', pointerEvents: 'none' }} aria-hidden>{final}</span>
-      <span ref={liveRef} style={{ position: 'absolute', top: 0, left: 0 }} aria-live="off">{final}</span>
-    </span>
   );
 }
 
@@ -697,4 +646,3 @@ function CompanyCard({ c, i }: { c: typeof COMPANIES[number]; i: number }) {
     </a>
   );
 }
-

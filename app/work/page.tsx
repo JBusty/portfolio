@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ProjectRow from '@/components/ProjectRow';
 import ScrollReveal from '@/components/ScrollReveal';
 import { PROJECTS } from '@/lib/data';
@@ -14,21 +14,6 @@ export default function WorkPage() {
   }, []);
 
   const [activeTag, setActiveTag] = useState('All');
-  const [topbarVisible, setTopbarVisible] = useState(true);
-  const lastY = useRef(0);
-
-  useEffect(() => {
-    function onScroll() {
-      const y = window.scrollY;
-      if (y < 60) setTopbarVisible(true);
-      else if (y > lastY.current) setTopbarVisible(false);
-      else setTopbarVisible(true);
-      lastY.current = y;
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
   const list = useMemo(() => {
     if (activeTag === 'All') return PROJECTS;
     return PROJECTS.filter((p) => p.tags.includes(activeTag));
@@ -79,13 +64,9 @@ export default function WorkPage() {
       <section>
         <div className="container sp-bot-sm" style={{ padding: '24px 32px 160px' }}>
           <div className="work-filter-bar" style={{
-            position: 'sticky',
-            top: topbarVisible ? 73 : 16,
-            zIndex: 40,
             display: 'flex',
             justifyContent: 'flex-start',
             paddingBottom: 18,
-            transition: 'top 280ms ease',
           }}>
             <div style={{
               display: 'flex',
@@ -106,14 +87,9 @@ export default function WorkPage() {
                 <button
                   key={tag}
                   onClick={() => setActiveTag(tag)}
-                  className="chip"
-                  style={{
-                    background: activeTag === tag ? 'var(--ink)' : 'rgba(17,17,16,0.03)',
-                    color: activeTag === tag ? 'var(--bone)' : 'var(--ink-2)',
-                    borderColor: activeTag === tag ? 'var(--ink)' : 'rgba(17,17,16,0.12)',
-                    cursor: 'pointer',
-                    transition: 'background 160ms, color 160ms, border-color 160ms',
-                  }}
+                  className="chip work-filter-chip"
+                  data-active={activeTag === tag}
+                  aria-pressed={activeTag === tag}
                 >
                   {tag}
                 </button>

@@ -1,84 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
-  <rect width="960" height="540" fill="#EFEFEE"/>
-  <!-- Page header bar -->
-  <rect width="960" height="56" fill="#FFF" stroke="#D4D4D4" stroke-width="1"/>
-  <!-- "Add Integration:" label -->
-  <rect x="24" y="20" width="120" height="16" rx="3" fill="#8FA8C0"/>
-  <rect x="24" y="20" width="120" height="16" rx="3" fill="none" stroke="#6E8EB0" stroke-width="1"/>
-  <rect x="36" y="25" width="96" height="6" rx="2" fill="#FFF"/>
-  <!-- Integration name placeholder -->
-  <rect x="160" y="20" width="200" height="16" rx="3" fill="#F0F0F0" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="172" y="25" width="120" height="6" rx="2" fill="#C8C8C8"/>
-  <!-- Delete button top right -->
-  <rect x="910" y="14" width="28" height="28" rx="4" fill="#E05050" opacity="0.8"/>
-  <rect x="921" y="22" width="6" height="12" rx="1" fill="#FFF"/>
-  <rect x="917" y="22" width="14" height="6" rx="1" fill="#FFF"/>
+  <defs>
+    <marker id="tip" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,8 L8,4 z" fill="#DCC060"/>
+    </marker>
+  </defs>
+  <rect width="960" height="540" fill="#F0EFEE"/>
 
-  <!-- Wizard container -->
-  <rect x="24" y="76" width="912" height="420" rx="8" fill="#FAFAFA" stroke="#D4D4D4" stroke-width="1"/>
+  <!-- Header bar -->
+  <rect width="960" height="56" fill="#FFF" stroke="#E0E0E0" stroke-width="1"/>
+  <rect x="24" y="16" width="140" height="24" rx="4" fill="#8FA8C0"/>
+  <text x="36" y="31" font-family="Arial, sans-serif" font-size="11" fill="#FFF">Add Integration:</text>
+  <rect x="176" y="16" width="200" height="24" rx="4" fill="#F0F0F0" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="188" y="31" font-family="Arial, sans-serif" font-size="11" fill="#888">Salesforce CRM</text>
+  <rect x="916" y="14" width="28" height="28" rx="4" fill="#E05050" opacity="0.8"/>
+  <text x="923" y="32" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#FFF">×</text>
+
+  <!-- Wizard card -->
+  <rect x="24" y="72" width="912" height="416" rx="8" fill="#FAFAFA" stroke="#E0E0E0" stroke-width="1"/>
 
   <!-- Step 1 — collapsed -->
-  <rect x="40" y="92" width="880" height="52" rx="6" fill="#FFF" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="60" y="107" width="28" height="22" rx="3" fill="#E8E8E8"/>
-  <rect x="64" y="113" width="20" height="10" rx="2" fill="#AAAAAA"/>
-  <rect x="100" y="112" width="270" height="10" rx="2" fill="#484848"/>
-  <circle cx="898" cy="118" r="10" fill="#EEEEEE"/>
-  <rect x="894" y="114" width="8" height="8" rx="1" fill="#AAAAAA"/>
+  <rect x="40" y="88" width="880" height="52" rx="6" fill="#FFF" stroke="#E0E0E0" stroke-width="1"/>
+  <rect x="58" y="102" width="26" height="24" rx="4" fill="#E8E8E8"/>
+  <text x="65" y="118" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#AAAAAA">1</text>
+  <text x="96" y="118" font-family="Arial, sans-serif" font-size="12" fill="#AAAAAA">Name &amp; configure source type</text>
+  <text x="876" y="119" font-family="Arial, sans-serif" font-size="16" fill="#CCCCCC">›</text>
 
-  <!-- Step 2 — expanded (active) -->
-  <rect x="40" y="152" width="880" height="272" rx="6" fill="#E8EFF5" stroke="#8FA8C0" stroke-width="1.5"/>
-  <!-- Step 2 header -->
-  <rect x="60" y="167" width="28" height="22" rx="3" fill="#8FA8C0"/>
-  <rect x="64" y="173" width="20" height="10" rx="2" fill="#FFF"/>
-  <rect x="100" y="172" width="340" height="10" rx="2" fill="#484848"/>
-  <circle cx="898" cy="178" r="10" fill="#8FA8C0" opacity="0.3"/>
-  <rect x="894" y="174" width="8" height="8" rx="1" fill="#8FA8C0"/>
-  <!-- Sub-step label -->
-  <rect x="60" y="200" width="240" height="9" rx="2" fill="#484848"/>
-  <!-- Description lines -->
-  <rect x="60" y="218" width="580" height="6" rx="2" fill="#C0C0C0"/>
-  <rect x="60" y="229" width="500" height="6" rx="2" fill="#C0C0C0"/>
-  <!-- Checkbox + label -->
-  <rect x="60" y="250" width="16" height="16" rx="3" fill="#FFF" stroke="#D0D0D0" stroke-width="1.5"/>
-  <rect x="84" y="254" width="160" height="7" rx="2" fill="#888"/>
-  <!-- Provision button with annotation -->
-  <rect x="60" y="276" width="90" height="32" rx="4" fill="#8FA8C0"/>
-  <rect x="74" y="287" width="62" height="9" rx="2" fill="#FFF"/>
-  <!-- Toggle circle on button -->
-  <circle cx="154" cy="292" r="12" fill="#FFF" stroke="#8FA8C0" stroke-width="2"/>
-  <!-- Annotation callout -->
-  <rect x="300" y="256" width="330" height="74" rx="8" fill="#FFFCEE" stroke="#DCC060" stroke-width="1.5"/>
-  <text x="316" y="272" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">Provision button generates API key</text>
-  <text x="316" y="287" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">inline — no modal or redirect</text>
-  <text x="316" y="302" font-family="Arial, sans-serif" font-size="11" fill="#A08030">Key shown once, copy-to-clipboard</text>
-  <line x1="300" y1="284" x2="180" y2="292" stroke="#DCC060" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <circle cx="180" cy="292" r="4" fill="#DCC060"/>
+  <!-- Step 2 — expanded -->
+  <rect x="40" y="148" width="880" height="262" rx="6" fill="#EAF1F8" stroke="#8FA8C0" stroke-width="1.5"/>
+  <rect x="58" y="163" width="26" height="24" rx="4" fill="#8FA8C0"/>
+  <text x="65" y="179" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#FFF">2</text>
+  <text x="96" y="179" font-family="Arial, sans-serif" font-size="13" font-weight="600" fill="#333">Provision credentials</text>
+
+  <!-- Step 2 body -->
+  <text x="60" y="210" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#444">OAuth connection</text>
+  <rect x="60" y="218" width="360" height="7" rx="2" fill="#BBCCD8"/>
+  <rect x="60" y="230" width="300" height="7" rx="2" fill="#BBCCD8"/>
+  <rect x="60" y="248" width="16" height="16" rx="3" fill="#FFF" stroke="#BBBBBB" stroke-width="1.5"/>
+  <text x="84" y="259" font-family="Arial, sans-serif" font-size="11" fill="#666">Grant read access to CRM objects</text>
+  <rect x="60" y="276" width="120" height="30" rx="4" fill="#8FA8C0"/>
+  <text x="76" y="295" font-family="Arial, sans-serif" font-size="12" fill="#FFF">Provision key</text>
+
+  <!-- Annotation -->
+  <rect x="208" y="266" width="318" height="64" rx="8" fill="#FFFCEE" stroke="#DCC060" stroke-width="1.5"/>
+  <text x="222" y="284" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">API key generated inline —</text>
+  <text x="222" y="299" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">no modal or redirect</text>
+  <text x="222" y="316" font-family="Arial, sans-serif" font-size="11" fill="#A08030">Shown once · copy-to-clipboard</text>
+  <line x1="208" y1="290" x2="180" y2="291" stroke="#DCC060" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#tip)"/>
+
+  <text x="60" y="388" font-family="Arial, sans-serif" font-size="11" fill="#8FA8C0">Credentials encrypted at rest and never logged</text>
 
   <!-- Step 3 — collapsed -->
-  <rect x="40" y="432" width="880" height="52" rx="6" fill="#FFF" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="60" y="447" width="28" height="22" rx="3" fill="#E8E8E8"/>
-  <rect x="64" y="453" width="20" height="10" rx="2" fill="#AAAAAA"/>
-  <rect x="100" y="452" width="300" height="10" rx="2" fill="#484848"/>
-  <circle cx="898" cy="458" r="10" fill="#EEEEEE"/>
-  <rect x="894" y="454" width="8" height="8" rx="1" fill="#AAAAAA"/>
+  <rect x="40" y="420" width="880" height="52" rx="6" fill="#FFF" stroke="#E0E0E0" stroke-width="1"/>
+  <rect x="58" y="434" width="26" height="24" rx="4" fill="#E8E8E8"/>
+  <text x="65" y="450" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#AAAAAA">3</text>
+  <text x="96" y="450" font-family="Arial, sans-serif" font-size="12" fill="#AAAAAA">Verify &amp; activate</text>
+  <text x="876" y="451" font-family="Arial, sans-serif" font-size="16" fill="#CCCCCC">›</text>
 
-  <!-- Footer action bar -->
-  <rect x="24" y="504" width="912" height="1" fill="#D4D4D4"/>
-  <rect x="700" y="512" width="100" height="7" rx="2" fill="#8FA8C0" opacity="0.7"/>
-  <rect x="810" y="508" width="60" height="22" rx="4" fill="#EEEEEE" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="822" y="515" width="36" height="7" rx="2" fill="#888"/>
-  <rect x="880" y="508" width="56" height="22" rx="4" fill="#8FA8C0"/>
-  <rect x="895" y="515" width="26" height="7" rx="2" fill="#FFF"/>
-  <!-- Label -->
-  <rect x="24" y="512" width="90" height="20" rx="4" fill="#404040" opacity="0.8"/>
-  <text x="34" y="525" font-family="Arial, sans-serif" font-size="9" fill="#FFF" letter-spacing="0.6">Lo-fi Wireframe</text>
+  <!-- Footer -->
+  <line x1="24" y1="500" x2="936" y2="500" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="34" y="521" font-family="Arial, sans-serif" font-size="11" fill="#8FA8C0">Progress saved automatically</text>
+  <rect x="808" y="506" width="56" height="26" rx="4" fill="#F0F0F0" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="820" y="522" font-family="Arial, sans-serif" font-size="11" fill="#888">Back</text>
+  <rect x="874" y="506" width="62" height="26" rx="4" fill="#8FA8C0"/>
+  <text x="885" y="522" font-family="Arial, sans-serif" font-size="11" fill="#FFF">Next →</text>
 
-  <!-- Step labels -->
-  <text x="104" y="105" font-family="Arial, sans-serif" font-size="12" fill="#AAAAAA">Step 1 — Name &amp; source type</text>
-  <text x="104" y="165" font-family="Arial, sans-serif" font-size="12" fill="#484848">Step 2 — Provision credentials  (active)</text>
-  <text x="104" y="445" font-family="Arial, sans-serif" font-size="12" fill="#AAAAAA">Step 3 — Verify &amp; save</text>
-
-  <!-- Footer label -->
-  <text x="700" y="507" font-family="Arial, sans-serif" font-size="10" fill="#8888BB">Progress saved on each step</text>
 </svg>

@@ -13,6 +13,10 @@
 
 .heroStatItem {
   padding: 0 20px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: heroStatItemIn 520ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: var(--stat-delay, 0ms);
 }
 
 .heroStatItem:first-child {
@@ -28,6 +32,34 @@
   font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 1;
+  perspective: 1200px;
+  font-variant-numeric: tabular-nums;
+}
+
+.heroStatNumInner {
+  display: inline-flex;
+  gap: 0.02em;
+  align-items: flex-end;
+  transform-style: preserve-3d;
+}
+
+.heroStatChar {
+  display: inline-block;
+  perspective: 900px;
+}
+
+.heroStatCharFace {
+  display: inline-block;
+  min-width: 0.5em;
+  transform-origin: center bottom;
+  transform-style: preserve-3d;
+  transform: rotateX(-92deg) translateY(22px) translateZ(-10px);
+  opacity: 0;
+  filter: blur(10px);
+  backface-visibility: hidden;
+  text-shadow: 0 10px 18px rgba(17, 17, 16, 0.12);
+  animation: heroStatFlipIn 820ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(var(--stat-delay, 0ms) + var(--char-delay, 0ms) + 40ms);
 }
 
 .heroStatLabel {
@@ -36,6 +68,10 @@
   color: var(--sub);
   line-height: 1.4;
   max-width: 20ch;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: heroStatLabelIn 420ms ease-out forwards;
+  animation-delay: calc(var(--stat-delay, 0ms) + 150ms);
 }
 
 .heroTitle {
@@ -158,6 +194,50 @@
   }
 }
 
+@keyframes heroStatItemIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroStatFlipIn {
+  from {
+    opacity: 0;
+    transform: rotateX(-92deg) translateY(22px) translateZ(-10px);
+    filter: blur(10px);
+  }
+
+  60% {
+    opacity: 1;
+    transform: rotateX(14deg) translateY(-3px) translateZ(12px);
+    filter: blur(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotateX(0deg) translateY(0) translateZ(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes heroStatLabelIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 980px) {
   .heroGrid {
     grid-template-columns: minmax(0, 1.05fr) 300px;
@@ -257,7 +337,11 @@
 
 @media (prefers-reduced-motion: reduce) {
   .heroLine,
-  .heroShip::after {
+  .heroShipWord,
+  .heroShip::after,
+  .heroStatItem,
+  .heroStatCharFace,
+  .heroStatLabel {
     animation: none;
     opacity: 1;
     transform: none;

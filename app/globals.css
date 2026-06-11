@@ -107,6 +107,44 @@ button { font: inherit; cursor: pointer; }
 }
 .chip.solid { background: var(--ink); color: var(--bone); border-color: var(--ink); }
 
+.work-filter-chip {
+  background: rgba(17,17,16,0.03);
+  border-color: rgba(17,17,16,0.12);
+  color: var(--ink-2);
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.work-filter-chip:hover {
+  transform: translateY(-1px);
+  background: rgba(225,59,20,0.08);
+  border-color: rgba(225,59,20,0.34);
+  color: var(--ink);
+}
+
+.work-filter-chip:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(225,59,20,0.18);
+}
+
+.work-filter-chip[data-active="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bone);
+}
+
+.work-filter-chip[data-active="true"]:hover,
+.work-filter-chip[data-active="true"]:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bone);
+}
+
 /* ---- photo placeholder ---- */
 .photo {
   position: relative;

@@ -1,146 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
-  <rect width="960" height="540" fill="#EFEFEE"/>
-  <!-- Narrow icon-only left sidebar -->
-  <rect x="0" y="0" width="52" height="540" fill="#2A2A2A" stroke="#1E1E1E" stroke-width="0.5"/>
-  <!-- Logo icon -->
-  <rect x="8" y="10" width="36" height="30" rx="4" fill="#C83030" opacity="0.9"/>
-  <!-- Nav icons (circles as icon placeholders) -->
-  <circle cx="26" cy="72" r="11" fill="#3A3A3A"/>
-  <rect x="20" y="68" width="12" height="8" rx="2" fill="#666"/>
-  <circle cx="26" cy="104" r="11" fill="#3A3A3A"/>
-  <rect x="20" y="100" width="12" height="8" rx="2" fill="#666"/>
-  <!-- Cards icon (active) -->
-  <circle cx="26" cy="136" r="11" fill="#8FA8C0" opacity="0.3"/>
-  <rect x="20" y="132" width="12" height="8" rx="2" fill="#8FA8C0"/>
-  <circle cx="26" cy="168" r="11" fill="#3A3A3A"/>
-  <rect x="20" y="164" width="12" height="8" rx="2" fill="#666"/>
-  <circle cx="26" cy="200" r="11" fill="#3A3A3A"/>
-  <rect x="20" y="196" width="12" height="8" rx="2" fill="#666"/>
-  <circle cx="26" cy="232" r="11" fill="#3A3A3A"/>
-  <rect x="20" y="228" width="12" height="8" rx="2" fill="#666"/>
-  <circle cx="26" cy="264" r="11" fill="#3A3A3A"/>
-  <rect x="20" y="260" width="12" height="8" rx="2" fill="#666"/>
-  <circle cx="26" cy="296" r="11" fill="#3A3A3A"/>
-  <rect x="20" y="292" width="12" height="8" rx="2" fill="#666"/>
-  <circle cx="26" cy="460" r="11" fill="#3A3A3A"/>
-  <rect x="20" y="456" width="12" height="8" rx="2" fill="#666"/>
-  <!-- Top header with vehicle image bg -->
-  <rect x="52" y="0" width="908" height="130" fill="#C8C8C8"/>
-  <!-- Simulated vehicle image placeholder lines -->
-  <rect x="52" y="0" width="908" height="130" fill="url(#vehicle-grad)"/>
   <defs>
-    <linearGradient id="vehicle-grad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#E0E0DE" stop-opacity="0.95"/>
-      <stop offset="0.4" stop-color="#D8D8D6" stop-opacity="0.9"/>
-      <stop offset="1" stop-color="#C0C0BE" stop-opacity="0.85"/>
-    </linearGradient>
+    <marker id="tip" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,8 L8,4 z" fill="#DCC060"/>
+    </marker>
   </defs>
-  <!-- Subtle truck silhouette suggestion -->
-  <ellipse cx="800" cy="80" rx="200" ry="60" fill="#C4C4C2" opacity="0.5"/>
-  <rect x="650" y="50" width="300" height="80" rx="8" fill="#BBBBBA" opacity="0.4"/>
-  <!-- Top nav in header area -->
-  <rect x="52" y="0" width="908" height="46" fill="#2C2C2C" opacity="0.85"/>
-  <rect x="64" y="11" width="80" height="24" rx="3" fill="#C2C2C2" opacity="0.6"/>
-  <rect x="880" y="10" width="68" height="24" rx="4" fill="#444" opacity="0.8"/>
-  <circle cx="902" cy="22" r="9" fill="#C2C2C2" opacity="0.6"/>
-  <rect x="916" y="15" width="26" height="14" rx="3" fill="#C2C2C2" opacity="0.6"/>
-  <!-- Page title overlay -->
-  <rect x="64" y="66" width="120" height="22" rx="3" fill="#2A2A2A" opacity="0.9"/>
-  <rect x="72" y="72" width="104" height="10" rx="2" fill="#EEEEEE" opacity="0.8"/>
-  <rect x="64" y="96" width="160" height="8" rx="2" fill="#2A2A2A" opacity="0.8"/>
-  <!-- Add Card button -->
-  <rect x="64" y="142" width="112" height="30" rx="4" fill="#FFF" stroke="#D0D0D0" stroke-width="1.5"/>
-  <rect x="80" y="152" width="80" height="8" rx="2" fill="#484848"/>
-  <!-- Search + Export right side -->
-  <rect x="726" y="142" width="180" height="30" rx="4" fill="#FFF" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="740" y="152" width="100" height="8" rx="2" fill="#C0C0C0"/>
-  <rect x="916" y="142" width="88" height="30" rx="4" fill="#FFF" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="928" y="152" width="64" height="8" rx="2" fill="#888"/>
+  <rect width="960" height="540" fill="#F0EFEE"/>
+
+  <!-- Narrow icon sidebar -->
+  <rect x="0" y="0" width="52" height="540" fill="#2A2A2A"/>
+  <rect x="8" y="10" width="36" height="30" rx="4" fill="#C83030" opacity="0.9"/>
+  <text x="26" y="58" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#666" letter-spacing="0.5" text-anchor="middle">NAV</text>
+  <circle cx="26" cy="78" r="11" fill="#3A3A3A"/>
+  <circle cx="26" cy="110" r="11" fill="#3A3A3A"/>
+  <circle cx="26" cy="142" r="11" fill="#8FA8C0" opacity="0.4"/>
+  <circle cx="26" cy="174" r="11" fill="#3A3A3A"/>
+  <circle cx="26" cy="206" r="11" fill="#3A3A3A"/>
+  <circle cx="26" cy="238" r="11" fill="#3A3A3A"/>
+
+  <!-- Vehicle context header -->
+  <rect x="52" y="0" width="908" height="130" fill="#C8C8C6"/>
+  <rect x="52" y="0" width="908" height="44" fill="#2C2C2C" opacity="0.88"/>
+  <rect x="64" y="10" width="76" height="24" rx="3" fill="#C2C2C2" opacity="0.5"/>
+  <rect x="880" y="8" width="68" height="26" rx="4" fill="#444" opacity="0.8"/>
+  <text x="896" y="24" font-family="Arial, sans-serif" font-size="10" fill="#CCC">Profile</text>
+  <text x="64" y="74" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">Unit 1042 — 2022 Ford F-250</text>
+  <text x="64" y="96" font-family="Arial, sans-serif" font-size="12" fill="#444">VIN: 1FT7W2BT6NEE02841 · Assigned: Southwest District</text>
+
+  <!-- Toolbar row -->
+  <rect x="52" y="130" width="908" height="44" fill="#FFF" stroke="#E0E0E0" stroke-width="1"/>
+  <rect x="64" y="142" width="106" height="22" rx="4" fill="#FFF" stroke="#D0D0D0" stroke-width="1.5"/>
+  <text x="76" y="156" font-family="Arial, sans-serif" font-size="11" fill="#444">+ Add Card</text>
+  <rect x="726" y="142" width="160" height="22" rx="4" fill="#F0F0F0" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="738" y="156" font-family="Arial, sans-serif" font-size="11" fill="#BBBBBB">Search cards...</text>
+  <rect x="898" y="142" width="56" height="22" rx="4" fill="#F0F0F0" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="912" y="156" font-family="Arial, sans-serif" font-size="11" fill="#888">Export</text>
+
   <!-- Table header -->
-  <rect x="52" y="184" width="908" height="28" fill="#F0F0F0" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="74" y="194" width="16" height="12" rx="3" fill="#C2C2C2"/>
-  <rect x="98" y="196" width="18" height="8" rx="2" fill="#888"/>
-  <rect x="130" y="196" width="80" height="8" rx="2" fill="#888"/>
-  <rect x="316" y="196" width="54" height="8" rx="2" fill="#888"/>
-  <rect x="430" y="196" width="54" height="8" rx="2" fill="#888"/>
-  <rect x="546" y="196" width="64" height="8" rx="2" fill="#888"/>
-  <rect x="680" y="196" width="86" height="8" rx="2" fill="#888"/>
-  <!-- Rows -->
-  <!-- Row 1 -->
-  <rect x="52" y="212" width="908" height="48" fill="#FFF" stroke="#EEEEEE" stroke-width="1"/>
-  <rect x="74" y="224" width="16" height="16" rx="3" fill="#EEEEEE" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="100" y="226" width="16" height="12" rx="2" fill="#BFD4B8"/>
-  <rect x="130" y="224" width="140" height="7" rx="2" fill="#888"/>
-  <rect x="130" y="236" width="120" height="6" rx="2" fill="#C0C0C0"/>
-  <rect x="316" y="229" width="46" height="8" rx="2" fill="#888"/>
-  <rect x="430" y="229" width="40" height="8" rx="2" fill="#888"/>
-  <rect x="546" y="228" width="70" height="12" rx="4" fill="#E0EED0"/>
-  <rect x="554" y="232" width="54" height="6" rx="2" fill="#4A7A4A"/>
-  <rect x="820" y="226" width="100" height="22" rx="11" fill="#F0F0F0" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="832" y="231" width="76" height="7" rx="2" fill="#888"/>
-  <!-- Row 2 - frozen badge -->
-  <rect x="52" y="260" width="908" height="48" fill="#F9F9F9" stroke="#EEEEEE" stroke-width="1"/>
-  <rect x="74" y="272" width="16" height="16" rx="3" fill="#EEEEEE" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="100" y="274" width="16" height="12" rx="2" fill="#AAC8E0"/>
-  <rect x="130" y="272" width="120" height="7" rx="2" fill="#888"/>
-  <rect x="130" y="284" width="100" height="6" rx="2" fill="#C0C0C0"/>
-  <rect x="316" y="277" width="80" height="18" rx="9" fill="#D0E8F8"/>
-  <rect x="316" y="277" width="80" height="18" rx="9" fill="none" stroke="#80C0E8" stroke-width="1"/>
-  <rect x="324" y="282" width="64" height="7" rx="2" fill="#3070A0"/>
-  <rect x="820" y="270" width="100" height="22" rx="11" fill="#F0F0F0" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="832" y="275" width="76" height="7" rx="2" fill="#888"/>
-  <!-- Row 3 - canceled -->
-  <rect x="52" y="308" width="908" height="48" fill="#FFF" stroke="#EEEEEE" stroke-width="1"/>
-  <rect x="74" y="320" width="16" height="16" rx="3" fill="#EEEEEE" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="100" y="322" width="16" height="12" rx="2" fill="#CCCCCC"/>
-  <rect x="130" y="320" width="100" height="7" rx="2" fill="#888"/>
-  <rect x="130" y="332" width="80" height="6" rx="2" fill="#C0C0C0"/>
-  <rect x="316" y="325" width="66" height="8" rx="2" fill="#AAAAAA"/>
-  <!-- Row 4 - pending -->
-  <rect x="52" y="356" width="908" height="60" fill="#F9F9F9" stroke="#EEEEEE" stroke-width="1"/>
-  <rect x="74" y="370" width="16" height="16" rx="3" fill="#EEEEEE" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="100" y="372" width="16" height="12" rx="2" fill="#CCCCCC"/>
-  <rect x="130" y="370" width="160" height="7" rx="2" fill="#888"/>
-  <rect x="130" y="382" width="130" height="6" rx="2" fill="#C0C0C0"/>
-  <rect x="316" y="370" width="80" height="7" rx="2" fill="#888"/>
-  <rect x="316" y="382" width="130" height="6" rx="2" fill="#C0C0C0"/>
-  <rect x="820" y="368" width="100" height="22" rx="11" fill="#F0F0F0" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="832" y="373" width="76" height="7" rx="2" fill="#888"/>
-  <!-- Row 5 - frozen fraud badge -->
-  <rect x="52" y="416" width="908" height="48" fill="#FFF8F0" stroke="#E8C080" stroke-width="1"/>
-  <rect x="74" y="428" width="16" height="16" rx="3" fill="#EEEEEE" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="100" y="430" width="16" height="12" rx="2" fill="#D04040" opacity="0.7"/>
-  <rect x="130" y="428" width="130" height="7" rx="2" fill="#888"/>
-  <rect x="130" y="440" width="100" height="6" rx="2" fill="#C0C0C0"/>
-  <rect x="316" y="426" width="110" height="20" rx="10" fill="#E8D0C8"/>
-  <rect x="316" y="426" width="110" height="20" rx="10" fill="none" stroke="#C8A08A" stroke-width="1"/>
-  <rect x="324" y="431" width="94" height="7" rx="2" fill="#904030"/>
-  <rect x="316" y="450" width="170" height="6" rx="2" fill="#C8C8C8"/>
-  <!-- Label -->
-  <rect x="862" y="512" width="90" height="20" rx="4" fill="#404040" opacity="0.8"/>
-  <text x="872" y="525" font-family="Arial, sans-serif" font-size="9" fill="#FFF" letter-spacing="0.6">Lo-fi Wireframe</text>
+  <rect x="52" y="174" width="908" height="28" fill="#F5F5F5" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="72" y="192" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.3">Card / Driver</text>
+  <text x="300" y="192" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.3">Status</text>
+  <text x="420" y="192" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.3">Limit</text>
+  <text x="530" y="192" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.3">Spend MTD</text>
+  <text x="660" y="192" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.3">Category</text>
+  <text x="820" y="192" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.3">Actions</text>
 
-  <!-- Region labels -->
-  <text x="56" y="184" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#8888BB" letter-spacing="1.0">CARD TABLE</text>
+  <!-- Row 1 — active -->
+  <rect x="52" y="202" width="908" height="48" fill="#FFF" stroke="#EEEEEE" stroke-width="1"/>
+  <rect x="72" y="216" width="14" height="12" rx="2" fill="#BFD4B8"/>
+  <text x="94" y="228" font-family="Arial, sans-serif" font-size="11" fill="#444">•••• 4821</text>
+  <text x="94" y="242" font-family="Arial, sans-serif" font-size="10" fill="#AAAAAA">J. Martinez</text>
+  <rect x="300" y="216" width="70" height="18" rx="4" fill="#E0EED0"/>
+  <text x="310" y="228" font-family="Arial, sans-serif" font-size="10" fill="#4A7A4A">Active</text>
+  <text x="420" y="228" font-family="Arial, sans-serif" font-size="11" fill="#555">$500 / mo</text>
+  <text x="530" y="228" font-family="Arial, sans-serif" font-size="11" fill="#555">$214.80</text>
+  <text x="660" y="228" font-family="Arial, sans-serif" font-size="11" fill="#888">Fuel, tolls</text>
+  <rect x="820" y="214" width="106" height="22" rx="11" fill="#F0F0F0" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="834" y="228" font-family="Arial, sans-serif" font-size="10" fill="#888">Manage card</text>
 
-  <!-- Column header labels -->
-  <text x="130" y="195" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.4">Card / Driver</text>
-  <text x="316" y="195" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.4">Status</text>
-  <text x="430" y="195" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.4">Limit</text>
-  <text x="546" y="195" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.4">Spend MTD</text>
-  <text x="680" y="195" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.4">Actions</text>
+  <!-- Row 2 — frozen -->
+  <rect x="52" y="250" width="908" height="48" fill="#F4F8FC" stroke="#EEEEEE" stroke-width="1"/>
+  <rect x="72" y="264" width="14" height="12" rx="2" fill="#AAC8E0"/>
+  <text x="94" y="276" font-family="Arial, sans-serif" font-size="11" fill="#444">•••• 7703</text>
+  <text x="94" y="290" font-family="Arial, sans-serif" font-size="10" fill="#AAAAAA">K. Thompson</text>
+  <rect x="300" y="264" width="66" height="18" rx="9" fill="#D0E8F8" stroke="#80C0E8" stroke-width="1"/>
+  <text x="311" y="276" font-family="Arial, sans-serif" font-size="10" fill="#2A6A9A">Frozen</text>
+  <text x="420" y="276" font-family="Arial, sans-serif" font-size="11" fill="#888">$500 / mo</text>
+  <text x="530" y="276" font-family="Arial, sans-serif" font-size="11" fill="#888">$0.00</text>
+  <rect x="820" y="262" width="106" height="22" rx="11" fill="#F0F0F0" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="834" y="276" font-family="Arial, sans-serif" font-size="10" fill="#888">Manage card</text>
 
-  <!-- Status badge annotation -->
-  <rect x="440" y="408" width="260" height="62" rx="6" fill="#FFFCEE" stroke="#DCC060" stroke-width="1.5"/>
-  <text x="454" y="424" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">Card lifecycle states: active,</text>
-  <text x="454" y="439" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">frozen, canceled, pending</text>
-  <text x="454" y="454" font-family="Arial, sans-serif" font-size="11" fill="#A08030">Fraud hold shown as sub-state</text>
-  <text x="454" y="467" font-family="Arial, sans-serif" font-size="11" fill="#A08030">of frozen with amber highlight</text>
-  <line x1="440" y1="436" x2="316" y2="436" stroke="#DCC060" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <circle cx="316" cy="436" r="4" fill="#DCC060"/>
+  <!-- Row 3 — canceled -->
+  <rect x="52" y="298" width="908" height="48" fill="#FFF" stroke="#EEEEEE" stroke-width="1"/>
+  <rect x="72" y="312" width="14" height="12" rx="2" fill="#CCCCCC"/>
+  <text x="94" y="324" font-family="Arial, sans-serif" font-size="11" fill="#AAAAAA">•••• 0092</text>
+  <text x="94" y="338" font-family="Arial, sans-serif" font-size="10" fill="#CCCCCC">Unassigned</text>
+  <rect x="300" y="312" width="72" height="18" rx="4" fill="#EEEEEE"/>
+  <text x="312" y="324" font-family="Arial, sans-serif" font-size="10" fill="#AAAAAA">Canceled</text>
 
-  <!-- Icon sidebar label -->
-  <text x="4" y="50" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#888" letter-spacing="0.8">ICON</text>
-  <text x="4" y="60" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#888" letter-spacing="0.8">NAV</text>
+  <!-- Row 4 — fraud hold, highlighted -->
+  <rect x="52" y="346" width="908" height="60" fill="#FFF8F0" stroke="#E8C080" stroke-width="1"/>
+  <rect x="72" y="362" width="14" height="12" rx="2" fill="#D04040" opacity="0.7"/>
+  <text x="94" y="374" font-family="Arial, sans-serif" font-size="11" fill="#444">•••• 5519</text>
+  <text x="94" y="388" font-family="Arial, sans-serif" font-size="10" fill="#AAAAAA">R. Okafor</text>
+  <rect x="300" y="360" width="110" height="20" rx="10" fill="#F0D8C8" stroke="#C8A08A" stroke-width="1"/>
+  <text x="310" y="373" font-family="Arial, sans-serif" font-size="10" fill="#904030">Frozen — fraud hold</text>
+  <text x="300" y="392" font-family="Arial, sans-serif" font-size="10" fill="#BBBBBB">Flagged 2d ago · review pending</text>
+
+  <!-- Status annotation -->
+  <rect x="430" y="420" width="250" height="64" rx="6" fill="#FFFCEE" stroke="#DCC060" stroke-width="1.5"/>
+  <text x="444" y="438" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">Card states: active, frozen,</text>
+  <text x="444" y="454" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">canceled, pending</text>
+  <text x="444" y="470" font-family="Arial, sans-serif" font-size="11" fill="#A08030">Fraud hold = frozen sub-state</text>
+  <line x1="430" y1="448" x2="300" y2="380" stroke="#DCC060" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#tip)"/>
+
 </svg>

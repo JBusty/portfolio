@@ -1,118 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
-  <rect width="960" height="540" fill="#EFEFEE"/>
-  <!-- Top nav -->
-  <rect width="960" height="46" fill="#E6E6E5" stroke="#CCCCCC" stroke-width="0.5"/>
-  <rect x="12" y="11" width="90" height="24" rx="3" fill="#C2C2C2"/>
-  <rect x="148" y="12" width="230" height="22" rx="11" fill="#FAFAFA" stroke="#C8C8C8" stroke-width="1"/>
-  <rect x="158" y="20" width="80" height="6" rx="2" fill="#C8C8C8"/>
-  <rect x="802" y="15" width="18" height="16" rx="3" fill="#C2C2C2"/>
-  <circle cx="836" cy="23" r="11" fill="#C2C2C2"/>
-  <!-- Left sidebar -->
-  <rect x="0" y="46" width="130" height="494" fill="#E2E2E1" stroke="#CCCCCC" stroke-width="0.5"/>
-  <rect x="22" y="64" width="60" height="7" rx="2" fill="#AAAAAA"/>
-  <rect x="22" y="90" width="70" height="7" rx="2" fill="#AAAAAA"/>
-  <rect x="22" y="116" width="50" height="7" rx="2" fill="#AAAAAA"/>
-  <rect x="22" y="142" width="64" height="7" rx="2" fill="#AAAAAA"/>
-  <rect x="12" y="168" width="76" height="5" rx="2" fill="#C8C8C8"/>
-  <rect x="22" y="184" width="56" height="7" rx="2" fill="#AAAAAA"/>
-  <!-- Integrations (highlighted) -->
-  <rect x="10" y="200" width="110" height="26" rx="4" fill="#D0DCE8"/>
-  <rect x="22" y="209" width="70" height="7" rx="2" fill="#8FA8C0"/>
-  <!-- Main content -->
-  <!-- Page header area - the table -->
-  <rect x="148" y="58" width="800" height="468" rx="4" fill="#FFF" stroke="#D0D0D0" stroke-width="1"/>
+  <defs>
+    <marker id="tip" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,8 L8,4 z" fill="#DCC060"/>
+    </marker>
+  </defs>
+  <rect width="960" height="540" fill="#F0EFEE"/>
+
+  <!-- Nav -->
+  <rect width="960" height="46" fill="#E6E6E5"/>
+  <rect x="12" y="11" width="88" height="24" rx="3" fill="#BBBBBB"/>
+  <circle cx="840" cy="23" r="11" fill="#BBBBBB"/>
+
+  <!-- Sidebar -->
+  <rect x="0" y="46" width="130" height="494" fill="#E4E4E3"/>
+  <text x="12" y="59" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#9999BB" letter-spacing="1">INTEGRATION NAV</text>
+  <text x="24" y="82" font-family="Arial, sans-serif" font-size="11" fill="#888">Overview</text>
+  <rect x="10" y="90" width="110" height="26" rx="4" fill="#D0DCE8"/>
+  <text x="24" y="107" font-family="Arial, sans-serif" font-size="11" font-weight="600" fill="#5A7A9A">Integrations</text>
+  <text x="24" y="134" font-family="Arial, sans-serif" font-size="11" fill="#888">Webhooks</text>
+  <text x="24" y="156" font-family="Arial, sans-serif" font-size="11" fill="#888">API Keys</text>
+  <text x="24" y="178" font-family="Arial, sans-serif" font-size="11" fill="#888">Settings</text>
+
+  <!-- Table container -->
+  <rect x="148" y="56" width="800" height="466" rx="4" fill="#FFF" stroke="#E0E0E0" stroke-width="1"/>
+
   <!-- Column headers -->
-  <rect x="148" y="58" width="800" height="32" rx="4" fill="#F0F0F0" stroke="#D0D0D0" stroke-width="1"/>
-  <rect x="160" y="70" width="120" height="7" rx="2" fill="#888"/>
-  <rect x="310" y="70" width="110" height="7" rx="2" fill="#888"/>
-  <rect x="490" y="70" width="80" height="7" rx="2" fill="#888"/>
-  <rect x="600" y="70" width="70" height="7" rx="2" fill="#888"/>
-  <rect x="700" y="70" width="60" height="7" rx="2" fill="#888"/>
-  <rect x="810" y="70" width="50" height="7" rx="2" fill="#888"/>
+  <rect x="148" y="56" width="800" height="32" rx="4" fill="#F5F5F5" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="168" y="76" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555">Integration</text>
+  <text x="330" y="76" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555">Type</text>
+  <text x="460" y="76" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555">Checks</text>
+  <text x="570" y="76" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555">Interval</text>
+  <text x="680" y="76" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555">Issues</text>
+  <text x="796" y="76" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555">Status</text>
+
   <!-- Row 1 -->
-  <rect x="148" y="90" width="800" height="42" fill="#FFF" stroke="#EEEEEE" stroke-width="1"/>
-  <rect x="158" y="100" width="16" height="16" rx="2" fill="#D85050" opacity="0.8"/>
-  <rect x="182" y="103" width="140" height="7" rx="2" fill="#8FA8C0" opacity="0.9"/>
-  <rect x="310" y="103" width="130" height="7" rx="2" fill="#888"/>
-  <rect x="490" y="103" width="60" height="7" rx="2" fill="#888"/>
-  <rect x="600" y="103" width="50" height="7" rx="2" fill="#888"/>
-  <rect x="700" y="103" width="38" height="7" rx="2" fill="#888"/>
-  <rect x="810" y="101" width="52" height="18" rx="9" fill="#7AB07A"/>
-  <rect x="826" y="107" width="22" height="6" rx="2" fill="#FFF"/>
+  <rect x="148" y="88" width="800" height="42" fill="#FFF" stroke="#EEEEEE" stroke-width="1"/>
+  <rect x="160" y="100" width="16" height="16" rx="2" fill="#D85050" opacity="0.8"/>
+  <text x="184" y="112" font-family="Arial, sans-serif" font-size="11" fill="#5A7A9A">Salesforce CRM</text>
+  <text x="330" y="112" font-family="Arial, sans-serif" font-size="11" fill="#888">OAuth</text>
+  <text x="460" y="112" font-family="Arial, sans-serif" font-size="11" fill="#888">12</text>
+  <text x="570" y="112" font-family="Arial, sans-serif" font-size="11" fill="#888">5 min</text>
+  <rect x="796" y="99" width="52" height="18" rx="9" fill="#7AB07A"/>
+  <text x="809" y="111" font-family="Arial, sans-serif" font-size="10" fill="#FFF">OK</text>
+
   <!-- Row 2 -->
-  <rect x="148" y="132" width="800" height="42" fill="#F9F9F9" stroke="#EEEEEE" stroke-width="1"/>
-  <rect x="158" y="142" width="16" height="16" rx="2" fill="#5880B0" opacity="0.8"/>
-  <rect x="182" y="145" width="160" height="7" rx="2" fill="#8FA8C0" opacity="0.9"/>
-  <rect x="310" y="145" width="150" height="7" rx="2" fill="#888"/>
-  <rect x="490" y="145" width="50" height="7" rx="2" fill="#888"/>
-  <rect x="810" y="143" width="52" height="18" rx="9" fill="#7AB07A"/>
-  <rect x="826" y="149" width="22" height="6" rx="2" fill="#FFF"/>
+  <rect x="148" y="130" width="800" height="42" fill="#FAFAFA" stroke="#EEEEEE" stroke-width="1"/>
+  <rect x="160" y="142" width="16" height="16" rx="2" fill="#5880B0" opacity="0.8"/>
+  <text x="184" y="154" font-family="Arial, sans-serif" font-size="11" fill="#5A7A9A">GitHub Actions</text>
+  <text x="330" y="154" font-family="Arial, sans-serif" font-size="11" fill="#888">Token</text>
+  <text x="460" y="154" font-family="Arial, sans-serif" font-size="11" fill="#888">8</text>
+  <text x="570" y="154" font-family="Arial, sans-serif" font-size="11" fill="#888">1 min</text>
+  <rect x="796" y="141" width="52" height="18" rx="9" fill="#7AB07A"/>
+  <text x="809" y="153" font-family="Arial, sans-serif" font-size="10" fill="#FFF">OK</text>
+
   <!-- Row 3 -->
-  <rect x="148" y="174" width="800" height="42" fill="#FFF" stroke="#EEEEEE" stroke-width="1"/>
-  <rect x="158" y="184" width="16" height="16" rx="2" fill="#888" opacity="0.7"/>
-  <rect x="182" y="187" width="180" height="7" rx="2" fill="#8FA8C0" opacity="0.9"/>
-  <rect x="310" y="187" width="120" height="7" rx="2" fill="#888"/>
-  <rect x="810" y="185" width="52" height="18" rx="9" fill="#7AB07A"/>
-  <rect x="826" y="191" width="22" height="6" rx="2" fill="#FFF"/>
+  <rect x="148" y="172" width="800" height="42" fill="#FFF" stroke="#EEEEEE" stroke-width="1"/>
+  <rect x="160" y="184" width="16" height="16" rx="2" fill="#888" opacity="0.7"/>
+  <text x="184" y="196" font-family="Arial, sans-serif" font-size="11" fill="#5A7A9A">Okta SSO</text>
+  <text x="330" y="196" font-family="Arial, sans-serif" font-size="11" fill="#888">SAML</text>
+  <text x="460" y="196" font-family="Arial, sans-serif" font-size="11" fill="#888">6</text>
+  <text x="570" y="196" font-family="Arial, sans-serif" font-size="11" fill="#888">10 min</text>
+  <rect x="796" y="183" width="52" height="18" rx="9" fill="#7AB07A"/>
+  <text x="809" y="195" font-family="Arial, sans-serif" font-size="10" fill="#FFF">OK</text>
+
   <!-- Row 4 -->
-  <rect x="148" y="216" width="800" height="42" fill="#F9F9F9" stroke="#EEEEEE" stroke-width="1"/>
-  <rect x="158" y="226" width="16" height="16" rx="2" fill="#C2C250" opacity="0.8"/>
-  <rect x="182" y="229" width="170" height="7" rx="2" fill="#8FA8C0" opacity="0.9"/>
-  <rect x="310" y="229" width="140" height="7" rx="2" fill="#888"/>
-  <rect x="490" y="229" width="56" height="7" rx="2" fill="#888"/>
-  <rect x="600" y="229" width="50" height="7" rx="2" fill="#888"/>
-  <rect x="700" y="229" width="38" height="7" rx="2" fill="#888"/>
-  <rect x="810" y="227" width="52" height="18" rx="9" fill="#7AB07A"/>
-  <rect x="826" y="233" width="22" height="6" rx="2" fill="#FFF"/>
-  <!-- Row 5 - with "issues" badge (highlighted) -->
-  <rect x="148" y="258" width="800" height="50" fill="#FFF8F0" stroke="#E8C080" stroke-width="1"/>
-  <rect x="158" y="271" width="16" height="16" rx="2" fill="#5060B8" opacity="0.8"/>
-  <rect x="182" y="274" width="200" height="7" rx="2" fill="#8FA8C0" opacity="0.9"/>
-  <rect x="310" y="274" width="140" height="7" rx="2" fill="#888"/>
-  <rect x="490" y="274" width="56" height="7" rx="2" fill="#888"/>
-  <rect x="700" y="271" width="70" height="20" rx="10" fill="#D4903A"/>
-  <rect x="710" y="277" width="50" height="7" rx="2" fill="#FFF"/>
-  <rect x="810" y="271" width="52" height="18" rx="9" fill="#7AB07A"/>
-  <rect x="826" y="277" width="22" height="6" rx="2" fill="#FFF"/>
-  <!-- Tooltip callout -->
-  <rect x="536" y="306" width="298" height="68" rx="6" fill="#FFF" stroke="#D0A840" stroke-width="1.5"/>
-  <text x="552" y="321" font-family="Arial, sans-serif" font-size="12" fill="#666">Auth token expired — last check 4d ago</text>
-  <text x="552" y="336" font-family="Arial, sans-serif" font-size="12" fill="#666">Webhook endpoint returning 401</text>
-  <text x="552" y="351" font-family="Arial, sans-serif" font-size="11" fill="#A08030">Hover on badge to see issue detail</text>
-  <text x="552" y="364" font-family="Arial, sans-serif" font-size="11" fill="#888">— tooltip, not a new page</text>
-  <!-- Connector line to "2 issues" badge -->
-  <line x1="700" y1="282" x2="536" y2="338" stroke="#D0A840" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <circle cx="700" cy="281" r="4" fill="#D0A840"/>
-  <!-- Callout annotation note -->
-  <rect x="196" y="314" width="298" height="60" rx="6" fill="#FFFCEE" stroke="#DCC060" stroke-width="1.5"/>
-  <text x="212" y="330" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">Degraded row: highlighted amber</text>
-  <text x="212" y="345" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">when any check returns non-200</text>
-  <text x="212" y="360" font-family="Arial, sans-serif" font-size="11" fill="#A08030">Badge shows issue count, not severity</text>
-  <!-- Connector from callout to row -->
-  <line x1="196" y1="342" x2="148" y2="284" stroke="#DCC060" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <circle cx="148" cy="284" r="4" fill="#DCC060"/>
-  <!-- Rows 6-8 muted -->
-  <rect x="148" y="308" width="800" height="42" fill="#F9F9F9" stroke="#EEEEEE" stroke-width="1"/>
-  <rect x="158" y="322" width="16" height="16" rx="2" fill="#888" opacity="0.5"/>
-  <rect x="182" y="325" width="190" height="7" rx="2" fill="#AAAAAA"/>
-  <rect x="810" y="321" width="52" height="18" rx="9" fill="#7AB07A" opacity="0.5"/>
-  <rect x="148" y="350" width="800" height="42" fill="#FFF" stroke="#EEEEEE" stroke-width="1"/>
-  <rect x="158" y="364" width="16" height="16" rx="2" fill="#888" opacity="0.5"/>
-  <rect x="182" y="367" width="160" height="7" rx="2" fill="#AAAAAA"/>
-  <rect x="810" y="363" width="52" height="18" rx="9" fill="#7AB07A" opacity="0.5"/>
-  <!-- Label -->
-  <rect x="862" y="512" width="90" height="20" rx="4" fill="#404040" opacity="0.8"/>
-  <text x="872" y="525" font-family="Arial, sans-serif" font-size="9" fill="#FFF" letter-spacing="0.6">Lo-fi Wireframe</text>
+  <rect x="148" y="214" width="800" height="42" fill="#FAFAFA" stroke="#EEEEEE" stroke-width="1"/>
+  <rect x="160" y="226" width="16" height="16" rx="2" fill="#C2C250" opacity="0.8"/>
+  <text x="184" y="238" font-family="Arial, sans-serif" font-size="11" fill="#5A7A9A">AWS CloudTrail</text>
+  <text x="330" y="238" font-family="Arial, sans-serif" font-size="11" fill="#888">IAM Role</text>
+  <text x="460" y="238" font-family="Arial, sans-serif" font-size="11" fill="#888">20</text>
+  <text x="570" y="238" font-family="Arial, sans-serif" font-size="11" fill="#888">15 min</text>
+  <rect x="796" y="225" width="52" height="18" rx="9" fill="#7AB07A"/>
+  <text x="809" y="237" font-family="Arial, sans-serif" font-size="10" fill="#FFF">OK</text>
 
-  <!-- Column header labels -->
-  <text x="160" y="69" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.5">Integration</text>
-  <text x="310" y="69" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.5">Type</text>
-  <text x="490" y="69" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.5">Checks</text>
-  <text x="600" y="69" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.5">Interval</text>
-  <text x="700" y="69" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.5">Issues</text>
-  <text x="810" y="69" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#555" letter-spacing="0.5">Status</text>
+  <!-- Row 5 — degraded, highlighted -->
+  <rect x="148" y="256" width="800" height="50" fill="#FFF8F0" stroke="#E8C080" stroke-width="1"/>
+  <rect x="160" y="270" width="16" height="16" rx="2" fill="#5060B8" opacity="0.8"/>
+  <text x="184" y="282" font-family="Arial, sans-serif" font-size="11" fill="#5A7A9A">Zendesk Support</text>
+  <text x="330" y="282" font-family="Arial, sans-serif" font-size="11" fill="#888">API Key</text>
+  <text x="460" y="282" font-family="Arial, sans-serif" font-size="11" fill="#888">5</text>
+  <text x="570" y="282" font-family="Arial, sans-serif" font-size="11" fill="#888">5 min</text>
+  <rect x="672" y="268" width="72" height="22" rx="11" fill="#D4903A"/>
+  <text x="681" y="282" font-family="Arial, sans-serif" font-size="10" fill="#FFF">2 issues</text>
+  <rect x="796" y="269" width="52" height="18" rx="9" fill="#7AB07A"/>
+  <text x="809" y="281" font-family="Arial, sans-serif" font-size="10" fill="#FFF">OK</text>
 
-  <!-- Region label -->
-  <text x="8" y="56" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#8888BB" letter-spacing="1.0">INTEGRATION NAV</text>
+  <!-- Tooltip -->
+  <rect x="520" y="308" width="300" height="72" rx="6" fill="#FFF" stroke="#D0A840" stroke-width="1.5"/>
+  <text x="536" y="326" font-family="Arial, sans-serif" font-size="12" fill="#555">Auth token expired — last check 4d ago</text>
+  <text x="536" y="343" font-family="Arial, sans-serif" font-size="12" fill="#555">Webhook returning 401 Unauthorized</text>
+  <text x="536" y="362" font-family="Arial, sans-serif" font-size="11" fill="#A08030">Hover badge to see issue detail</text>
+  <text x="536" y="376" font-family="Arial, sans-serif" font-size="11" fill="#CCCCCC">— tooltip, not a new page</text>
+  <line x1="700" y1="308" x2="700" y2="285" stroke="#D0A840" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#tip)"/>
+
+  <!-- Degraded row annotation -->
+  <rect x="160" y="314" width="300" height="54" rx="6" fill="#FFFCEE" stroke="#DCC060" stroke-width="1.5"/>
+  <text x="174" y="332" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">Amber highlight = degraded —</text>
+  <text x="174" y="348" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">any check returning non-200</text>
+  <text x="174" y="362" font-family="Arial, sans-serif" font-size="10" fill="#A08030">Badge shows count, not severity</text>
+  <line x1="160" y1="334" x2="148" y2="281" stroke="#DCC060" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#tip)"/>
+
 </svg>

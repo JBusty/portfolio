@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
+  <defs>
+    <marker id="tip" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,8 L8,4 z" fill="#DCC060"/>
+    </marker>
+  </defs>
   <rect width="960" height="540" fill="#F0EFEE"/>
 
   <!-- Nav -->
@@ -58,8 +63,7 @@
   <text x="708" y="151" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">Amber = anomalous signal,</text>
   <text x="708" y="167" font-family="Arial, sans-serif" font-size="12" fill="#7A5A00">not a confirmed threat</text>
   <text x="708" y="181" font-family="Arial, sans-serif" font-size="10" fill="#A08030">Distinct from green (stable) scoring</text>
-  <line x1="694" y1="160" x2="522" y2="212" stroke="#DCC060" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <circle cx="522" cy="212" r="4" fill="#DCC060"/>
+  <line x1="694" y1="160" x2="522" y2="212" stroke="#DCC060" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#tip)"/>
 
   <!-- Tab bar -->
   <text x="158" y="263" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#9999BB" letter-spacing="1">TIMELINE VIEWS</text>
@@ -109,7 +113,4 @@
   <rect x="740" y="441" width="52" height="18" rx="9" fill="#E8C080"/>
   <text x="751" y="453" font-family="Arial, sans-serif" font-size="10" fill="#7A5010">MED</text>
 
-  <!-- Watermark -->
-  <rect x="860" y="512" width="92" height="20" rx="4" fill="#404040" opacity="0.7"/>
-  <text x="870" y="525" font-family="Arial, sans-serif" font-size="9" fill="#FFF" letter-spacing="0.6">Lo-fi Wireframe</text>
 </svg>
