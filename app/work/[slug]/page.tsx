@@ -197,7 +197,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
                 {study.summary}
               </p>
             </div>
-            {study.images?.problem && <ProblemImage src={study.images.problem} />}
+            {study.images?.problem && <ProblemImage src={study.images.problem} alt={`${p.title} — problem overview`} />}
           </ScrollReveal>
         </div>
       </section>
@@ -491,7 +491,7 @@ function CSection({ title, eyebrow, children }: { title: ReactNode; eyebrow?: Re
   );
 }
 
-function ProblemImage({ src }: { src: string }) {
+function ProblemImage({ src, alt }: { src: string; alt: string }) {
   const [hover, setHover] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   return (
@@ -518,7 +518,7 @@ function ProblemImage({ src }: { src: string }) {
       >
         <img
           src={src}
-          alt=""
+          alt={alt}
           style={{
             width: '100%',
             display: 'block',
@@ -910,7 +910,7 @@ function TimelineGalleryItem({
       >
         <img
           src={src}
-          alt=""
+          alt={caption?.label ?? ''}
           style={{
             width: '100%',
             height: '100%',
@@ -1083,7 +1083,7 @@ function ThumbnailItem({ src, index, label, body, onClick }: {
       >
         <img
           src={src}
-          alt=""
+          alt={label ?? ''}
           style={{
             width: '100%',
             height: '100%',
