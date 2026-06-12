@@ -231,24 +231,21 @@ function ContactFAQ() {
       {CONTACT_FAQ.map((it, i) => {
         const isOpen = i === openIdx;
         return (
-          <div key={it.q} style={{ borderBottom: '1px solid var(--rule)' }}>
+          <div key={it.q} style={{ borderBottom: '1px solid var(--rule)', background: isOpen ? 'rgba(255,255,255,0.35)' : 'transparent', transition: 'background 220ms', margin: '0 -16px 0 0', padding: '0 16px 0 0' }}>
             <button
               onClick={() => setOpenIdx(isOpen ? -1 : i)}
               style={{
                 width: '100%',
                 display: 'grid',
-                gridTemplateColumns: '60px 1fr 40px',
+                gridTemplateColumns: '1fr 40px',
                 gap: 24,
                 alignItems: 'center',
-                padding: '28px 0',
+                padding: '28px 0 28px 20px',
                 background: 'transparent',
                 border: 'none',
                 textAlign: 'left',
               }}
             >
-              <span className="mono" style={{ fontSize: 12, color: 'var(--sub)' }}>
-                Q.0{i + 1}
-              </span>
               <span className="tight" style={{ fontSize: 'clamp(22px, 2.4vw, 32px)', fontWeight: 600, letterSpacing: '-0.025em', color: isOpen ? 'var(--accent)' : 'var(--ink)' }}>
                 {it.q}
               </span>

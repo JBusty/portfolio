@@ -878,27 +878,34 @@ function TimelineGalleryItem({
   const [hover, setHover] = useState(false);
 
   return (
-    <div>
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        border: `1px solid ${hover ? 'rgba(225,59,20,0.32)' : 'var(--rule)'}`,
+        borderRadius: 'var(--radius)',
+        background: 'var(--paper)',
+        overflow: 'hidden',
+        transform: hover ? 'translateY(-4px)' : 'translateY(0)',
+        boxShadow: hover
+          ? '0 24px 48px -24px rgba(17,17,16,0.28)'
+          : '0 10px 24px -20px rgba(17,17,16,0.16)',
+        transition: 'transform 240ms cubic-bezier(.2,.7,.2,1), box-shadow 240ms cubic-bezier(.2,.7,.2,1), border-color 180ms ease',
+      }}
+    >
       <button
         onClick={onClick}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
         style={{
           display: 'block',
           position: 'relative',
           width: '100%',
           aspectRatio: '16 / 9',
           overflow: 'hidden',
-          border: `1px solid ${hover ? 'rgba(225,59,20,0.32)' : 'var(--rule)'}`,
-          borderRadius: 'var(--radius)',
+          border: 'none',
+          borderRadius: 0,
           cursor: 'pointer',
           padding: 0,
-          background: 'var(--paper)',
-          transform: hover ? 'translateY(-4px)' : 'translateY(0)',
-          boxShadow: hover
-            ? '0 24px 48px -24px rgba(17,17,16,0.28)'
-            : '0 10px 24px -20px rgba(17,17,16,0.16)',
-          transition: 'transform 240ms cubic-bezier(.2,.7,.2,1), box-shadow 240ms cubic-bezier(.2,.7,.2,1), border-color 180ms ease',
+          background: 'transparent',
         }}
       >
         <img
@@ -964,7 +971,7 @@ function TimelineGalleryItem({
         </div>
       </button>
       {caption && (
-        <div style={{ padding: '10px 2px 4px' }}>
+        <div style={{ padding: '14px 16px 18px' }}>
           <div className="mono upper" style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.1em', marginBottom: 4 }}>
             {caption.label}
           </div>
@@ -1050,7 +1057,14 @@ function ThumbnailItem({ src, index, label, body, onClick }: {
   const [hover, setHover] = useState(false);
 
   return (
-    <div>
+    <div style={{
+      border: '1px solid var(--rule)',
+      borderRadius: 'var(--radius)',
+      background: 'var(--paper)',
+      overflow: 'hidden',
+      transition: 'box-shadow 240ms, border-color 180ms',
+      boxShadow: hover ? '0 24px 48px -24px rgba(17,17,16,0.28)' : '0 2px 8px -4px rgba(17,17,16,0.1)',
+    }}>
       <button
         onClick={onClick}
         onMouseEnter={() => setHover(true)}
@@ -1061,8 +1075,8 @@ function ThumbnailItem({ src, index, label, body, onClick }: {
           width: '100%',
           aspectRatio: '16 / 9',
           overflow: 'hidden',
-          border: '1px solid var(--rule)',
-          borderRadius: 'var(--radius)',
+          border: 'none',
+          borderRadius: 0,
           cursor: 'zoom-in',
           padding: 0,
         }}
@@ -1102,7 +1116,7 @@ function ThumbnailItem({ src, index, label, body, onClick }: {
         </div>
       </button>
       {(label || body) && (
-        <div style={{ padding: '12px 2px 4px' }}>
+        <div style={{ padding: '14px 16px 16px' }}>
           {label && (
             <div className="mono upper" style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.1em', marginBottom: 5 }}>
               {label}

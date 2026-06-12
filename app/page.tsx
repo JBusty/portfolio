@@ -285,7 +285,7 @@ function ValueCard({ v, idx }: { v: typeof VALUES[number]; idx: number }) {
         transformOrigin: 'center bottom',
         transform: hover && !noted
           ? 'translateY(-8px) rotate(0deg) scale(1.01)'
-          : `translateY(0) rotate(${noted ? 0 : restRot}deg) scale(1)`,
+          : `translateY(0) rotate(${restRot}deg) scale(1)`,
         transition: 'transform 340ms cubic-bezier(.2,.7,.2,1), background 220ms, border-color 220ms, box-shadow 240ms',
         boxShadow: hover
           ? '0 24px 56px -28px rgba(0,0,0,0.65)'
@@ -541,12 +541,12 @@ function HomeFAQ() {
           {FAQ.map((it, i) => {
             const isOpen = i === openIdx;
             return (
-              <div key={i} style={{ borderBottom: '1px solid var(--rule)' }}>
+              <div key={i} style={{ borderBottom: '1px solid var(--rule)', background: isOpen ? 'rgba(255,255,255,0.35)' : 'transparent', transition: 'background 220ms' }}>
                 <button
                   onClick={() => setOpenIdx(isOpen ? -1 : i)}
                   style={{
                     width: '100%', display: 'grid', gridTemplateColumns: '1fr 40px',
-                    gap: 24, alignItems: 'center', padding: '28px 0',
+                    gap: 24, alignItems: 'center', padding: '28px 0 28px 20px',
                     background: 'transparent', border: 'none', textAlign: 'left',
                   }}
                 >
@@ -597,8 +597,8 @@ function HomeCompanies() {
           A short list of places I've shipped from<span className="accent">.</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
-          {COMPANIES.map((c, i) => (
-            <CompanyCard key={c.name} c={c} i={i} />
+          {COMPANIES.map(c => (
+            <CompanyCard key={c.name} c={c} />
           ))}
           <div style={{
             padding: '28px 24px', border: '1px dashed var(--rule-strong)',
@@ -615,7 +615,7 @@ function HomeCompanies() {
   );
 }
 
-function CompanyCard({ c, i }: { c: typeof COMPANIES[number]; i: number }) {
+function CompanyCard({ c }: { c: typeof COMPANIES[number] }) {
   const [hover, setHover] = useState(false);
   return (
     <a
@@ -626,7 +626,7 @@ function CompanyCard({ c, i }: { c: typeof COMPANIES[number]; i: number }) {
       onMouseLeave={() => setHover(false)}
       style={{
         padding: '28px 24px', border: '1px solid var(--rule)', borderRadius: 'var(--radius)',
-        minHeight: 160, display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+        minHeight: 160, display: 'flex', flexDirection: 'column', justifyContent: 'center',
         background: hover ? 'var(--ink)' : 'var(--bone)',
         color: hover ? 'var(--bone)' : 'var(--ink)',
         borderColor: hover ? 'var(--ink)' : 'var(--rule)',
@@ -635,9 +635,6 @@ function CompanyCard({ c, i }: { c: typeof COMPANIES[number]; i: number }) {
         textDecoration: 'none',
       }}
     >
-      <div className="mono upper" style={{ fontSize: 10, opacity: 0.55, letterSpacing: '0.1em' }}>
-        {String(i + 1).padStart(2, '0')}
-      </div>
       <div>
         <div className="tight" style={{ fontSize: 26, fontWeight: 600, letterSpacing: '-0.025em' }}>{c.name}</div>
         <div className="mono" style={{ fontSize: 11, marginTop: 8, opacity: 0.7, letterSpacing: '0.04em' }}>// {c.note}</div>

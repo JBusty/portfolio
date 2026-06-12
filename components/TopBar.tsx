@@ -317,6 +317,33 @@ export default function TopBar() {
         {/* LinkedIn at bottom */}
         <div style={{ marginTop: 'auto', paddingTop: 24, borderTop: '1px solid var(--rule)' }}>
           <LinkedInButton />
+          <div
+            className="mono"
+            style={{
+              marginTop: 16,
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 8,
+              fontSize: 11,
+              lineHeight: 1.5,
+              color: 'var(--sub)',
+              letterSpacing: '0.04em',
+            }}
+          >
+            <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink)', marginTop: 1, flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="5" y="8" width="14" height="11" rx="3" />
+                <path d="M12 4v4" />
+                <path d="M9 4h6" />
+                <circle cx="10" cy="13" r="1" fill="currentColor" stroke="none" />
+                <circle cx="14" cy="13" r="1" fill="currentColor" stroke="none" />
+                <path d="M9 16h6" />
+                <path d="M5 12H3" />
+                <path d="M21 12h-2" />
+              </svg>
+            </span>
+            No robots were harmed building this portfolio.
+          </div>
         </div>
       </nav>
     </>
