@@ -792,7 +792,7 @@ function ProcessTimeline({ steps }: { steps: EnhancedStep[] }) {
         </div>
 
         {/* Timeline track */}
-        <div ref={trackRef} style={{ position: 'relative' }}>
+        <div ref={trackRef} className="r-process-track" style={{ position: 'relative' }}>
           <div style={{ position: 'absolute', left: 15, top: 12, bottom: 12, width: 2, background: 'var(--rule)' }} />
           <div style={{ position: 'absolute', left: 15, top: 12, width: 2, height: `calc((100% - 24px) * ${progress})`, background: 'var(--accent)', transition: 'height 80ms linear' }} />
           {steps.map((step, i) => {
@@ -801,6 +801,7 @@ function ProcessTimeline({ steps }: { steps: EnhancedStep[] }) {
             return (
               <div
                 key={`${step.n}-${i}`}
+                className="r-process-step"
                 ref={el => { stepRefs.current[i] = el; }}
                 style={{
                   position: 'relative', paddingLeft: 64, paddingTop: 36, paddingBottom: 36,
@@ -830,7 +831,7 @@ function ProcessTimeline({ steps }: { steps: EnhancedStep[] }) {
                   {step.body}
                 </p>
                 {step.images && step.images.length > 0 && (
-                  <div style={{
+                  <div className="r-process-gallery" style={{
                     marginTop: 28,
                     display: 'grid',
                     gridTemplateColumns: step.n === '↗'
@@ -1190,5 +1191,4 @@ function ModalViewer({ src, onClose }: { src: string; onClose: () => void }) {
     document.body,
   );
 }
-
 

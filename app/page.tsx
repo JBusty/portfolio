@@ -534,10 +534,10 @@ function HomeJourney() {
 function HomeFAQ() {
   const [openIdx, setOpenIdx] = useState(0);
   return (
-    <section>
+    <section style={{ background: 'var(--bone-2)' }}>
       <SectionHead title={<>What it's like<br />working with me<span className="accent">.</span></>} />
       <div className="container sp-bot-sm" style={{ padding: '0 32px 160px' }}>
-        <div style={{ borderTop: '1px solid var(--ink)' }}>
+        <div style={{ borderTop: '1px solid var(--rule-strong)' }}>
           {FAQ.map((it, i) => {
             const isOpen = i === openIdx;
             return (
@@ -545,12 +545,11 @@ function HomeFAQ() {
                 <button
                   onClick={() => setOpenIdx(isOpen ? -1 : i)}
                   style={{
-                    width: '100%', display: 'grid', gridTemplateColumns: '60px 1fr 40px',
+                    width: '100%', display: 'grid', gridTemplateColumns: '1fr 40px',
                     gap: 24, alignItems: 'center', padding: '28px 0',
                     background: 'transparent', border: 'none', textAlign: 'left',
                   }}
                 >
-                  <span className="mono" style={{ fontSize: 12, color: 'var(--sub)' }}>Q.0{i + 1}</span>
                   <span className="tight" style={{
                     fontSize: 'clamp(22px, 2.4vw, 32px)', fontWeight: 600, letterSpacing: '-0.025em',
                     color: isOpen ? 'var(--accent)' : 'var(--ink)',

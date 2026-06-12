@@ -273,7 +273,7 @@
 
 @media (max-width: 640px) {
   .heroInner {
-    padding: 88px 20px 0 !important;
+    padding: 40px 20px 0 !important;
   }
 
   .heroStatStrip {
@@ -306,7 +306,7 @@
 
   .heroTitle {
     font-size: clamp(30px, 9.4vw, 52px);
-    max-width: 10.5ch;
+    max-width: none;
   }
 
   .heroGrid {
@@ -315,9 +315,13 @@
     align-items: start;
   }
 
+  .heroCopy {
+    gap: 32px;
+  }
+
   .heroIntro {
     font-size: 14px;
-    max-width: 34ch;
+    max-width: none;
   }
 
   .heroActions {
@@ -325,6 +329,7 @@
   }
 
   .heroStackWrap {
+    padding-top: 40px;
     max-width: 300px;
     justify-self: center;
     align-self: start;

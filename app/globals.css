@@ -201,6 +201,13 @@ button { font: inherit; cursor: pointer; }
   transition: background 300ms ease, top 280ms ease;
 }
 
+.topbar-hamburger { display: none; }
+
+@media (min-width: 641px) {
+  .topbar-mobile-menu    { display: none !important; }
+  .topbar-mobile-backdrop { display: none !important; }
+}
+
 /* ---- link underline animation ---- */
 .link-u {
   background-image: linear-gradient(currentColor, currentColor);
@@ -415,6 +422,11 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
 .r-grid-3  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .r-grid-2  { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .r-journey { display: grid; grid-template-columns: 260px 1fr; gap: 56px; }
+.r-journey > * { min-width: 0; }
+.r-process-track { min-width: 0; width: 100%; }
+.r-process-step { min-width: 0; width: 100%; }
+.r-process-gallery { min-width: 0; width: 100%; }
+.r-process-gallery > * { min-width: 0; }
 .r-hero-meta   { display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: start; }
 .r-hero-split  { display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; align-items: center; }
 .r-outcome { display: grid; grid-template-columns: repeat(3, 1fr); }
@@ -491,7 +503,9 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
   .proj-row-btn { display: none !important; }
 
   /* Case study: process step → stacked */
-  .r-process-step { grid-template-columns: 1fr !important; gap: 6px !important; }
+  .r-process-track { width: 100%; overflow-x: clip; }
+  .r-process-step { width: 100%; min-width: 0; padding-left: 42px !important; }
+  .r-process-gallery { grid-template-columns: 1fr !important; gap: 16px !important; max-width: none !important; }
 
   /* Case study: reflection columns stacked, clear right border */
   .r-reflect { grid-template-columns: 1fr !important; }
@@ -500,9 +514,11 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
   .avail-card { border-left: none !important; border-top: 1px solid var(--rule-strong) !important; padding-top: 20px !important; padding-bottom: 20px !important; }
   .avail-card:first-child { border-top: none !important; }
 
-  /* TopBar: hide long logo text and LinkedIn button on very small screens */
+  /* TopBar: switch to hamburger on mobile */
   .topbar-logo-text { display: none !important; }
+  .topbar-nav       { display: none !important; }
   .topbar-linkedin  { display: none !important; }
+  .topbar-hamburger { display: flex !important; }
 
   /* FAQ answer: collapse left indent on small screens */
   .faq-answer { padding-left: 0 !important; }

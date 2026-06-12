@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -99,9 +99,32 @@ function LinkedInIcon() {
   );
 }
 
+function HamburgerIcon({ open }: { open: boolean }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: 22 }}>
+      <span style={{
+        display: 'block', height: 2, background: 'var(--ink)', borderRadius: 2,
+        transform: open ? 'translateY(7px) rotate(45deg)' : 'none',
+        transition: 'transform 220ms cubic-bezier(.2,.8,.2,1)',
+      }} />
+      <span style={{
+        display: 'block', height: 2, background: 'var(--ink)', borderRadius: 2,
+        opacity: open ? 0 : 1,
+        transition: 'opacity 180ms',
+      }} />
+      <span style={{
+        display: 'block', height: 2, background: 'var(--ink)', borderRadius: 2,
+        transform: open ? 'translateY(-7px) rotate(-45deg)' : 'none',
+        transition: 'transform 220ms cubic-bezier(.2,.8,.2,1)',
+      }} />
+    </div>
+  );
+}
+
 export default function TopBar() {
   const pathname = usePathname();
   const [visible, setVisible] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
   const lastY = useRef(0);
 
   useEffect(() => {
@@ -116,33 +139,154 @@ export default function TopBar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Close on route change or Escape
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') setMenuOpen(false); }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  // Prevent body scroll while menu is open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
   const bg = getHeroBg(pathname);
 
   return (
-    <header className="topbar" style={{ background: bg, top: visible ? 0 : -80 }}>
-      <div className="container" style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 24,
-        padding: '14px 32px',
-      }}>
-        {/* Logo */}
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <LogoBadge />
-          <div className="topbar-logo-text" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em', whiteSpace: 'nowrap', lineHeight: 1 }}>
+    <>
+      <header
+        className="topbar"
+        style={{ background: bg, top: menuOpen ? 0 : (visible ? 0 : -80) }}
+      >
+        <div className="container" style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 24,
+          padding: '14px 32px',
+        }}>
+          {/* Logo */}
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <LogoBadge />
+            <div className="topbar-logo-text" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em', whiteSpace: 'nowrap', lineHeight: 1 }}>
+                Joshua Bussey
+              </span>
+              <span className="mono upper" style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', whiteSpace: 'nowrap', color: 'var(--sub)', lineHeight: 1 }}>
+                Product Designer
+              </span>
+            </div>
+          </Link>
+
+          <span className="grow" />
+
+          {/* Desktop nav */}
+          <nav className="topbar-nav" style={{ display: 'flex', gap: 6 }}>
+            {navItems.map(item => {
+              const isActive = item.href === '/'
+                ? pathname === '/'
+                : pathname.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`mono upper nav-link${isActive ? ' nav-link-active' : ''}`}
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: 12,
+                    letterSpacing: '0.06em',
+                    borderRadius: 999,
+                    color: isActive ? 'var(--bone)' : 'var(--ink)',
+                    background: isActive ? 'var(--ink)' : 'transparent',
+                  }}
+                >
+                  <span style={{ marginRight: 6, color: 'var(--accent)' }}>·</span>
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Desktop CTA */}
+          <LinkedInButton />
+
+          {/* Hamburger */}
+          <button
+            className="topbar-hamburger"
+            onClick={() => setMenuOpen(o => !o)}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 6,
+              borderRadius: 6,
+              lineHeight: 0,
+            }}
+          >
+            <HamburgerIcon open={menuOpen} />
+          </button>
+        </div>
+      </header>
+
+      {/* Backdrop */}
+      <div
+        className="topbar-mobile-backdrop"
+        onClick={() => setMenuOpen(false)}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 49,
+          background: 'rgba(17,17,16,0.45)',
+          opacity: menuOpen ? 1 : 0,
+          pointerEvents: menuOpen ? 'auto' : 'none',
+          transition: 'opacity 300ms ease',
+        }}
+      />
+
+      {/* Slide-in panel */}
+      <nav
+        className="topbar-mobile-menu"
+        style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          width: 'min(300px, 82vw)',
+          height: '100dvh',
+          zIndex: 51,
+          background: bg,
+          boxShadow: '-12px 0 40px rgba(17,17,16,0.14)',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '20px 20px 32px',
+          overflowY: 'auto',
+          transform: menuOpen ? 'translateX(0)' : 'translateX(100%)',
+          transition: 'transform 340ms cubic-bezier(.2,.8,.2,1)',
+        }}
+      >
+        {/* Panel header row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.02em', lineHeight: 1 }}>
               Joshua Bussey
             </span>
-            <span className="mono upper" style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', whiteSpace: 'nowrap', color: 'var(--sub)', lineHeight: 1 }}>
+            <span className="mono upper" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--sub)', lineHeight: 1 }}>
               Product Designer
             </span>
           </div>
-        </Link>
+          <button
+            onClick={() => setMenuOpen(false)}
+            aria-label="Close menu"
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 6, borderRadius: 6, lineHeight: 0 }}
+          >
+            <HamburgerIcon open={true} />
+          </button>
+        </div>
 
-        <span className="grow" />
-
-        {/* Nav */}
-        <nav style={{ display: 'flex', gap: 6 }}>
+        {/* Nav links */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {navItems.map(item => {
             const isActive = item.href === '/'
               ? pathname === '/'
@@ -153,24 +297,28 @@ export default function TopBar() {
                 href={item.href}
                 className={`mono upper nav-link${isActive ? ' nav-link-active' : ''}`}
                 style={{
-                  padding: '6px 12px',
-                  fontSize: 12,
+                  padding: '13px 16px',
+                  fontSize: 13,
                   letterSpacing: '0.06em',
-                  borderRadius: 999,
+                  borderRadius: 10,
                   color: isActive ? 'var(--bone)' : 'var(--ink)',
                   background: isActive ? 'var(--ink)' : 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
                 }}
               >
-                <span style={{ marginRight: 6, color: 'var(--accent)' }}>·</span>
+                <span style={{ marginRight: 8, color: isActive ? 'var(--bone)' : 'var(--accent)' }}>·</span>
                 {item.label}
               </Link>
             );
           })}
-        </nav>
+        </div>
 
-        {/* CTA */}
-        <LinkedInButton />
-      </div>
-    </header>
+        {/* LinkedIn at bottom */}
+        <div style={{ marginTop: 'auto', paddingTop: 24, borderTop: '1px solid var(--rule)' }}>
+          <LinkedInButton />
+        </div>
+      </nav>
+    </>
   );
 }
