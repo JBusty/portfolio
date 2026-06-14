@@ -30,7 +30,7 @@ export default function ContactPage() {
   return (
     <main className="page-enter">
       <section style={{ borderBottom: '1px solid var(--ink)', background: 'var(--hero-contact)' }}>
-        <div className="container r-hero-split sp-ctct-hero" style={{ padding: '80px 32px', gap: 56 }}>
+        <div className="container r-hero-split sp-ctct-hero" style={{ padding: '64px 32px', gap: 40 }}>
           <div>
             <h1
               className="tight"
@@ -66,7 +66,7 @@ export default function ContactPage() {
               </div>
             </div>
           </div>
-          <div style={{ width: '100%', maxWidth: 380, justifySelf: 'end' }}>
+          <div style={{ width: '100%', maxWidth: 260, justifySelf: 'end' }}>
             <ContactHeroArt />
           </div>
         </div>

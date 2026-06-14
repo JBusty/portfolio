@@ -40,7 +40,7 @@ function BackToTop() {
 const siteLinks = [
   { href: '/', label: 'Homepage' },
   { href: '/work', label: 'Selected work' },
-  { href: '/work/identity-profiles', label: 'Case study — Identity profiles' },
+  { href: '/work/identity-profiles', label: 'Case study: Identity profiles' },
   { href: '/contact', label: "Let's talk" },
 ];
 
@@ -136,7 +136,7 @@ export default function Footer() {
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
         }}>
-          <span>© 2026 Josh — Hand-built in HTML & opinions.</span>
+          <span>© 2026 Josh. Hand-built in HTML & opinions.</span>
           <span>No robots were harmed in the making of this portfolio.</span>
           <BackToTop />
         </div>

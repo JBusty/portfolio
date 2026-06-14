@@ -54,7 +54,7 @@ function HomeHero() {
               ▍ Now serving
             */}
             <p className={styles.heroIntro}>
-              Hi, I'm Josh — a front-end developer turned senior product
+              Hi, I'm Josh, a front-end developer turned senior product
               designer with 12+ years of experience untangling enterprise
               software. I lead 0→1 work, design systems, and the kind of
               quiet refactors no one notices but everyone benefits from.

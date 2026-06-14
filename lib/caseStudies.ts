@@ -64,7 +64,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       problem: '/images/identity-profiles/problem-overview.png',
       wireframes: ['/images/identity-profiles/wireframe-1.svg'],
       wireframeCaptions: [
-        { label: 'Early structure', body: 'Wireframes focused on the two-column behavioral split — consistent signals left, anomalies right — before any visual polish was added.' },
+        { label: 'Early structure', body: 'Wireframes focused on the two-column behavioral split (consistent signals left, anomalies right) before any visual polish was added.' },
       ],
       solution: [
         '/images/identity-profiles/solution-1.png',
@@ -73,9 +73,9 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         '/images/identity-profiles/solution-4.png',
       ],
       solutionCaptions: [
-        { label: 'Benchmarking the field', body: 'I mapped every competitor\'s identity experience to establish the floor — what customers already expected — before deciding where to move ahead of it.' },
+        { label: 'Benchmarking the field', body: 'I mapped every competitor\'s identity experience to establish the floor (what customers already expected) before deciding where to move ahead of it.' },
         { label: 'AI summaries, not essays', body: 'GenAI generates a short, high-value wrap-up of identity activity. Enough to act on. Not enough to drown in.' },
-        { label: 'Evidence stays visible', body: 'The raw data didn\'t disappear — it moved below the fold so analysts can still dig in when they need to.' },
+        { label: 'Evidence stays visible', body: 'The raw data didn\'t disappear; it moved below the fold so analysts can still dig in when they need to.' },
         { label: 'The shipped experience', body: 'A unified identity profile that reduced analyst correlation time by roughly 15% in early customer testing.' },
       ],
     },
@@ -181,7 +181,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         { label: 'Usage at a glance', body: 'The first release was a dashboard: integration-level breakdowns, historical trends, and export support for compliance teams.' },
         { label: 'A familiar query interface', body: 'The search tool was built on SQL patterns customers already knew so the power felt accessible instead of intimidating.' },
         { label: 'Cost before you commit', body: 'Query size is surfaced before execution. Customers see what they\'re spending before they spend it.' },
-        { label: 'The shipped experience', body: 'SDL launched on schedule and immediately generated positive feedback — and new contracts — from enterprise customers.' },
+        { label: 'The shipped experience', body: 'SDL launched on schedule and immediately generated positive feedback, including new contracts, from enterprise customers.' },
       ],
     },
     summary:
@@ -282,24 +282,24 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         '/images/unified-onboarding/solution-3.png',
       ],
       solutionCaptions: [
-        { label: 'The shared shell', body: 'A reusable onboarding frame that handles auth, configuration, and validation — with structured room for vendor-specific steps.' },
+        { label: 'The shared shell', body: 'A reusable onboarding frame that handles auth, configuration, and validation, with structured room for vendor-specific steps.' },
         { label: 'Edge cases have a home', body: 'Instead of one-off flows, exceptions slot into a defined part of the pattern. Consistent structure, flexible details.' },
         { label: 'The shipped pattern', body: 'One system that covers 100+ integrations and makes every new one cheaper to design and build than the last.' },
       ],
     },
     summary:
-      'Red Canary has over 100 integrations, each with its own onboarding flow. I replaced the pile of one-offs with a single adaptable pattern — one that survives contact with every vendor while cutting the design and engineering cost of every integration that comes after.',
+      'Red Canary has over 100 integrations, each with its own onboarding flow. I replaced the pile of one-offs with a single adaptable pattern that survives contact with every vendor while cutting the design and engineering cost of every integration that comes after.',
     problemTitle: ['100 integrations.', '100 different onboarding flows'],
     problemBody: [
       "Every time a new integration was added, onboarding was designed from scratch. The result was a product that felt inconsistent and an engineering process that couldn't scale.",
-      'The technical debt was obvious, but the bigger problem was that customers experienced meaningfully different flows depending on which integration they were setting up — and none of them were as good as they should have been.',
+      'The technical debt was obvious, but the bigger problem was that customers experienced meaningfully different flows depending on which integration they were setting up, and none of them were as good as they should have been.',
     ],
     decisionQuestion: 'Do we fix one flow at a time, or do we design a system?',
     decisionContext:
       'The safer play was incremental: fix the worst offenders and move on. The riskier play was building a unified pattern that would require more upfront investment but pay off across every integration after.',
     decisionAnswerTitle: 'Build the pattern once.',
     decisionAnswerBody:
-      "Design a shared onboarding shell flexible enough to absorb every vendor's edge cases, so the next integration ships faster than the last one — and the one after that faster still.",
+      "Design a shared onboarding shell flexible enough to absorb every vendor's edge cases, so the next integration ships faster than the last one, and the one after that faster still.",
     outcomes: {
       painPoints: [
         'Each integration had a bespoke onboarding flow, creating inconsistency for customers and toil for engineering.',
@@ -325,7 +325,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       {
         n: '02',
         h: 'Design the shared shell',
-        b: 'The reusable skeleton handles the common steps — auth, configuration, validation — while leaving structured room for vendor-specific variations.',
+        b: 'The reusable skeleton handles the common steps: auth, configuration, and validation, while leaving structured room for vendor-specific variations.',
       },
       {
         n: '03',
@@ -382,7 +382,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       ],
       solutionCaptions: [
         { label: 'Health in the list view', body: 'A status badge on the integrations list makes broken integrations visible before customers have to go looking for them.' },
-        { label: 'Checks in context', body: 'The detail page shows exactly which checks are failing, why they matter, and what to do next — no support ticket required.' },
+        { label: 'Checks in context', body: 'The detail page shows exactly which checks are failing, why they matter, and what to do next, no support ticket required.' },
       ],
     },
     summary:
@@ -580,7 +580,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       problem: '/images/fleet-card/problem-overview.png',
       wireframes: ['/images/fleet-card/wireframe-1.svg'],
       wireframeCaptions: [
-        { label: 'Cards list with status states', body: 'Early wireframes mapped out all card status variants — Active, Frozen, Pending, Fraud — to confirm the table could communicate health without becoming cluttered.' },
+        { label: 'Cards list with status states', body: 'Early wireframes mapped out all card status variants (Active, Frozen, Pending, Fraud) to confirm the table could communicate health without becoming cluttered.' },
       ],
       solution: [
         '/images/fleet-card/solution-1.png',
@@ -589,8 +589,8 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         '/images/fleet-card/solution-4.png',
       ],
       solutionCaptions: [
-        { label: 'Design system first', body: 'Visual tokens, component direction, and spacing rules were locked in before screen work ramped up — so both the customer and admin sides stayed aligned.' },
-        { label: 'Real-time card controls', body: 'The cardholder experience centered on spend controls that worked in real time — the core value proposition of the whole product.' },
+        { label: 'Design system first', body: 'Visual tokens, component direction, and spacing rules were locked in before screen work ramped up, keeping both the customer and admin sides aligned.' },
+        { label: 'Real-time card controls', body: 'The cardholder experience centered on spend controls that worked in real time, the core value proposition of the whole product.' },
         { label: 'Admin at scale', body: 'Fleet managers needed just as much power as cardholders. The admin side was designed to be as intuitive as the consumer-facing experience.' },
         { label: 'The shipped platform', body: 'Launched in 13 months with a VISA partnership in place. Over 200 businesses converted in the first wave.' },
       ],
@@ -690,7 +690,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         '/images/groundbase/solution-3.png',
       ],
       solutionCaptions: [
-        { label: 'Draws and budget tracking', body: 'Every draw is tracked against the budget with funding source breakdowns — no more reconciling across a spreadsheet and a group chat.' },
+        { label: 'Draws and budget tracking', body: 'Every draw is tracked against the budget with funding source breakdowns. No more reconciling across a spreadsheet and a group chat.' },
         { label: 'Build timeline', body: 'Milestones, contractor events, and draw approvals live in one timeline so nothing falls through the cracks between trades.' },
         { label: 'Project health at a glance', body: 'Budget status, equity position, and DTI surface together so owner-builders always know where they stand before approving the next draw.' },
       ],

@@ -59,7 +59,7 @@ export const PROJECTS: Project[] = [
     company: 'Red Canary',
     title: 'Reimagining identity profiles with AI-driven insights',
     blurb:
-      'An identity could appear a half-dozen times across integrations. I unified the picture and folded in Gen-AI summaries — without making people read a wall of text.',
+      'An identity could appear a half-dozen times across integrations. I unified the picture and folded in Gen-AI summaries without making people read a wall of text.',
     year: '2025',
     quarter: 'Q3 2025',
     role: 'Lead Product Designer',
@@ -168,7 +168,7 @@ export const JOURNEY: JourneyStep[] = [
     range: '2013 — 2018',
     title: 'Front-end Developer',
     body:
-      'Wrote production HTML/CSS/JS for companies that cared a lot about pixels. Learned what\'s expensive vs. cheap to build — knowledge I still use every single day.',
+      'Wrote production HTML/CSS/JS for companies that cared a lot about pixels. Learned what\'s expensive vs. cheap to build, knowledge I still use every single day.',
     companies: [
       { name: 'U. of Rochester', url: 'https://www.urmc.rochester.edu' },
       { name: 'Circadence', url: 'https://www.circadence.com' },
@@ -199,19 +199,19 @@ export const JOURNEY: JourneyStep[] = [
 export const FAQ: FaqItem[] = [
   {
     q: "What's your design superpower?",
-    a: "Systems thinking. I default to building scalable patterns and component libraries rather than one-off solutions — so the work compounds over time instead of creating more debt.",
+    a: "Systems thinking. I default to building scalable patterns and component libraries rather than one-off solutions, so the work compounds over time instead of creating more debt.",
   },
   {
     q: "What kind of problems do you solve best?",
-    a: "Complex enterprise workflows that have gotten out of hand — the kind where users have learned to work around the product instead of with it. I've spent 12+ years in cybersecurity, finance, and healthcare, which means I'm comfortable with high-stakes, high-complexity problems where getting it wrong actually matters.",
+    a: "Complex enterprise workflows that have gotten out of hand, the kind where users have learned to work around the product instead of with it. I've spent 12+ years in cybersecurity, finance, and healthcare, which means I'm comfortable with high-stakes, high-complexity problems where getting it wrong actually matters.",
   },
   {
     q: "What's it like working with you?",
-    a: "I'm the person teammates come to when something's stuck. Friendly, collaborative, and genuinely dependable — and when something's blocking us, I'll kick down whatever doors are necessary to move forward. People know that when I'm involved, it gets done.",
+    a: "I'm the person teammates come to when something's stuck. Friendly, collaborative, and genuinely dependable. When something's blocking us, I'll kick down whatever doors are necessary to move forward. People know that when I'm involved, it gets done.",
   },
   {
     q: "How do you work with engineers?",
-    a: "Closely and directly — which is easier when you can speak their language. I've contributed to front-end production code, implemented design systems in Bootstrap, and spent enough time in the codebase to know what's actually feasible.",
+    a: "Closely and directly, which is easier when you can speak their language. I've contributed to front-end production code, implemented design systems in Bootstrap, and spent enough time in the codebase to know what's actually feasible.",
   },
   {
     q: "What environments bring out your best work?",
@@ -232,7 +232,7 @@ export const COMPANIES: Company[] = [
 export const STATS: Stat[] = [
   { n: '12+', label: 'Years building things people use', unit: 'yrs' },
   { n: '1M+', label: 'Humans impacted by work I shipped', unit: 'ppl' },
-  { n: '3', label: 'Disciplines crossed — code, design, leadership', unit: 'hats' },
+  { n: '3', label: 'Disciplines crossed: code, design, leadership', unit: 'hats' },
   { n: '1,000+', label: 'Rounds of feedback survived', unit: 'loops' },
 ];
 
@@ -241,13 +241,13 @@ export const VALUES: Value[] = [
     kind: 'collab',
     tag: 'WE will take the ring to mordor',
     title: 'Collaborator',
-    body: 'Exploring new ideas, jumping into CSS tweaks, or whiteboarding through a problem — I work best shoulder-to-shoulder with the team to drive the strongest outcome.',
+    body: 'Exploring new ideas, jumping into CSS tweaks, or whiteboarding through a problem. I work best shoulder-to-shoulder with the team to drive the strongest outcome.',
   },
   {
     kind: 'relentless',
     tag: 'Comfortable with hidden dragons',
     title: 'Relentless',
-    body: 'Comfortable with ambiguity and persistent through blockers. The interesting problems are always behind a few boring ones — I\'ll go find them.',
+    body: 'Comfortable with ambiguity and persistent through blockers. The interesting problems are always behind a few boring ones. I\'ll go find them.',
   },
   {
     kind: 'craft',

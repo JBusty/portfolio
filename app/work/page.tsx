@@ -22,7 +22,7 @@ export default function WorkPage() {
   return (
     <main className="page-enter">
       <section style={{ borderBottom: '1px solid var(--ink)', background: 'var(--hero-work)' }}>
-        <div className="container r-hero-split sp-hero" style={{ padding: '126px 32px 88px', gap: 56 }}>
+        <div className="container r-hero-split sp-hero" style={{ padding: '88px 32px 72px', gap: 40 }}>
           <div>
           <h1
             className={`tight ${heroStyles.heroTitle}`}
@@ -49,13 +49,12 @@ export default function WorkPage() {
                 maxWidth: '60ch',
               }}
             >
-              From idea to implementation, these are projects where the work
-              actually shipped, not just a Figma file with rounded corners.
-              A mix of 0→1, platform-level refactors, and the kind of design
-              work that lives in production for years.
+              These are the projects I'm most proud of: 0→1 launches,
+              complex refactors, and the kind of work that takes a few years
+              to fully appreciate.
             </p>
           </div>
-          <div style={{ width: '100%', maxWidth: 560, justifySelf: 'end' }}>
+          <div style={{ width: '100%', maxWidth: 360, justifySelf: 'end' }}>
             <WorkHeroArt />
           </div>
         </div>

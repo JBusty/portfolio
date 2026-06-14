@@ -45,7 +45,9 @@
       "WebFetch(domain:localhost)",
       "Bash(Write-Output \"Deleted\")",
       "Bash(Get-Item \"C:\\\\dev\\\\portfolio\\\\app\\\\favicon.ico\")",
-      "Bash(Select-Object Name, Length)"
+      "Bash(Select-Object Name, Length)",
+      "Bash(npx --yes chromium-cli screenshot http://localhost:3000 --width 1440 --height 900 --output /tmp/home.png)",
+      "Bash(powershell *)"
     ]
   }
 }

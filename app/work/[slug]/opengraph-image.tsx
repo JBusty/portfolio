@@ -67,7 +67,6 @@ export default async function Image({
       >
         {imgSrc && (
           <div style={{ position: 'absolute', inset: 0, display: 'flex' }}>
-            {/* @ts-expect-error Satori accepts base64 string for img src */}
             <img src={imgSrc} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.55 }} />
           </div>
         )}
