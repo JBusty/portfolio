@@ -1,5 +1,6 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Instrument_Serif } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import TopBar from '@/components/TopBar';
 import Footer from '@/components/Footer';
 import SectionRevealObserver from '@/components/SectionRevealObserver';
@@ -74,6 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <TopBar />
         {children}
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
