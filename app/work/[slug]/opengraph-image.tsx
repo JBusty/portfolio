@@ -14,7 +14,7 @@ export async function generateImageMetadata({
 }) {
   const { slug } = await params;
   const project = PROJECTS.find((p) => p.slug === slug);
-  return [{ id: slug, alt: project ? `${project.title} — Joshua Bussey` : 'Case Study' }];
+  return [{ id: slug || 'og', alt: project ? `${project.title} by Joshua Bussey` : 'Case Study' }];
 }
 
 export default async function Image({
