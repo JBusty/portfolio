@@ -80,7 +80,7 @@ export default function ContactPage() {
         <div className="container sp-normal" style={{ padding: '112px 32px 128px' }}>
           <div className="r-grid-3" style={{ gap: 0 }}>
             {[
-              { label: 'Focus', value: 'Product design', note: 'Complex software, workflows, and systems' },
+              { label: 'Open to', value: 'Senior & Staff', note: 'Product design on complex software, workflows, and systems' },
               { label: 'Location', value: 'Remote only', note: 'Utica, NY' },
               { label: 'Timezone', value: 'Eastern Time', note: 'Flexible on working with teammates in other timezones' },
             ].map((item, i) => (
