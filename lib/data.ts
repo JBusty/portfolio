@@ -258,7 +258,7 @@ export const VALUES: Value[] = [
   {
     kind: 'ai',
     tag: 'Summaries, not essays',
-    title: 'Fluent in AI product',
+    title: 'Fluent in AI',
     body: 'I design the AI surfaces, not just around them. Deciding how much a model should say, where confidence belongs, and when generated content helps versus gets in the way. I also prototype with AI, which means direction gets pressure-tested in days instead of sprints.',
   },
 ];

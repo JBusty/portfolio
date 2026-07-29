@@ -384,23 +384,30 @@ function ValueGlyph({ kind, hover }: { kind: string; hover: boolean }) {
     );
   }
   if (kind === 'ai') {
-    // three lines of prose collapsing into one short summary
-    const essay = [34, 26, 18];
-    const summary = [22, 0, 0];
+    // paired sparkles — the AI mark; they turn and brighten on hover
     return (
-      <div style={{
-        display: 'inline-flex', flexDirection: 'column', alignItems: 'end',
-        gap: 6, height: 26, justifyContent: 'center',
-      }}>
-        {essay.map((w, i) => (
-          <span key={i} style={{
-            display: 'inline-block', height: 4, borderRadius: 2,
-            width: hover ? summary[i] : w,
-            background: 'var(--accent)',
-            opacity: hover ? (summary[i] ? 1 : 0) : 0.32,
-            transition: `width 320ms cubic-bezier(.2,.7,.2,1) ${i * 60}ms, opacity 240ms ease ${i * 60}ms`,
-          }} />
-        ))}
+      <div style={{ display: 'inline-flex', alignItems: 'center', height: 28 }}>
+        <svg width="34" height="28" viewBox="0 0 34 28" fill="none" aria-hidden>
+          <path
+            d="M13 3 C13 8.5 17.5 13 23 13 C17.5 13 13 17.5 13 23 C13 17.5 8.5 13 3 13 C8.5 13 13 8.5 13 3 Z"
+            fill="var(--accent)"
+            style={{
+              transformOrigin: '13px 13px',
+              transform: hover ? 'rotate(90deg) scale(1.08)' : 'rotate(0deg) scale(1)',
+              transition: 'transform 440ms cubic-bezier(.2,.7,.2,1)',
+            }}
+          />
+          <path
+            d="M27 4 C27 6.8 29.2 9 32 9 C29.2 9 27 11.2 27 14 C27 11.2 24.8 9 22 9 C24.8 9 27 6.8 27 4 Z"
+            fill="var(--accent)"
+            style={{
+              transformOrigin: '27px 9px',
+              opacity: hover ? 1 : 0.38,
+              transform: hover ? 'rotate(90deg) scale(1)' : 'rotate(0deg) scale(0.8)',
+              transition: 'transform 440ms cubic-bezier(.2,.7,.2,1) 80ms, opacity 300ms ease 80ms',
+            }}
+          />
+        </svg>
       </div>
     );
   }
