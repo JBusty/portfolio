@@ -253,7 +253,7 @@ function HomeValues() {
             </h2>
           </div>
         </div>
-        <div className="r-grid-3">
+        <div className="r-grid-values">
           {VALUES.map((v, i) => <ValueCard key={v.title} v={v} idx={i} />)}
         </div>
       </div>
@@ -264,7 +264,7 @@ function HomeValues() {
 function ValueCard({ v, idx }: { v: typeof VALUES[number]; idx: number }) {
   const [hover, setHover] = useState(false);
   const [noted, setNoted] = useState(false);
-  const restRot = [-1.8, 1.2, -1.0][idx];
+  const restRot = [-1.8, 1.2, -1.0, 1.6][idx] ?? 0;
 
   return (
     <div
@@ -380,6 +380,34 @@ function ValueGlyph({ kind, hover }: { kind: string; hover: boolean }) {
             transition: `opacity 200ms ease ${i * 70}ms, transform 240ms cubic-bezier(.2,.7,.2,1) ${i * 70}ms`,
           }} />
         ))}
+      </div>
+    );
+  }
+  if (kind === 'ai') {
+    // paired sparkles — the AI mark; they turn and brighten on hover
+    return (
+      <div style={{ display: 'inline-flex', alignItems: 'center', height: 28 }}>
+        <svg width="34" height="28" viewBox="0 0 34 28" fill="none" aria-hidden>
+          <path
+            d="M13 3 C13 8.5 17.5 13 23 13 C17.5 13 13 17.5 13 23 C13 17.5 8.5 13 3 13 C8.5 13 13 8.5 13 3 Z"
+            fill="var(--accent)"
+            style={{
+              transformOrigin: '13px 13px',
+              transform: hover ? 'rotate(90deg) scale(1.08)' : 'rotate(0deg) scale(1)',
+              transition: 'transform 440ms cubic-bezier(.2,.7,.2,1)',
+            }}
+          />
+          <path
+            d="M27 4 C27 6.8 29.2 9 32 9 C29.2 9 27 11.2 27 14 C27 11.2 24.8 9 22 9 C24.8 9 27 6.8 27 4 Z"
+            fill="var(--accent)"
+            style={{
+              transformOrigin: '27px 9px',
+              opacity: hover ? 1 : 0.38,
+              transform: hover ? 'rotate(90deg) scale(1)' : 'rotate(0deg) scale(0.8)',
+              transition: 'transform 440ms cubic-bezier(.2,.7,.2,1) 80ms, opacity 300ms ease 80ms',
+            }}
+          />
+        </svg>
       </div>
     );
   }

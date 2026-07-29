@@ -78,6 +78,24 @@ export default function ProjectRow({ p, first }: ProjectRowProps) {
         }}>
           {p.title}
         </div>
+
+        {/* result — the outcome, set off from the description by a short rule */}
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginTop: 10 }}>
+          <span
+            aria-hidden
+            style={{
+              flexShrink: 0,
+              width: hover ? 26 : 18,
+              height: 1,
+              background: 'var(--accent)',
+              transform: 'translateY(-4px)',
+              transition: 'width 260ms cubic-bezier(0.2, 0.8, 0.2, 1)',
+            }}
+          />
+          <span style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.35, letterSpacing: '-0.005em', color: 'var(--accent)' }}>
+            {p.metric}
+          </span>
+        </div>
       </div>
 
       <div className="proj-row-blurb" style={{ color: 'var(--ink-2)', fontSize: 14, lineHeight: 1.5, maxWidth: '52ch' }}>

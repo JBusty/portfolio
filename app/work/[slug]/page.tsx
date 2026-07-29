@@ -38,7 +38,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
     ...(hasWireframes ? [{
       n: '↗',
       h: 'Exploration',
-      body: 'Low-fidelity wireframes mapped the core layout and key interactions before any visual decisions were locked in.',
+      body: study.explorationBody ?? 'Low-fidelity wireframes mapped the core layout and key interactions before any visual decisions were locked in.',
       isBookend: true,
       images: study.images!.wireframes,
       captions: study.images!.wireframeCaptions,
@@ -47,7 +47,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
     ...(hasSolution ? [{
       n: '✓',
       h: 'Shipped',
-      body: 'The final experience, tested with customers and validated through iteration.',
+      body: study.shippedBody ?? 'The final experience, tested with customers and validated through iteration.',
       isBookend: true,
       images: study.images!.solution,
       captions: study.images!.solutionCaptions,

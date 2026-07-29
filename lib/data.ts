@@ -38,7 +38,7 @@ export interface Stat {
 }
 
 export interface Value {
-  kind: 'collab' | 'relentless' | 'craft';
+  kind: 'collab' | 'relentless' | 'craft' | 'ai';
   tag: string;
   title: string;
   body: string;
@@ -62,25 +62,25 @@ export const PROJECTS: Project[] = [
       'An identity could appear a half-dozen times across integrations. I unified the picture and folded in Gen-AI summaries without making people read a wall of text.',
     year: '2025',
     quarter: 'Q3 2025',
-    role: 'Lead Product Designer',
+    role: 'Senior Product Designer',
     team: '1 PM · 4 Eng · 1 Designer',
     tags: ['Strategy', 'Refactor'],
-    metric: '-15% time-to-decision',
+    metric: '~15% faster time-to-decision',
     accent: '#E13B14',
   },
   {
-    slug: 'security-data-lake',
+    slug: 'status-checks',
     num: '02',
     company: 'Red Canary',
-    title: 'Security Data Lake',
+    title: 'Integrations with failing status checks',
     blurb:
-      'A net-new product letting customers query everything their integrations capture. Zero-to-one from research through GA.',
-    year: '2024',
-    quarter: 'Q3 2024',
-    role: 'Lead Product Designer',
-    team: '2 PM · 6 Eng · 1 Designer',
-    tags: ['0→1', 'Innovate'],
-    metric: 'GA in 9 months',
+      'An expired cert during a live incident eroded customer trust. I designed the surface that surfaces brokenness before customers notice.',
+    year: '2025',
+    quarter: 'Q1 2025',
+    role: 'Senior Product Designer',
+    team: '1 PM · 2 Eng · 1 Designer',
+    tags: ['Design advocacy', 'UX loopholes'],
+    metric: '~25% fewer support escalations',
   },
   {
     slug: 'unified-onboarding',
@@ -91,56 +91,14 @@ export const PROJECTS: Project[] = [
       '100+ integrations, 100+ flavors of onboarding. I built one pattern that survives contact with every vendor.',
     year: '2024',
     quarter: 'Q4 2024',
-    role: 'Lead Product Designer',
+    role: 'Senior Product Designer',
     team: '1 PM · 3 Eng · 1 Designer',
     tags: ['Strategy', 'UX Cleanup'],
     metric: '1 pattern, 100+ integrations',
   },
   {
-    slug: 'status-checks',
-    num: '04',
-    company: 'Red Canary',
-    title: 'Integrations with failing status checks',
-    blurb:
-      'An expired cert during a live incident eroded customer trust. I designed the surface that surfaces brokenness before customers notice.',
-    year: '2025',
-    quarter: 'Q1 2025',
-    role: 'Senior Designer',
-    team: '1 PM · 2 Eng · 1 Designer',
-    tags: ['Design advocacy', 'UX loopholes'],
-    metric: '~25% fewer support escalations',
-  },
-  {
-    slug: 'commuter-benefits',
-    num: '05',
-    company: 'Edenred',
-    title: 'Commuter Benefits',
-    blurb:
-      'A product duct-taped together from three legacy systems. I rebuilt the experience without forcing a big-bang migration.',
-    year: '2023',
-    quarter: 'Q2 2023',
-    role: 'Senior UX Designer',
-    team: '2 PM · 8 Eng · 2 Designers',
-    tags: ['Refactor', 'Strategy'],
-    metric: 'Won the Google contract',
-  },
-  {
-    slug: 'fleet-card',
-    num: '06',
-    company: 'Edenred',
-    title: 'Fleet Card',
-    blurb:
-      'A real-time spend-controlled card for fleets. New product line, new revenue, designed from a single index card.',
-    year: '2022',
-    quarter: 'Q2 2022',
-    role: 'Senior UX Designer',
-    team: '1 PM · 5 Eng · 1 Designer',
-    tags: ['Strategy', '0→1'],
-    metric: '200+ businesses converted',
-  },
-  {
     slug: 'groundbase',
-    num: '07',
+    num: '04',
     company: 'Personal Project',
     title: 'Groundbase',
     blurb:
@@ -151,6 +109,48 @@ export const PROJECTS: Project[] = [
     team: 'Me, late at night',
     tags: ['Founder', '0→1'],
     metric: '1 house, 0 spreadsheets',
+  },
+  {
+    slug: 'security-data-lake',
+    num: '05',
+    company: 'Red Canary',
+    title: 'Security Data Lake',
+    blurb:
+      'A net-new product letting customers query everything their integrations capture. Zero-to-one from research through GA.',
+    year: '2024',
+    quarter: 'Q3 2024',
+    role: 'Senior Product Designer',
+    team: '2 PM · 6 Eng · 1 Designer',
+    tags: ['0→1', 'Innovate'],
+    metric: 'GA in 9 months',
+  },
+  {
+    slug: 'commuter-benefits',
+    num: '06',
+    company: 'Edenred',
+    title: 'Commuter Benefits',
+    blurb:
+      'A product duct-taped together from three legacy systems. I rebuilt the experience without forcing a big-bang migration.',
+    year: '2023',
+    quarter: 'Q2 2023',
+    role: 'Senior Product Designer',
+    team: '2 PM · 8 Eng · 2 Designers',
+    tags: ['Refactor', 'Strategy'],
+    metric: 'Won the Google contract',
+  },
+  {
+    slug: 'fleet-card',
+    num: '07',
+    company: 'Edenred',
+    title: 'Fleet Card',
+    blurb:
+      'A real-time spend-controlled card for fleets. New product line, new revenue, designed from a single index card.',
+    year: '2022',
+    quarter: 'Q2 2022',
+    role: 'Senior Product Designer',
+    team: '1 PM · 5 Eng · 1 Designer',
+    tags: ['Strategy', '0→1'],
+    metric: '200+ businesses converted',
   },
 ];
 
@@ -187,7 +187,7 @@ export const JOURNEY: JourneyStep[] = [
     range: '2021 — Now',
     title: 'Senior / Lead Product Designer',
     body:
-      'Leading 0→1 and platform work. Partnering closely with PM and Eng to ship faster and argue less. Comfortable with both the strategy doc and the spec.',
+      'Leading 0→1 and platform work in security operations, including the GenAI surfaces analysts now rely on. Partnering closely with PM and Eng to ship faster and argue less. Comfortable with both the strategy doc and the spec.',
     companies: [
       { name: 'Edenred', url: 'https://www.edenred.com' },
       { name: 'Red Canary', url: 'https://redcanary.com' },
@@ -211,7 +211,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: "How do you work with engineers?",
-    a: "Closely and directly, which is easier when you can speak their language. I've contributed to front-end production code, implemented design systems in Bootstrap, and spent enough time in the codebase to know what's actually feasible.",
+    a: "Closely and directly, which is easier when you can speak their language. I've contributed to front-end production code, built design systems in code from Bootstrap through React and Tailwind, and spent enough time in the codebase to know what's actually feasible.",
   },
   {
     q: "What environments bring out your best work?",
@@ -254,6 +254,12 @@ export const VALUES: Value[] = [
     tag: 'Design AND code',
     title: 'Craft across disciplines',
     body: "I design and I code. That mix lets me bridge vision and implementation, ship realistic specs, and keep the gap between Figma and production thin.",
+  },
+  {
+    kind: 'ai',
+    tag: 'Summaries, not essays',
+    title: 'Fluent in AI',
+    body: 'I design the AI surfaces, not just around them. Deciding how much a model should say, where confidence belongs, and when generated content helps versus gets in the way. I also prototype with AI, which means direction gets pressure-tested in days instead of sprints.',
   },
 ];
 

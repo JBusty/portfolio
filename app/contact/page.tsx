@@ -13,12 +13,16 @@ const CONTACT_FAQ = [
     a: 'Messy, meaningful problems with lots of moving parts, especially when the work spans strategy, systems, and execution.',
   },
   {
+    q: 'What are you looking for next?',
+    a: 'Staff-level product design where the scope spans strategy, systems, and execution. Security and fintech are where I\'m strongest, but the common thread is complex products with technical users. Remote only.',
+  },
+  {
     q: 'How do you like to collaborate?',
     a: 'I do my best work in close partnership with product and engineering, with fast feedback loops and a shared willingness to get into the details.',
   },
   {
     q: "What's your availability?",
-    a: 'Available Q3 2026. US East Coast timezone (Eastern Time). I overlap well with EU mornings and West Coast afternoons.',
+    a: 'Available now. US Eastern Time. I overlap well with EU mornings and West Coast afternoons.',
   },
   {
     q: 'Can you sign an NDA before a conversation?',
@@ -77,7 +81,7 @@ export default function ContactPage() {
           <div className="r-grid-3" style={{ gap: 0 }}>
             {[
               { label: 'Focus', value: 'Product design', note: 'Complex software, workflows, and systems' },
-              { label: 'Location', value: 'Remote', note: 'Farmington NH' },
+              { label: 'Location', value: 'Remote only', note: 'Utica, NY' },
               { label: 'Timezone', value: 'Eastern Time', note: 'Flexible on working with teammates in other timezones' },
             ].map((item, i) => (
               <div key={item.label} className="avail-card" style={{ padding: '4px 28px', borderLeft: i === 0 ? 'none' : '1px solid var(--rule-strong)' }}>
