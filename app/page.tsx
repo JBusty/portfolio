@@ -65,8 +65,9 @@ function HomeHero() {
               <Link href="/work" className="btn">
                 View case studies <span className="arr">→</span>
               </Link>
+              {/* Internal link, so it takes the → convention; ↗ is reserved for offsite. */}
               <Link href="/work/identity-profiles" className="btn ghost">
-                Jump right in <span className="arr">↗</span>
+                Read the AI case study <span className="arr">→</span>
               </Link>
             </div>
           </div>

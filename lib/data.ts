@@ -261,7 +261,10 @@ export const STATS: Stat[] = [
   { n: '12+', label: 'Years building things people use', unit: 'yrs' },
   { n: '1M+', label: 'Humans impacted by work I shipped', unit: 'ppl' },
   { n: '3', label: 'Disciplines crossed: code, design, leadership', unit: 'hats' },
-  { n: '1,000+', label: 'Rounds of feedback survived', unit: 'loops' },
+  // Derived from COMPANIES below: security (Zscaler, Circadence, Red Canary),
+  // banking (CIT Bank), healthcare (U. of Rochester), benefits + payments (Edenred),
+  // food service (Catertrax). Drops to 4 if payments is grouped under finance.
+  { n: '5', label: 'Industries, from security to healthcare', unit: 'fields' },
 ];
 
 export const VALUES: Value[] = [

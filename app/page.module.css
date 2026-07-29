@@ -108,11 +108,13 @@
   animation: heroReadIn 720ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
+/* Emphasis comes from the weight bump plus the highlight bar below.
+   An offset text-shadow was also stacked here; at 91px the two effects
+   overlapped in the descender and read as printing misregistration. */
 .heroShip {
   position: relative;
   display: inline-block;
   font-weight: 800;
-  text-shadow: 0.05em 0.05em 0 rgba(225, 59, 20, 0.24);
 }
 
 .heroShip::after {
