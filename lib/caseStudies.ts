@@ -232,7 +232,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         b: 'Searches exposed their expected cost before execution so customers could avoid blowing through query limits by accident.',
       },
     ],
-    processTitle: ['Two months.', 'A phased MVP'],
+    processTitle: ['Two months of design.', 'Nine to GA'],
     processStats: [
       { n: '2 months', label: 'Design time' },
       { n: '14', label: 'Early access customers' },
@@ -592,11 +592,11 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         { label: 'Design system first', body: 'Visual tokens, component direction, and spacing rules were locked in before screen work ramped up, keeping both the customer and admin sides aligned.' },
         { label: 'Real-time card controls', body: 'The cardholder experience centered on spend controls that worked in real time, the core value proposition of the whole product.' },
         { label: 'Admin at scale', body: 'Fleet managers needed just as much power as cardholders. The admin side was designed to be as intuitive as the consumer-facing experience.' },
-        { label: 'The shipped platform', body: 'Launched in 13 months with a VISA partnership in place. Over 200 businesses converted in the first wave.' },
+        { label: 'The shipped platform', body: 'Launched in under a year with a VISA partnership in place. Over 200 businesses converted in the first wave.' },
       ],
     },
     summary:
-      "I designed and launched Edenred USA's first Fleet Card platform, taking it from concept to live in 13 months. Built with VISA, it enabled real-time spending controls, opened a new market for the company, and converted more than 200 businesses.",
+      "I designed and launched Edenred USA's first Fleet Card platform, taking it from concept to live in under a year. Built with VISA, it enabled real-time spending controls, opened a new market for the company, and converted more than 200 businesses.",
     problemTitle: ['New market.', 'Very short runway'],
     problemBody: [
       'Edenred wanted to enter a fleet card market already dominated by a few strong incumbents. To do it well, the team needed an entirely new platform, a workable MVP, and support for a strategic VISA partnership.',
@@ -641,9 +641,9 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         b: 'Features were scoped into roughly two-week chunks and validated continuously with internal stakeholders and VISA to reduce risk as the deadline approached.',
       },
     ],
-    processTitle: ['Concept to launch.', 'In 13 months'],
+    processTitle: ['Concept to launch.', 'Under a year'],
     processStats: [
-      { n: '13 months', label: 'From concept to launch' },
+      { n: '<1 year', label: 'From concept to launch' },
       { n: '1', label: 'Designer' },
       { n: '~2 weeks', label: 'Average time per feature' },
     ],

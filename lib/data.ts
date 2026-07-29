@@ -65,7 +65,7 @@ export const PROJECTS: Project[] = [
     role: 'Senior Product Designer',
     team: '1 PM · 4 Eng · 1 Designer',
     tags: ['Strategy', 'Refactor'],
-    metric: '-15% time-to-decision',
+    metric: '~15% faster time-to-decision',
     accent: '#E13B14',
   },
   {
