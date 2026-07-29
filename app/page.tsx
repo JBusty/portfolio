@@ -1,10 +1,11 @@
 ﻿'use client';
 
-import { useState, useEffect, useRef, type CSSProperties } from 'react';
+import { useState, useEffect, useId, useRef, type CSSProperties } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import SectionHead from '@/components/SectionHead';
-import ScrollReveal from '@/components/ScrollReveal';
-import { PROJECTS, STATS, VALUES, CREW, JOURNEY, FAQ, COMPANIES } from '@/lib/data';
+import FeaturedWork from '@/components/FeaturedWork';
+import { STATS, VALUES, CREW, JOURNEY, FAQ, COMPANIES } from '@/lib/data';
 import styles from './page.module.css';
 
 function splitStatCharacters(value: string) {
@@ -14,9 +15,10 @@ function splitStatCharacters(value: string) {
 // ---------- HOME ----------
 export default function Home() {
   return (
-    <main className="page-enter">
+    <main id="main-content" tabIndex={-1} className="page-enter">
       <HomeHero />
       <HomeValues />
+      <FeaturedWork />
       <HomeJourney />
       <HomeFAQ />
       <HomeCompanies />
@@ -54,8 +56,8 @@ function HomeHero() {
               ▍ Now serving
             */}
             <p className={styles.heroIntro}>
-              Hi, I'm Josh, a front-end developer turned senior product
-              designer with 12+ years of experience untangling enterprise
+              Hi, I'm Josh, a front-end developer turned product design
+              lead with 12+ years of experience untangling enterprise
               software. I lead 0→1 work, design systems, and the kind of
               quiet refactors no one notices but everyone benefits from.
             </p>
@@ -89,7 +91,13 @@ function HomeHero() {
                       className={styles.heroStatChar}
                       style={{ '--char-delay': `${charIndex * 90}ms` } as CSSProperties}
                     >
-                      <span className={styles.heroStatCharFace}>
+                      {/* Only digits get the tabular min-width \u2014 padding a comma out to
+                          0.5em is what rendered "1,000+" as "1, 000+". */}
+                      <span
+                        className={`${styles.heroStatCharFace} ${
+                          /[0-9]/.test(char) ? styles.heroStatCharFaceDigit : ''
+                        }`}
+                      >
                         {char === ' ' ? '\u00A0' : char}
                       </span>
                     </span>
@@ -195,7 +203,16 @@ function PolaroidStack() {
               }}
             >
               <div className="photo" style={{ aspectRatio: '4/5', borderRadius: 8 }}>
-                <img src={c.img} alt={c.name} className="polaroid-photo" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, pointerEvents: 'none', animationDelay: `${500 + i * 150}ms` }} />
+                <Image
+                  src={c.img}
+                  alt={c.name}
+                  fill
+                  sizes="(max-width: 640px) 300px, 340px"
+                  // The front card is the hero image on first paint.
+                  preload={i === 0}
+                  className="polaroid-photo"
+                  style={{ objectFit: 'cover', borderRadius: 8, pointerEvents: 'none', animationDelay: `${500 + i * 150}ms` }}
+                />
               </div>
               <div style={{
                 paddingTop: 14, paddingBottom: 6,
@@ -347,7 +364,16 @@ function ValueCard({ v, idx }: { v: typeof VALUES[number]; idx: number }) {
         alignItems: 'center',
       }}>
         <span>// {v.tag}</span>
-        {!noted && <span style={{ color: 'rgba(236,231,220,0.3)' }}>tap</span>}
+        {!noted && (
+          <button
+            type="button"
+            className="mono upper value-card-tap"
+            onClick={e => { e.stopPropagation(); setNoted(true); }}
+            aria-label={`Mark "${v.title}" as noted`}
+          >
+            tap
+          </button>
+        )}
       </div>
 
     </div>
@@ -561,6 +587,7 @@ function HomeJourney() {
 // ---------- FAQ ----------
 function HomeFAQ() {
   const [openIdx, setOpenIdx] = useState(0);
+  const baseId = useId();
   return (
     <section style={{ background: 'var(--bone-2)' }}>
       <SectionHead title={<>What it's like<br />working with me<span className="accent">.</span></>} />
@@ -568,10 +595,16 @@ function HomeFAQ() {
         <div style={{ borderTop: '1px solid var(--rule-strong)' }}>
           {FAQ.map((it, i) => {
             const isOpen = i === openIdx;
+            const triggerId = `${baseId}-faq-${i}-trigger`;
+            const panelId = `${baseId}-faq-${i}-panel`;
             return (
               <div key={i} style={{ borderBottom: '1px solid var(--rule)', background: isOpen ? 'rgba(255,255,255,0.35)' : 'transparent', transition: 'background 220ms' }}>
                 <button
+                  type="button"
+                  id={triggerId}
                   onClick={() => setOpenIdx(isOpen ? -1 : i)}
+                  aria-expanded={isOpen}
+                  aria-controls={panelId}
                   style={{
                     width: '100%', display: 'grid', gridTemplateColumns: '1fr 40px',
                     gap: 24, alignItems: 'center', padding: '28px 0 28px 20px',
@@ -582,7 +615,7 @@ function HomeFAQ() {
                     fontSize: 'clamp(22px, 2.4vw, 32px)', fontWeight: 600, letterSpacing: '-0.025em',
                     color: isOpen ? 'var(--accent)' : 'var(--ink)',
                   }}>{it.q}</span>
-                  <span className="mono" style={{
+                  <span className="mono" aria-hidden="true" style={{
                     fontSize: 22, textAlign: 'right',
                     transform: isOpen ? 'rotate(45deg)' : 'rotate(0)',
                     transition: 'transform 220ms',
@@ -590,11 +623,17 @@ function HomeFAQ() {
                     display: 'inline-block',
                   }}>+</span>
                 </button>
-                <div style={{
-                  display: 'grid',
-                  gridTemplateRows: isOpen ? '1fr' : '0fr',
-                  transition: 'grid-template-rows 360ms cubic-bezier(.2,.7,.2,1)',
-                }}>
+                <div
+                  id={panelId}
+                  role="region"
+                  aria-labelledby={triggerId}
+                  inert={!isOpen}
+                  style={{
+                    display: 'grid',
+                    gridTemplateRows: isOpen ? '1fr' : '0fr',
+                    transition: 'grid-template-rows 360ms cubic-bezier(.2,.7,.2,1)',
+                  }}
+                >
                   <div style={{ overflow: 'hidden' }}>
                     <div className="faq-answer" style={{
                       opacity: isOpen ? 1 : 0,

@@ -20,7 +20,7 @@ export default function WorkPage() {
   }, [activeTag]);
 
   return (
-    <main className="page-enter">
+    <main id="main-content" tabIndex={-1} className="page-enter">
       <section style={{ borderBottom: '1px solid var(--ink)', background: 'var(--hero-work)' }}>
         <div className="container r-hero-split sp-hero" style={{ padding: '88px 32px 72px', gap: 40 }}>
           <div>
@@ -62,26 +62,9 @@ export default function WorkPage() {
 
       <section>
         <div className="container sp-bot-sm" style={{ padding: '24px 32px 160px' }}>
-          <div className="work-filter-bar" style={{
-            display: 'flex',
-            justifyContent: 'flex-start',
-            paddingBottom: 18,
-          }}>
-            <div style={{
-              display: 'flex',
-              width: '100%',
-              gap: 6,
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              padding: '14px 16px',
-              border: '1px solid rgba(17,17,16,0.12)',
-              borderRadius: 18,
-              background: 'rgba(245,241,230,0.92)',
-              backdropFilter: 'saturate(160%) blur(12px)',
-            }}>
-              <span className="mono upper" style={{ fontSize: 11, color: 'var(--sub)', letterSpacing: '0.1em', marginRight: 6 }}>
-                Filter
-              </span>
+          <div className="work-filter-bar">
+            <div className="work-filter-inner">
+              <span className="mono upper work-filter-label">Filter</span>
               {allTags.map((tag) => (
                 <button
                   key={tag}
@@ -99,7 +82,7 @@ export default function WorkPage() {
           <div style={{ borderBottom: '1px solid var(--rule)' }}>
             {list.map((project, index) => (
               <ScrollReveal key={project.slug} delayMs={Math.min(index * 36, 180)}>
-                <ProjectRow p={project} first={index === 0} />
+                <ProjectRow p={project} first={index === 0} index={index} />
               </ScrollReveal>
             ))}
           </div>

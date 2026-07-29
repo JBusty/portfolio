@@ -71,7 +71,13 @@ export default function Footer() {
               <a href="mailto:jbusseywork@gmail.com" className="btn" style={{ background: 'var(--accent)', borderColor: 'var(--accent)' }}>
                 jbusseywork@gmail.com <span className="arr">↗</span>
               </a>
-              <a href="https://drive.google.com/file/d/17OJanguMKHAdKGfoBDpI_eS_1_a5fZEh/view" className="btn ghost" style={{ color: 'var(--bone)', borderColor: 'rgba(236,231,220,0.4)' }}>
+              <a
+                href="https://drive.google.com/file/d/17OJanguMKHAdKGfoBDpI_eS_1_a5fZEh/view"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn ghost"
+                style={{ color: 'var(--bone)', borderColor: 'rgba(236,231,220,0.4)' }}
+              >
                 Resume / CV <span className="arr">↗</span>
               </a>
             </div>
@@ -111,7 +117,13 @@ export default function Footer() {
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
               {elsewhereLinks.map(it => (
                 <li key={it.label}>
-                  <a href={it.href} className="link-u" style={{ fontFamily: 'var(--font-jetbrains-mono)', fontSize: 13 }}>
+                  <a
+                    href={it.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="link-u"
+                    style={{ fontFamily: 'var(--font-jetbrains-mono)', fontSize: 13 }}
+                  >
                     {it.label}
                   </a>
                 </li>
@@ -136,7 +148,7 @@ export default function Footer() {
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
         }}>
-          <span>© 2026 Josh. Hand-built in HTML & opinions.</span>
+          <span>© {new Date().getFullYear()} Josh. Hand-built in HTML &amp; opinions.</span>
           <span>No robots were harmed in the making of this portfolio.</span>
           <BackToTop />
         </div>

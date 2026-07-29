@@ -10,6 +10,13 @@
   team: string;
   tags: string[];
   metric: string;
+  /** Representative image for list rows and homepage cards — the shipped state, not the problem. */
+  thumb: string;
+  /**
+   * object-position for the thumbnail crop. These screenshots range from ar 0.92 to 3.80,
+   * so the interesting region is not always the centre. Defaults to 'top center'.
+   */
+  thumbPosition?: string;
   accent?: string;
 }
 
@@ -66,6 +73,9 @@ export const PROJECTS: Project[] = [
     team: '1 PM · 4 Eng · 1 Designer',
     tags: ['Strategy', 'Refactor'],
     metric: '~15% faster time-to-decision',
+    // solution-4 is an annotated skeleton-loader spec; solution-2 is the actual AI feature.
+    thumb: '/images/identity-profiles/solution-2.png',
+    thumbPosition: 'left top',
     accent: '#E13B14',
   },
   {
@@ -79,8 +89,9 @@ export const PROJECTS: Project[] = [
     quarter: 'Q1 2025',
     role: 'Senior Product Designer',
     team: '1 PM · 2 Eng · 1 Designer',
-    tags: ['Design advocacy', 'UX loopholes'],
+    tags: ['Design Advocacy', 'UX Loopholes'],
     metric: '~25% fewer support escalations',
+    thumb: '/images/status-checks/carousel-2.png',
   },
   {
     slug: 'unified-onboarding',
@@ -95,6 +106,7 @@ export const PROJECTS: Project[] = [
     team: '1 PM · 3 Eng · 1 Designer',
     tags: ['Strategy', 'UX Cleanup'],
     metric: '1 pattern, 100+ integrations',
+    thumb: '/images/unified-onboarding/solution-3.png',
   },
   {
     slug: 'groundbase',
@@ -109,6 +121,7 @@ export const PROJECTS: Project[] = [
     team: 'Me, late at night',
     tags: ['Founder', '0→1'],
     metric: '1 house, 0 spreadsheets',
+    thumb: '/images/groundbase/solution-3.png',
   },
   {
     slug: 'security-data-lake',
@@ -123,6 +136,7 @@ export const PROJECTS: Project[] = [
     team: '2 PM · 6 Eng · 1 Designer',
     tags: ['0→1', 'Innovate'],
     metric: 'GA in 9 months',
+    thumb: '/images/security-data-lake/solution-4.png',
   },
   {
     slug: 'commuter-benefits',
@@ -137,6 +151,7 @@ export const PROJECTS: Project[] = [
     team: '2 PM · 8 Eng · 2 Designers',
     tags: ['Refactor', 'Strategy'],
     metric: 'Won the Google contract',
+    thumb: '/images/commuter-benefits/solution-final.png',
   },
   {
     slug: 'fleet-card',
@@ -151,8 +166,21 @@ export const PROJECTS: Project[] = [
     team: '1 PM · 5 Eng · 1 Designer',
     tags: ['Strategy', '0→1'],
     metric: '200+ businesses converted',
+    thumb: '/images/fleet-card/solution-4.png',
   },
 ];
+
+/**
+ * The three studies that lead the homepage. Chosen to cover security, fintech,
+ * and founder/0→1 range rather than to be the three most recent.
+ */
+export const FEATURED_SLUGS = ['identity-profiles', 'commuter-benefits', 'groundbase'] as const;
+
+export const FEATURED_PROJECTS: Project[] = FEATURED_SLUGS.map((slug) => {
+  const project = PROJECTS.find((p) => p.slug === slug);
+  if (!project) throw new Error(`FEATURED_SLUGS references unknown project: ${slug}`);
+  return project;
+});
 
 export const JOURNEY: JourneyStep[] = [
   {
@@ -269,21 +297,21 @@ export const CREW: CrewMember[] = [
     role: 'The human',
     note: 'Designs by day. Builds furniture badly by night.',
     label: 'PHOTO — JOSH (REAL)',
-    img: 'https://framerusercontent.com/images/pQVssKXDl3MGeXUnsOIlyRrk.jpg',
+    img: '/images/crew/josh.jpg',
   },
   {
     name: 'Squash',
     role: 'Director of Vibes',
     note: 'Goldendoodle. Has opinions on every stand-up.',
     label: 'PHOTO — SQUASH',
-    img: 'https://framerusercontent.com/images/a0oeWqUB7vLiZ92mkZpIsvP3hkQ.jpg',
+    img: '/images/crew/squash.jpg',
   },
   {
     name: 'Noodles',
     role: 'VP of Snacks',
     note: 'Smaller. Faster. Slightly worse manners.',
     label: 'PHOTO — NOODLES',
-    img: 'https://framerusercontent.com/images/hcFB78uQ64NAhoDDNKBiPdG1Dg.jpg',
+    img: '/images/crew/noodles.jpg',
   },
 ];
 

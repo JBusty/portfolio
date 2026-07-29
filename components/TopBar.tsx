@@ -171,10 +171,10 @@ export default function TopBar() {
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <LogoBadge />
             <div className="topbar-logo-text" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em', whiteSpace: 'nowrap', lineHeight: 1 }}>
+              <span className="topbar-logo-name" style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em', whiteSpace: 'nowrap', lineHeight: 1 }}>
                 Joshua Bussey
               </span>
-              <span className="mono upper" style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', whiteSpace: 'nowrap', color: 'var(--sub)', lineHeight: 1 }}>
+              <span className="mono upper topbar-logo-role" style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', whiteSpace: 'nowrap', color: 'var(--sub)', lineHeight: 1 }}>
                 Product Designer
               </span>
             </div>

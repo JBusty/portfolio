@@ -47,7 +47,17 @@
       "Bash(Get-Item \"C:\\\\dev\\\\portfolio\\\\app\\\\favicon.ico\")",
       "Bash(Select-Object Name, Length)",
       "Bash(npx --yes chromium-cli screenshot http://localhost:3000 --width 1440 --height 900 --output /tmp/home.png)",
-      "Bash(powershell *)"
+      "Bash(powershell *)",
+      "Bash(echo \"TSC_EXIT=$?\")",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(gh pr *)",
+      "Bash(gh api *)",
+      "Bash(grep -oE \"Groundbase is still in progress[^<]{0,200}|A system with too many exceptions|Design the reusable core first|Worked as Founder[^.]*\\\\.|Partnered with a team of[^.]*\\\\.\")",
+      "Bash(grep -E \"^[A-Z].{40,}\")",
+      "Bash(file public/images/crew/*.jpg)",
+      "Bash(grep -nB2 -A 18 \"^#### \\\\`preload\\\\`\" node_modules/next/dist/docs/01-app/03-api-reference/02-components/image.md)",
+      "Bash(npx kill-port *)"
     ]
   }
 }

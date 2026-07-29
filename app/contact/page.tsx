@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import SectionHead from '@/components/SectionHead';
 
 const CONTACT_FAQ = [
@@ -32,7 +32,7 @@ const CONTACT_FAQ = [
 
 export default function ContactPage() {
   return (
-    <main className="page-enter">
+    <main id="main-content" tabIndex={-1} className="page-enter">
       <section style={{ borderBottom: '1px solid var(--ink)', background: 'var(--hero-contact)' }}>
         <div className="container r-hero-split sp-ctct-hero" style={{ padding: '64px 32px', gap: 40 }}>
           <div>
@@ -64,7 +64,12 @@ export default function ContactPage() {
                 <a href="mailto:jbusseywork@gmail.com" className="btn">
                   jbusseywork@gmail.com <span className="arr">↗</span>
                 </a>
-                <a href="https://drive.google.com/file/d/17OJanguMKHAdKGfoBDpI_eS_1_a5fZEh/view" className="btn ghost">
+                <a
+                  href="https://drive.google.com/file/d/17OJanguMKHAdKGfoBDpI_eS_1_a5fZEh/view"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn ghost"
+                >
                   Resume / CV <span className="arr">↗</span>
                 </a>
               </div>
@@ -80,7 +85,7 @@ export default function ContactPage() {
         <div className="container sp-normal" style={{ padding: '112px 32px 128px' }}>
           <div className="r-grid-3" style={{ gap: 0 }}>
             {[
-              { label: 'Focus', value: 'Product design', note: 'Complex software, workflows, and systems' },
+              { label: 'Open to roles', value: 'Senior & Staff', note: 'Complex software, workflows, and systems' },
               { label: 'Location', value: 'Remote only', note: 'Utica, NY' },
               { label: 'Timezone', value: 'Eastern Time', note: 'Flexible on working with teammates in other timezones' },
             ].map((item, i) => (
@@ -230,14 +235,21 @@ function ContactHeroArt() {
 
 function ContactFAQ() {
   const [openIdx, setOpenIdx] = useState(0);
+  const baseId = useId();
   return (
     <div style={{ borderTop: '1px solid var(--ink)' }}>
       {CONTACT_FAQ.map((it, i) => {
         const isOpen = i === openIdx;
+        const triggerId = `${baseId}-cfaq-${i}-trigger`;
+        const panelId = `${baseId}-cfaq-${i}-panel`;
         return (
           <div key={it.q} style={{ borderBottom: '1px solid var(--rule)', background: isOpen ? 'rgba(255,255,255,0.35)' : 'transparent', transition: 'background 220ms', margin: '0 -16px 0 0', padding: '0 16px 0 0' }}>
             <button
+              type="button"
+              id={triggerId}
               onClick={() => setOpenIdx(isOpen ? -1 : i)}
+              aria-expanded={isOpen}
+              aria-controls={panelId}
               style={{
                 width: '100%',
                 display: 'grid',
@@ -255,6 +267,7 @@ function ContactFAQ() {
               </span>
               <span
                 className="mono"
+                aria-hidden="true"
                 style={{
                   fontSize: 22,
                   textAlign: 'right',
@@ -267,7 +280,13 @@ function ContactFAQ() {
                 +
               </span>
             </button>
-            <div style={{ display: 'grid', gridTemplateRows: isOpen ? '1fr' : '0fr', transition: 'grid-template-rows 360ms cubic-bezier(.2,.7,.2,1)' }}>
+            <div
+              id={panelId}
+              role="region"
+              aria-labelledby={triggerId}
+              inert={!isOpen}
+              style={{ display: 'grid', gridTemplateRows: isOpen ? '1fr' : '0fr', transition: 'grid-template-rows 360ms cubic-bezier(.2,.7,.2,1)' }}
+            >
               <div style={{ overflow: 'hidden' }}>
                 <div
                   className="faq-answer"

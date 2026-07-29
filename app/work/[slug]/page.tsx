@@ -1,7 +1,8 @@
 ﻿'use client';
 
 import { createPortal } from 'react-dom';
-import { use, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { use, useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,7 +11,42 @@ import ScrollReveal from '@/components/ScrollReveal';
 import SectionHead from '@/components/SectionHead';
 import { getCaseStudy } from '@/lib/caseStudies';
 import { PROJECTS } from '@/lib/data';
+import { imageMeta } from '@/lib/imageMeta';
 import heroStyles from '../../page.module.css';
+
+/**
+ * Case study screenshot. Renders at its true aspect ratio — these images range from
+ * ar 0.92 (portrait) to 4.13 (ultra-wide), so a fixed crop throws away most of the frame.
+ */
+function CaseImage({
+  src,
+  alt,
+  sizes,
+  className,
+  style,
+}: {
+  src: string;
+  alt: string;
+  sizes: string;
+  className?: string;
+  style?: CSSProperties;
+}) {
+  const { w, h } = imageMeta(src);
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={w}
+      height={h}
+      sizes={sizes}
+      loading="lazy"
+      // The optimizer refuses SVG unless explicitly allowed; pass wireframes through untouched.
+      unoptimized={src.endsWith('.svg')}
+      className={className}
+      style={{ width: '100%', height: 'auto', display: 'block', ...style }}
+    />
+  );
+}
 
 type EnhancedStep = {
   n: string;
@@ -55,7 +91,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
   ];
 
   return (
-    <main className="page-enter">
+    <main id="main-content" tabIndex={-1} className="page-enter">
       <section style={{ borderBottom: '1px solid var(--ink)', background: 'var(--hero-case)' }}>
         <div className="container sp-hero" style={{ padding: '66px 32px 88px' }}>
           <div
@@ -132,7 +168,13 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
                 <dd>
                   {study.images?.logo ? (
                     <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <img src={study.images.logo} alt={p.company} style={{ height: 20, width: 'auto', display: 'block' }} />
+                      <Image
+                        src={study.images.logo}
+                        alt=""
+                        width={Math.round((20 * imageMeta(study.images.logo).w) / imageMeta(study.images.logo).h)}
+                        height={20}
+                        style={{ display: 'block', width: 'auto', height: 20 }}
+                      />
                       {p.company}
                     </span>
                   ) : p.company}
@@ -325,6 +367,9 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
   const sectionRef = useRef<HTMLElement>(null);
   const [pos, setPos] = useState({ x: -9999, y: -9999, on: false });
   const [revealed, setRevealed] = useState(false);
+  const baseId = useId();
+  const triggerId = `${baseId}-decision-trigger`;
+  const panelId = `${baseId}-decision-panel`;
 
   return (
     <section
@@ -398,9 +443,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
 
         {/* Decision card */}
         <div
-          onClick={() => setRevealed(r => !r)}
           style={{
-            marginTop: 64,
             width: '100%',
             maxWidth: '800px',
             margin: '64px auto 0',
@@ -409,26 +452,39 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
             borderRadius: 'var(--radius-lg)',
             overflow: 'hidden',
             textAlign: 'left',
-            cursor: 'pointer',
             transition: 'border-color 300ms, background 300ms, box-shadow 300ms',
             boxShadow: revealed ? '0 0 60px -20px rgba(225,59,20,0.35)' : '0 0 0 0 transparent',
           }}
         >
-          {/* Collapsed CTA */}
-          <div style={{
-            padding: '28px 36px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: 24,
-            borderBottom: `1px solid ${revealed ? 'rgba(225,59,20,0.2)' : 'transparent'}`,
-            transition: 'border-color 300ms',
-          }}>
-            <div>
-              <div className="mono upper" style={{ fontSize: 10, letterSpacing: '0.14em', color: 'var(--accent)', marginBottom: 8 }}>
+          {/* Collapsed CTA — a real disclosure button so it works by keyboard and is announced */}
+          <button
+            type="button"
+            id={triggerId}
+            onClick={() => setRevealed(r => !r)}
+            aria-expanded={revealed}
+            aria-controls={panelId}
+            style={{
+              width: '100%',
+              padding: '28px 36px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 24,
+              background: 'transparent',
+              border: 'none',
+              borderBottom: `1px solid ${revealed ? 'rgba(225,59,20,0.2)' : 'transparent'}`,
+              transition: 'border-color 300ms',
+              textAlign: 'left',
+              color: 'inherit',
+              cursor: 'pointer',
+            }}
+          >
+            <span style={{ display: 'block' }}>
+              <span className="mono upper" style={{ display: 'block', fontSize: 10, letterSpacing: '0.14em', color: 'var(--accent)', marginBottom: 8 }}>
                 The Decision
-              </div>
-              <div className="tight" style={{
+              </span>
+              <span className="tight" style={{
+                display: 'block',
                 fontSize: 'clamp(26px, 3vw, 42px)',
                 fontWeight: 700,
                 letterSpacing: '-0.03em',
@@ -439,9 +495,14 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
                 userSelect: 'none',
               }}>
                 {answerTitle}
-              </div>
-            </div>
-            <div style={{
+              </span>
+              {!revealed && (
+                <span className="mono upper" aria-hidden="true" style={{ display: 'block', marginTop: 18, fontSize: 10, color: 'rgba(236,231,220,0.3)', letterSpacing: '0.14em' }}>
+                  Click to unlock →
+                </span>
+              )}
+            </span>
+            <span style={{
               flexShrink: 0,
               width: 52, height: 52,
               border: `1px solid ${revealed ? 'var(--accent)' : 'rgba(236,231,220,0.2)'}`,
@@ -451,15 +512,21 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
               transition: 'all 280ms cubic-bezier(.2,.7,.2,1)',
             }}>
               <LockIcon open={revealed} />
-            </div>
-          </div>
+            </span>
+          </button>
 
           {/* Expanded body */}
-          <div style={{
-            display: 'grid',
-            gridTemplateRows: revealed ? '1fr' : '0fr',
-            transition: 'grid-template-rows 400ms cubic-bezier(.2,.7,.2,1)',
-          }}>
+          <div
+            id={panelId}
+            role="region"
+            aria-labelledby={triggerId}
+            inert={!revealed}
+            style={{
+              display: 'grid',
+              gridTemplateRows: revealed ? '1fr' : '0fr',
+              transition: 'grid-template-rows 400ms cubic-bezier(.2,.7,.2,1)',
+            }}
+          >
             <div style={{ overflow: 'hidden' }}>
               <div style={{ padding: '28px 36px 36px' }}>
                 <div style={{ fontFamily: 'var(--font-jetbrains-mono)', fontSize: 14, color: 'rgba(236,231,220,0.75)', letterSpacing: '0.02em', lineHeight: 1.7 }}>
@@ -468,12 +535,6 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
               </div>
             </div>
           </div>
-
-          {!revealed && (
-            <div className="mono upper" style={{ padding: '0 36px 24px', fontSize: 10, color: 'rgba(236,231,220,0.3)', letterSpacing: '0.14em' }}>
-              Click to unlock →
-            </div>
-          )}
         </div>
       </ScrollReveal>
     </section>
@@ -516,12 +577,11 @@ function ProblemImage({ src, alt }: { src: string; alt: string }) {
           transition: 'transform 440ms cubic-bezier(.2,.7,.2,1), box-shadow 440ms cubic-bezier(.2,.7,.2,1)',
         }}
       >
-        <img
+        <CaseImage
           src={src}
           alt={alt}
+          sizes="(max-width: 880px) 92vw, 520px"
           style={{
-            width: '100%',
-            display: 'block',
             filter: hover ? 'brightness(1.05) saturate(1.08)' : 'brightness(1) saturate(1)',
             transition: 'filter 440ms ease',
           }}
@@ -535,7 +595,7 @@ function ProblemImage({ src, alt }: { src: string; alt: string }) {
           pointerEvents: 'none',
         }} />
       </button>
-      {modalOpen && <ModalViewer src={src} onClose={() => setModalOpen(false)} />}
+      {modalOpen && <ModalViewer src={src} alt={alt} onClose={() => setModalOpen(false)} />}
     </>
   );
 }
@@ -713,7 +773,7 @@ function renderAnimatedHeroTitle(title: string) {
 function ProcessTimeline({ steps }: { steps: EnhancedStep[] }) {
   const [active, setActive] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [modalSrc, setModalSrc] = useState<string | null>(null);
+  const [modal, setModal] = useState<{ src: string; alt: string } | null>(null);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -831,27 +891,13 @@ function ProcessTimeline({ steps }: { steps: EnhancedStep[] }) {
                   {step.body}
                 </p>
                 {step.images && step.images.length > 0 && (
-                  <div className="r-process-gallery" style={{
-                    marginTop: 28,
-                    display: 'grid',
-                    gridTemplateColumns: step.n === '↗'
-                      ? 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))'
-                      : step.n === '✓'
-                        ? 'repeat(auto-fit, minmax(min(250px, 100%), 1fr))'
-                        : 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))',
-                    gap: step.n === '↗' ? 16 : step.n === '✓' ? 36 : 28,
-                    maxWidth: step.n === '↗'
-                      ? 480
-                      : step.n === '✓'
-                        ? 822
-                        : undefined,
-                  }}>
+                  <div className="r-process-gallery">
                     {step.images.map((src, idx) => (
                       <TimelineGalleryItem
                         key={src}
                         src={src}
                         caption={step.captions?.[idx]}
-                        onClick={() => setModalSrc(src)}
+                        onClick={() => setModal({ src, alt: step.captions?.[idx]?.label ?? step.h })}
                       />
                     ))}
                   </div>
@@ -861,7 +907,7 @@ function ProcessTimeline({ steps }: { steps: EnhancedStep[] }) {
           })}
         </div>
       </div>
-      {modalSrc && <ModalViewer src={modalSrc} onClose={() => setModalSrc(null)} />}
+      {modal && <ModalViewer src={modal.src} alt={modal.alt} onClose={() => setModal(null)} />}
     </>
   );
 }
@@ -894,29 +940,28 @@ function TimelineGalleryItem({
       }}
     >
       <button
+        type="button"
         onClick={onClick}
+        aria-label={caption?.label ? `Expand image: ${caption.label}` : 'Expand image'}
         style={{
           display: 'block',
           position: 'relative',
           width: '100%',
-          aspectRatio: '16 / 9',
           overflow: 'hidden',
           border: 'none',
           borderRadius: 0,
-          cursor: 'pointer',
+          cursor: 'zoom-in',
           padding: 0,
           background: 'transparent',
+          lineHeight: 0,
         }}
       >
-        <img
+        <CaseImage
           src={src}
           alt={caption?.label ?? ''}
+          sizes="(max-width: 640px) 90vw, (max-width: 1080px) 46vw, 500px"
           style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            display: 'block',
-            transform: hover ? 'scale(1.035)' : 'scale(1)',
+            transform: hover ? 'scale(1.02)' : 'scale(1)',
             filter: hover ? 'brightness(1.02) saturate(1.04)' : 'brightness(1) saturate(1)',
             transition: 'transform 280ms cubic-bezier(.2,.7,.2,1), filter 200ms ease',
           }}
@@ -1018,138 +1063,45 @@ function NavCard({ dir, p }: { dir: 'prev' | 'next'; p: typeof PROJECTS[number] 
   );
 }
 
-function ThumbnailGallery({ images, captions }: {
-  images: string[];
-  captions?: Array<{ label: string; body: string }>;
-}) {
-  const [modalSrc, setModalSrc] = useState<string | null>(null);
-
-  return (
-    <div>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: `repeat(auto-fit, minmax(min(280px, 100%), 1fr))`,
-        gap: 16,
-      }}>
-        {images.map((src, i) => (
-          <ThumbnailItem
-            key={src}
-            src={src}
-            index={i}
-            label={captions?.[i]?.label}
-            body={captions?.[i]?.body}
-            onClick={() => setModalSrc(src)}
-          />
-        ))}
-      </div>
-      {modalSrc && <ModalViewer src={modalSrc} onClose={() => setModalSrc(null)} />}
-    </div>
-  );
-}
-
-function ThumbnailItem({ src, index, label, body, onClick }: {
-  src: string;
-  index: number;
-  label?: string;
-  body?: string;
-  onClick: () => void;
-}) {
-  const [hover, setHover] = useState(false);
-
-  return (
-    <div style={{
-      border: '1px solid var(--rule)',
-      borderRadius: 'var(--radius)',
-      background: 'var(--paper)',
-      overflow: 'hidden',
-      transition: 'box-shadow 240ms, border-color 180ms',
-      boxShadow: hover ? '0 24px 48px -24px rgba(17,17,16,0.28)' : '0 2px 8px -4px rgba(17,17,16,0.1)',
-    }}>
-      <button
-        onClick={onClick}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        style={{
-          display: 'block',
-          position: 'relative',
-          width: '100%',
-          aspectRatio: '16 / 9',
-          overflow: 'hidden',
-          border: 'none',
-          borderRadius: 0,
-          cursor: 'zoom-in',
-          padding: 0,
-        }}
-      >
-        <img
-          src={src}
-          alt={label ?? ''}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            display: 'block',
-            transition: 'transform 300ms ease',
-            transform: hover ? 'scale(1.04)' : 'scale(1)',
-          }}
-        />
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: hover ? 'rgba(10,8,6,0.28)' : 'rgba(10,8,6,0)',
-          transition: 'background 200ms',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-          <div style={{
-            opacity: hover ? 1 : 0,
-            transition: 'opacity 200ms',
-            fontSize: 11,
-            fontFamily: 'var(--font-jetbrains-mono)',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            color: 'rgba(236,231,220,0.9)',
-          }}>
-            Click to expand
-          </div>
-        </div>
-      </button>
-      {(label || body) && (
-        <div style={{ padding: '14px 16px 16px' }}>
-          {label && (
-            <div className="mono upper" style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.1em', marginBottom: 5 }}>
-              {label}
-            </div>
-          )}
-          {body && (
-            <div style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--ink-2)' }}>
-              {body}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ModalViewer({ src, onClose }: { src: string; onClose: () => void }) {
+function ModalViewer({ src, alt, onClose }: { src: string; alt?: string; onClose: () => void }) {
   const [visible, setVisible] = useState(false);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const { w, h } = imageMeta(src);
 
   useEffect(() => {
     const raf = requestAnimationFrame(() => setVisible(true));
+    const previouslyFocused = document.activeElement as HTMLElement | null;
     document.body.style.overflow = 'hidden';
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    closeRef.current?.focus();
+
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      // Only the close button is focusable in here, so keep Tab from escaping to the page behind.
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        closeRef.current?.focus();
+      }
+    }
+
     window.addEventListener('keydown', onKey);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
+      previouslyFocused?.focus?.();
     };
   }, [onClose]);
 
   return createPortal(
     <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={alt ? `Expanded image: ${alt}` : 'Expanded image'}
       onClick={onClose}
       style={{
         position: 'fixed',
@@ -1163,11 +1115,17 @@ function ModalViewer({ src, onClose }: { src: string; onClose: () => void }) {
         transition: 'background 320ms ease, backdrop-filter 320ms ease',
       }}
     >
-      <img
+      <Image
         src={src}
-        alt=""
+        alt={alt ?? ''}
+        width={w}
+        height={h}
+        sizes="90vw"
+        unoptimized={src.endsWith('.svg')}
         onClick={e => e.stopPropagation()}
         style={{
+          width: 'auto',
+          height: 'auto',
           maxWidth: '90vw',
           maxHeight: '88vh',
           objectFit: 'contain',
@@ -1179,7 +1137,10 @@ function ModalViewer({ src, onClose }: { src: string; onClose: () => void }) {
         }}
       />
       <button
+        ref={closeRef}
+        type="button"
         onClick={onClose}
+        aria-label="Close image"
         style={{
           position: 'absolute',
           top: 24,

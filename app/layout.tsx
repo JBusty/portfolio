@@ -71,6 +71,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }),
           }}
         />
+        <a href="#main-content" className="skip-link">Skip to content</a>
         <SectionRevealObserver />
         <TopBar />
         {children}
