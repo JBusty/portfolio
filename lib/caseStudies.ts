@@ -48,6 +48,10 @@ export interface CaseStudy {
   solutionTitle: string[];
   solutionIntro?: string;
   solutionCards: CaseStudyCard[];
+  /** Copy for the "Exploration" bookend that opens the process timeline. */
+  explorationBody?: string;
+  /** Copy for the "Shipped" bookend that closes the process timeline. */
+  shippedBody?: string;
   processTitle: string[];
   processStats: CaseStudyStat[];
   processSteps: CaseStudyStep[];
@@ -127,6 +131,9 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         b: 'The old information still had to be available somewhere, so the page balanced quick insight up top with deeper supporting detail below.',
       },
     ],
+    explorationBody:
+      'Before touching visuals, I needed to know whether the two-column behavioral split would hold: consistent signals on one side, anomalies on the other.',
+    shippedBody: 'What shipped after six iterations and a tiered rollout.',
     processTitle: ['Five months.', 'Six iterations'],
     processStats: [
       { n: '5 months', label: 'Design phase' },
@@ -232,6 +239,9 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         b: 'Searches exposed their expected cost before execution so customers could avoid blowing through query limits by accident.',
       },
     ],
+    explorationBody:
+      'The first question was structural: how much room does a schema browser need next to a SQL editor before either one stops being usable?',
+    shippedBody: 'The phased release, dashboard first and query tool second.',
     processTitle: ['Two months of design.', 'Nine to GA'],
     processStats: [
       { n: '2 months', label: 'Design time' },
@@ -333,6 +343,9 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         b: 'The pattern was pressure-tested against the ugliest integrations first so we knew it could hold up before it became the standard.',
       },
     ],
+    explorationBody:
+      'The wireframes existed to test one idea: could a numbered step structure with a single expanded step absorb every vendor\'s quirks?',
+    shippedBody: 'The pattern, after surviving the ugliest integrations we had.',
     processTitle: ['Two months.', 'One pattern'],
     processStats: [
       { n: '2 months', label: 'Design phase' },
@@ -433,6 +446,9 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         b: 'Contextual help and plain-language messaging gave users a clear next step instead of just telling them something was broken.',
       },
     ],
+    explorationBody:
+      'Two weeks of runway meant the wireframes had one job — find where a health badge could live in the integrations list without adding noise.',
+    shippedBody: 'Two weeks of work, live in the product.',
     processTitle: ['Two weeks.', 'A small team'],
     processStats: [
       { n: '100', label: 'Integrations improved' },
@@ -538,6 +554,9 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         b: 'The customer-facing portal launched first, then the administrative side followed, which reduced risk and let production usage validate the approach.',
       },
     ],
+    explorationBody:
+      'Three legacy products had to fit inside one shell. The wireframes were about finding the shared skeleton before arguing about pixels.',
+    shippedBody: 'The consolidated platform, rolled out customer-side first.',
     processTitle: ['Discovery first.', 'Then consolidation'],
     processStats: [
       { n: '2 months', label: 'Discovery phase' },
@@ -641,6 +660,9 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         b: 'Features were scoped into roughly two-week chunks and validated continuously with internal stakeholders and VISA to reduce risk as the deadline approached.',
       },
     ],
+    explorationBody:
+      'Card status was the whole product, so the wireframes started there: Active, Frozen, Pending, Fraud, all legible in one table.',
+    shippedBody: 'Under a year from index card to live product.',
     processTitle: ['Concept to launch.', 'Under a year'],
     processStats: [
       { n: '<1 year', label: 'From concept to launch' },
@@ -736,8 +758,8 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       },
       {
         n: '02',
-        h: 'Design system before screens',
-        b: 'Color tokens, type, spacing, and interaction rules were defined early so the product could move quickly without turning into a pile of one-off decisions.',
+        h: 'Tokens I had to live with',
+        b: 'I was also the engineer, so color, type, spacing, and interaction rules got written as code I would have to maintain. That kept the system honest and small.',
       },
       {
         n: '03',
@@ -745,6 +767,8 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         b: 'A dark palette, terracotta accents, bottom navigation on mobile, and a sidebar on desktop help the app feel like a real work tool instead of a novelty app.',
       },
     ],
+    explorationBody:
+      'I sketched the timeline and budget panel first, because if those two didn\'t work together the rest of the app wouldn\'t matter.',
     processTitle: ['Solo 0->1.', 'Built in the open'],
     processStats: [
       { n: '1', label: 'Person team' },
@@ -759,8 +783,8 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       },
       {
         n: '02',
-        h: 'Define the system early',
-        body: 'The design system came first because it was the only way to move quickly later without sacrificing consistency or burning time on rework.',
+        h: 'Write the primitives first',
+        body: 'As a team of one, the primitives were the only leverage I had. Getting them right up front was what made every screen after cheap to build.',
       },
       {
         n: '03',
@@ -775,7 +799,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     ],
     reflection: {
       wins: [
-        'Building the design system before any screens paid off with day-one consistency.',
+        'Designing and implementing the primitives myself meant no translation loss between intent and build.',
         'The role-toggle architecture created a natural network effect between owners and contractors.',
         'The mobile bottom nav and desktop sidebar pattern tested well without explanation.',
       ],
