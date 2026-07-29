@@ -211,7 +211,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: "How do you work with engineers?",
-    a: "Closely and directly, which is easier when you can speak their language. I've contributed to front-end production code, implemented design systems in Bootstrap, and spent enough time in the codebase to know what's actually feasible.",
+    a: "Closely and directly, which is easier when you can speak their language. I've contributed to front-end production code, built design systems in code from Bootstrap through React and Tailwind, and spent enough time in the codebase to know what's actually feasible.",
   },
   {
     q: "What environments bring out your best work?",
