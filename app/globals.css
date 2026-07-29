@@ -432,6 +432,11 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
 .r-hero-split  { display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; align-items: center; }
 .r-outcome { display: grid; grid-template-columns: repeat(3, 1fr); }
 .r-problem-full { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: 96px; align-items: start; }
+/* "How I show up" cards — 4 across, 2x2 before they get too narrow to read */
+.r-grid-values { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+@media (max-width: 1180px) {
+  .r-grid-values { grid-template-columns: repeat(2, 1fr); }
+}
 
 /* ---- mobile ---- */
 @media (max-width: 880px) {
@@ -486,6 +491,7 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
   .r-grid-4  { grid-template-columns: 1fr; }
   .r-grid-3  { grid-template-columns: 1fr; }
   .r-grid-2  { grid-template-columns: 1fr; }
+  .r-grid-values { grid-template-columns: 1fr; }
 
   /* Vertical padding — xs screens */
   .sp-normal    { padding-top:  48px !important; padding-bottom:  56px !important; }

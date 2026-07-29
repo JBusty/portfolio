@@ -253,7 +253,7 @@ function HomeValues() {
             </h2>
           </div>
         </div>
-        <div className="r-grid-3">
+        <div className="r-grid-values">
           {VALUES.map((v, i) => <ValueCard key={v.title} v={v} idx={i} />)}
         </div>
       </div>
@@ -264,7 +264,7 @@ function HomeValues() {
 function ValueCard({ v, idx }: { v: typeof VALUES[number]; idx: number }) {
   const [hover, setHover] = useState(false);
   const [noted, setNoted] = useState(false);
-  const restRot = [-1.8, 1.2, -1.0][idx];
+  const restRot = [-1.8, 1.2, -1.0, 1.6][idx] ?? 0;
 
   return (
     <div
@@ -378,6 +378,27 @@ function ValueGlyph({ kind, hover }: { kind: string; hover: boolean }) {
             opacity: hover ? 1 : 0.32,
             transform: hover ? 'translateY(0)' : 'translateY(2px)',
             transition: `opacity 200ms ease ${i * 70}ms, transform 240ms cubic-bezier(.2,.7,.2,1) ${i * 70}ms`,
+          }} />
+        ))}
+      </div>
+    );
+  }
+  if (kind === 'ai') {
+    // three lines of prose collapsing into one short summary
+    const essay = [34, 26, 18];
+    const summary = [22, 0, 0];
+    return (
+      <div style={{
+        display: 'inline-flex', flexDirection: 'column', alignItems: 'end',
+        gap: 6, height: 26, justifyContent: 'center',
+      }}>
+        {essay.map((w, i) => (
+          <span key={i} style={{
+            display: 'inline-block', height: 4, borderRadius: 2,
+            width: hover ? summary[i] : w,
+            background: 'var(--accent)',
+            opacity: hover ? (summary[i] ? 1 : 0) : 0.32,
+            transition: `width 320ms cubic-bezier(.2,.7,.2,1) ${i * 60}ms, opacity 240ms ease ${i * 60}ms`,
           }} />
         ))}
       </div>

@@ -26,7 +26,7 @@ const instrumentSerif = Instrument_Serif({
   style: ['normal', 'italic'],
 });
 
-const description = 'Senior product designer with 12+ years untangling complex enterprise software. Specializes in 0→1 work, design systems, and shipping things that actually work.';
+const description = 'Product designer with 12+ years untangling complex enterprise software. Security, AI product surfaces, 0→1 work, and shipping things that actually work.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

@@ -38,7 +38,7 @@ export interface Stat {
 }
 
 export interface Value {
-  kind: 'collab' | 'relentless' | 'craft';
+  kind: 'collab' | 'relentless' | 'craft' | 'ai';
   tag: string;
   title: string;
   body: string;
@@ -187,7 +187,7 @@ export const JOURNEY: JourneyStep[] = [
     range: '2021 — Now',
     title: 'Senior / Lead Product Designer',
     body:
-      'Leading 0→1 and platform work. Partnering closely with PM and Eng to ship faster and argue less. Comfortable with both the strategy doc and the spec.',
+      'Leading 0→1 and platform work in security operations, including the GenAI surfaces analysts now rely on. Partnering closely with PM and Eng to ship faster and argue less. Comfortable with both the strategy doc and the spec.',
     companies: [
       { name: 'Edenred', url: 'https://www.edenred.com' },
       { name: 'Red Canary', url: 'https://redcanary.com' },
@@ -254,6 +254,12 @@ export const VALUES: Value[] = [
     tag: 'Design AND code',
     title: 'Craft across disciplines',
     body: "I design and I code. That mix lets me bridge vision and implementation, ship realistic specs, and keep the gap between Figma and production thin.",
+  },
+  {
+    kind: 'ai',
+    tag: 'Summaries, not essays',
+    title: 'Fluent in AI product',
+    body: 'I design the AI surfaces, not just around them. Deciding how much a model should say, where confidence belongs, and when generated content helps versus gets in the way. I also prototype with AI, which means direction gets pressure-tested in days instead of sprints.',
   },
 ];
 
