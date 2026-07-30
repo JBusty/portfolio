@@ -1124,7 +1124,10 @@ function ModalViewer({ src, alt, onClose }: { src: string; alt?: string; onClose
         unoptimized={src.endsWith('.svg')}
         onClick={e => e.stopPropagation()}
         style={{
-          width: 'auto',
+          // width:auto capped every image at its intrinsic pixel size, so the sub-1200px
+          // screenshots opened barely bigger than the thumbnail. Grow to whichever viewport
+          // bound binds first instead — but never blow a small asset past 2x its own pixels.
+          width: `min(90vw, calc(88vh * ${(w / h).toFixed(4)}), ${w * 2}px)`,
           height: 'auto',
           maxWidth: '90vw',
           maxHeight: '88vh',
