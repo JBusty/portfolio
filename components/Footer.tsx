@@ -68,7 +68,7 @@ export default function Footer() {
               <span style={{ color: 'var(--accent)' }}>worth shipping.</span>
             </h2>
             <div style={{ marginTop: 28, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <a href="mailto:jbusseywork@gmail.com" className="btn" style={{ background: 'var(--accent)', borderColor: 'var(--accent)' }}>
+              <a href="mailto:jbusseywork@gmail.com" className="btn" style={{ background: 'var(--accent-ink)', borderColor: 'var(--accent-ink)' }}>
                 jbusseywork@gmail.com <span className="arr">↗</span>
               </a>
               <a

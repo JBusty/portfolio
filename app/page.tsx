@@ -320,7 +320,7 @@ function ValueCard({ v, idx }: { v: typeof VALUES[number]; idx: number }) {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontFamily: 'var(--font-jetbrains-mono)', fontSize: 9,
             textTransform: 'uppercase', letterSpacing: '0.14em',
-            color: 'var(--accent)', textAlign: 'center', lineHeight: 1.1,
+            color: 'var(--accent-lift)', textAlign: 'center', lineHeight: 1.1,
             transform: 'rotate(-14deg)',
             animation: 'notedStamp 320ms cubic-bezier(.2,.7,.2,1)',
             flexShrink: 0,
@@ -358,7 +358,7 @@ function ValueCard({ v, idx }: { v: typeof VALUES[number]; idx: number }) {
         marginTop: 'auto',
         paddingTop: 28,
         fontSize: 10,
-        color: 'rgba(236,231,220,0.42)',
+        color: 'rgba(236,231,220,0.55)',
         letterSpacing: '0.14em',
         display: 'flex',
         justifyContent: 'space-between',
@@ -501,7 +501,7 @@ function HomeJourney() {
             </div>
             <div style={{ overflow: 'hidden', marginTop: 20, minHeight: 90 }}>
               <div key={active} style={{ animation: 'phaseSwap 380ms cubic-bezier(.2,.7,.2,1)' }}>
-                <div className="mono" style={{ fontSize: 12, color: 'var(--accent)' }}>{current.range}</div>
+                <div className="mono" style={{ fontSize: 12, color: 'var(--accent-ink)' }}>{current.range}</div>
                 <div className="tight" style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em', marginTop: 8, lineHeight: 1.2 }}>
                   {current.title}
                 </div>
@@ -558,7 +558,7 @@ function HomeJourney() {
                   <div className="mono upper" style={{ fontSize: 10, color: 'var(--sub)', letterSpacing: '0.12em' }}>
                     Phase 0{i + 1}
                     <span style={{ margin: '0 8px', color: 'var(--rule-strong)' }}>·</span>
-                    <span style={{ color: isActive ? 'var(--accent)' : 'var(--sub)' }}>{step.range}</span>
+                    <span style={{ color: isActive ? 'var(--accent-ink)' : 'var(--sub)' }}>{step.range}</span>
                   </div>
                   <h3 className="tight" style={{ margin: '12px 0 0', fontSize: 'clamp(30px, 3.6vw, 52px)', fontWeight: 600, letterSpacing: '-0.035em', lineHeight: 1.02 }}>
                     {step.title}
@@ -570,7 +570,7 @@ function HomeJourney() {
                     {step.companies.map(co => (
                       <span key={co.name} className="chip" style={{
                         borderColor: isActive ? 'var(--accent)' : 'var(--rule-strong)',
-                        color: isActive ? 'var(--accent)' : 'var(--sub)',
+                        color: isActive ? 'var(--accent-ink)' : 'var(--sub)',
                         transition: 'color 280ms, border-color 280ms',
                       }}>{co.name}</span>
                     ))}
@@ -613,7 +613,7 @@ function HomeFAQ() {
                   }}
                 >
                   <span className="tight" style={{
-                    fontSize: 'clamp(22px, 2.4vw, 32px)', fontWeight: 600, letterSpacing: '-0.025em',
+                    fontSize: 'clamp(24px, 2.4vw, 32px)', fontWeight: 600, letterSpacing: '-0.025em',
                     color: isOpen ? 'var(--accent)' : 'var(--ink)',
                   }}>{it.q}</span>
                   <span className="mono" aria-hidden="true" style={{

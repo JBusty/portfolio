@@ -196,7 +196,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
                   </div>
                 </dd>
                 <dt>Result</dt>
-                <dd style={{ color: 'var(--accent)', fontWeight: 500 }}>{p.metric}</dd>
+                <dd style={{ color: 'var(--accent-ink)', fontWeight: 500 }}>{p.metric}</dd>
               </dl>
             </div>
           </div>
@@ -220,7 +220,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
               <div className="mono upper" style={{
                 fontSize: 12,
                 letterSpacing: '0.22em',
-                color: 'var(--accent)',
+                color: 'var(--accent-ink)',
                 marginBottom: 24,
               }}>
                 The TL;DR<span className="accent">.</span>
@@ -251,7 +251,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
               <div className="mono upper" style={{
                 fontSize: 12,
                 letterSpacing: '0.22em',
-                color: 'var(--accent)',
+                color: 'var(--accent-ink)',
                 marginBottom: 24,
               }}>
                 {renderSubTitle(study.problemTitle)}
@@ -410,7 +410,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
           <span className="mono upper" style={{
             fontSize: 12,
             letterSpacing: '0.14em',
-            color: 'var(--accent)',
+            color: 'var(--accent-lift)',
             whiteSpace: 'nowrap',
             border: '1px solid rgba(225,59,20,0.5)',
             background: 'rgba(225,59,20,0.1)',
@@ -480,7 +480,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
             }}
           >
             <span style={{ display: 'block' }}>
-              <span className="mono upper" style={{ display: 'block', fontSize: 10, letterSpacing: '0.14em', color: 'var(--accent)', marginBottom: 8 }}>
+              <span className="mono upper" style={{ display: 'block', fontSize: 10, letterSpacing: '0.14em', color: 'var(--accent-lift)', marginBottom: 8 }}>
                 The Decision
               </span>
               <span className="tight" style={{
@@ -489,7 +489,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
                 fontWeight: 700,
                 letterSpacing: '-0.03em',
                 lineHeight: 1.05,
-                color: revealed ? 'var(--bone)' : 'rgba(236,231,220,0.45)',
+                color: revealed ? 'var(--bone)' : 'rgba(236,231,220,0.55)',
                 filter: revealed ? 'none' : 'blur(6px)',
                 transition: 'color 400ms, filter 400ms',
                 userSelect: 'none',
@@ -497,7 +497,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
                 {answerTitle}
               </span>
               {!revealed && (
-                <span className="mono upper" aria-hidden="true" style={{ display: 'block', marginTop: 18, fontSize: 10, color: 'rgba(236,231,220,0.3)', letterSpacing: '0.14em' }}>
+                <span className="mono upper" aria-hidden="true" style={{ display: 'block', marginTop: 18, fontSize: 10, color: 'rgba(236,231,220,0.55)', letterSpacing: '0.14em' }}>
                   Click to unlock →
                 </span>
               )}
@@ -624,7 +624,7 @@ function OutcomeColumn({
       <h3 className="tight" style={{ margin: 0, fontSize: 'clamp(44px, 5vw, 72px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.95, color: 'var(--bone)' }}>
         {label}
       </h3>
-      <div className="mono upper" style={{ marginTop: 18, fontSize: 10, color: 'rgba(236,231,220,0.45)', letterSpacing: '0.1em' }}>
+      <div className="mono upper" style={{ marginTop: 18, fontSize: 10, color: 'rgba(236,231,220,0.55)', letterSpacing: '0.1em' }}>
         — {title}
       </div>
       <ul style={{ margin: '20px 0 0', padding: 0, listStyle: 'none' }}>
@@ -689,7 +689,7 @@ function ReflectionColumn({
             </svg>
           )}
         </span>
-        <span className="mono upper" style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.12em' }}>
+        <span className="mono upper" style={{ fontSize: 11, color: isWins ? 'var(--accent-lift)' : 'var(--accent-ink)', letterSpacing: '0.12em' }}>
           {title}
         </span>
       </div>
@@ -1017,7 +1017,7 @@ function TimelineGalleryItem({
       </button>
       {caption && (
         <div style={{ padding: '14px 16px 18px' }}>
-          <div className="mono upper" style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.1em', marginBottom: 4 }}>
+          <div className="mono upper" style={{ fontSize: 10, color: 'var(--accent-ink)', letterSpacing: '0.1em', marginBottom: 4 }}>
             {caption.label}
           </div>
           <div style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--ink-2)' }}>

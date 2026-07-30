@@ -262,7 +262,7 @@ function ContactFAQ() {
                 textAlign: 'left',
               }}
             >
-              <span className="tight" style={{ fontSize: 'clamp(22px, 2.4vw, 32px)', fontWeight: 600, letterSpacing: '-0.025em', color: isOpen ? 'var(--accent)' : 'var(--ink)' }}>
+              <span className="tight" style={{ fontSize: 'clamp(24px, 2.4vw, 32px)', fontWeight: 600, letterSpacing: '-0.025em', color: isOpen ? 'var(--accent)' : 'var(--ink)' }}>
                 {it.q}
               </span>
               <span

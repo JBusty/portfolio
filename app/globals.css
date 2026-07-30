@@ -12,11 +12,17 @@
   --bone-3:      #D7D0BF;
   --ink:         #111110;
   --ink-2:       #2A2924;
-  --sub:         #6F6B61;
+  /* Darkened from #6F6B61 — that failed AA at the 10–12px sizes it's used at
+     (4.31 on bone, 3.49 on the contact hero tint). #5A574F clears 4.5 on every
+     surface in the palette, worst case 4.74 on --hero-contact. */
+  --sub:         #5A574F;
   --rule:        rgba(17, 17, 16, 0.16);
   --rule-strong: rgba(17, 17, 16, 0.45);
+  /* --accent is for large display type only (passes the 3:1 large-text bar).
+     Small text needs one of the two variants below. */
   --accent:      #E13B14;
-  --accent-ink:  #B12C0C;
+  --accent-ink:  #B12C0C;  /* small accent text on light surfaces — 4.75+ */
+  --accent-lift: #F0562F;  /* small accent text on ink/dark surfaces — 5.08+ */
   --paper:       #F5F1E6;
   --hero-home:   #EBDAC1;
   --hero-work:   #D7DECC;
@@ -108,8 +114,8 @@ main:focus { outline: none; }
 }
 .btn:hover {
   transform: translateY(-1px);
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--accent-ink);
+  border-color: var(--accent-ink);
 }
 .btn .arr { display: inline-block; transition: transform 120ms ease; }
 .btn:hover .arr { transform: translate(2px, -2px); }
@@ -194,8 +200,8 @@ main:focus { outline: none; }
 
 .work-filter-chip[data-active="true"]:hover,
 .work-filter-chip[data-active="true"]:focus-visible {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--accent-ink);
+  border-color: var(--accent-ink);
   color: var(--bone);
 }
 
@@ -224,13 +230,13 @@ main:focus { outline: none; }
   padding: 2px 6px;
   font-size: inherit;
   letter-spacing: inherit;
-  color: rgba(236, 231, 220, 0.3);
+  color: rgba(236, 231, 220, 0.55);
   transition: color 160ms ease, border-color 160ms ease;
 }
 
 .value-card-tap:hover,
 .value-card-tap:focus-visible {
-  color: var(--accent);
+  color: var(--accent-lift);
   border-color: rgba(225, 59, 20, 0.5);
   outline: none;
 }
@@ -298,7 +304,7 @@ main:focus { outline: none; }
 
 .featured-card-company {
   font-size: 11px;
-  color: var(--accent);
+  color: var(--accent-ink);
   letter-spacing: 0.1em;
 }
 
@@ -318,7 +324,7 @@ main:focus { outline: none; }
   font-size: 13px;
   font-weight: 600;
   line-height: 1.35;
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 
 .featured-card-rule {
@@ -357,7 +363,7 @@ main:focus { outline: none; }
 }
 
 .featured-card:hover .featured-card-more {
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 
 .featured-card:hover .featured-card-more .arr {
@@ -445,7 +451,7 @@ main:focus { outline: none; }
 
 .proj-row-company {
   font-size: 11px;
-  color: var(--accent);
+  color: var(--accent-ink);
   letter-spacing: 0.1em;
 }
 
@@ -465,7 +471,7 @@ main:focus { outline: none; }
   font-weight: 600;
   line-height: 1.35;
   letter-spacing: -0.005em;
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 
 .proj-row-rule {

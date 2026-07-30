@@ -47,14 +47,14 @@ function LogoBadge() {
     >
       <span style={{
         display: 'inline-block',
-        color: hover ? 'var(--accent)' : 'rgba(17,17,16,0.35)',
+        color: hover ? 'var(--accent)' : 'rgba(17,17,16,0.65)',
         transform: hover ? 'translateX(-3px)' : 'translateX(0)',
         transition: 'transform 240ms cubic-bezier(.2,.8,.2,1), color 180ms',
       }}>&lt;</span>
       <span style={{ color: 'var(--ink)' }}>JB</span>
       <span style={{
         display: 'inline-block',
-        color: hover ? 'var(--accent)' : 'rgba(17,17,16,0.35)',
+        color: hover ? 'var(--accent)' : 'rgba(17,17,16,0.65)',
         transform: hover ? 'translateX(3px)' : 'translateX(0)',
         transition: 'transform 240ms cubic-bezier(.2,.8,.2,1), color 180ms',
         fontSize: 17,

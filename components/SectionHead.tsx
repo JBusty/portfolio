@@ -13,7 +13,7 @@ export default function SectionHead({ title, eyebrow }: SectionHeadProps) {
           <div className="mono upper" style={{
             fontSize: 12,
             letterSpacing: '0.22em',
-            color: 'var(--accent)',
+            color: 'var(--accent-ink)',
             marginBottom: 24,
           }}>
             {eyebrow}

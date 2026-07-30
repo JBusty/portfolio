@@ -231,7 +231,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: "What kind of problems do you solve best?",
-    a: "Complex enterprise workflows that have gotten out of hand, the kind where users have learned to work around the product instead of with it. I've spent 12+ years in cybersecurity, finance, and healthcare, which means I'm comfortable with high-stakes, high-complexity problems where getting it wrong actually matters.",
+    a: "Complex enterprise workflows that have gotten out of hand, the kind where users have learned to work around the product instead of with it. I've spent 12+ years across five industries, going deepest in cybersecurity, finance, and healthcare, which means I'm comfortable with high-stakes, high-complexity problems where getting it wrong actually matters.",
   },
   {
     q: "What's it like working with you?",
@@ -260,7 +260,8 @@ export const COMPANIES: Company[] = [
 export const STATS: Stat[] = [
   { n: '12+', label: 'Years building things people use', unit: 'yrs' },
   { n: '1M+', label: 'Humans impacted by work I shipped', unit: 'ppl' },
-  { n: '3', label: 'Disciplines crossed: code, design, leadership', unit: 'hats' },
+  // Counted from the 0→1 tag: Security Data Lake, Fleet Card, Groundbase.
+  { n: '3', label: 'Products taken 0→1, concept to ship', unit: 'builds' },
   // Derived from COMPANIES below: security (Zscaler, Circadence, Red Canary),
   // banking (CIT Bank), healthcare (U. of Rochester), benefits + payments (Edenred),
   // food service (Catertrax). Drops to 4 if payments is grouped under finance.
