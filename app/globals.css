@@ -75,6 +75,10 @@ button { font: inherit; cursor: pointer; }
 }
 
 main:focus { outline: none; }
+/* <main> is focused on route change and by the skip link. Without a scroll margin
+   the browser aligns it under the sticky bar, landing the page ~73px down instead
+   of at the true top. Anything >= the bar height keeps the target clamped to 0. */
+main { scroll-margin-top: 96px; }
 ::selection { background: var(--accent); color: var(--bone); }
 
 /* ---- type ---- */

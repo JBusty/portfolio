@@ -130,7 +130,8 @@ export default function TopBar() {
   useEffect(() => {
     function onScroll() {
       const y = window.scrollY;
-      if (y < 60) { setVisible(true); }
+      // Anything within the bar's own height counts as "at the top".
+      if (y < 100) { setVisible(true); }
       else if (y > lastY.current) { setVisible(false); }
       else { setVisible(true); }
       lastY.current = y;
@@ -141,6 +142,14 @@ export default function TopBar() {
 
   // Close on route change or Escape
   useEffect(() => { setMenuOpen(false); }, [pathname]);
+
+  // Always arrive on a new page with the bar showing. Next.js moves focus to the
+  // new <main> after navigation, which nudges the page down slightly; without this
+  // the bar reads that as a downward scroll and hides itself on arrival.
+  useEffect(() => {
+    setVisible(true);
+    lastY.current = 0;
+  }, [pathname]);
   useEffect(() => {
     function onKey(e: KeyboardEvent) { if (e.key === 'Escape') setMenuOpen(false); }
     window.addEventListener('keydown', onKey);
