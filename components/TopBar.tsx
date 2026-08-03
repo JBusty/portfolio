@@ -264,7 +264,7 @@ export default function TopBar() {
                     background: isActive ? 'var(--ink)' : 'transparent',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: 7,
+                    gap: 5,
                   }}
                 >
                   <NavIcon href={item.href} />
@@ -371,7 +371,7 @@ export default function TopBar() {
                   background: isActive ? 'var(--ink)' : 'transparent',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 10,
+                  gap: 8,
                 }}
               >
                 <NavIcon href={item.href} />
