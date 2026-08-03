@@ -169,6 +169,70 @@ footer { --mk: var(--accent-lift); }
 .btn.ghost { --mk: var(--accent); }
 .btn:hover { --mk: var(--bone); }
 
+/* ---- solution cards ----
+   The "How I show up" cards from the home page, on paper instead of ink. They sit
+   at a slight angle until you point at one, then straighten and lift. The copy
+   never moves — the card carries the interest. */
+.sol-card {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 28px 24px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  transform-origin: center bottom;
+  transform: rotate(var(--sol-tilt, 0deg));
+  box-shadow: 0 10px 22px -18px rgba(17, 17, 16, 0.4);
+  transition:
+    transform 340ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    background 220ms ease,
+    border-color 220ms ease,
+    box-shadow 240ms ease;
+}
+
+.sol-card-num {
+  align-self: flex-end;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--accent-ink);
+}
+
+.sol-card-title {
+  margin: 22px 0 0;
+  font-size: clamp(22px, 2vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  transition: color 220ms ease;
+}
+
+.sol-card-rule {
+  display: block;
+  margin-top: 14px;
+  width: 20px;
+  height: 2px;
+  background: var(--accent);
+  transition: width 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.sol-card-body {
+  margin: 20px 0 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+@media (hover: hover) {
+  .sol-card:hover {
+    transform: translateY(-8px) rotate(0deg) scale(1.01);
+    background: var(--bone);
+    border-color: var(--accent);
+    box-shadow: 0 24px 56px -28px rgba(17, 17, 16, 0.45);
+  }
+  .sol-card:hover .sol-card-title { color: var(--accent); }
+  .sol-card:hover .sol-card-rule { width: 44px; }
+}
+
 /* ---- chips ---- */
 .chip {
   display: inline-flex;
@@ -1015,6 +1079,10 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
     transition: none !important;
     transform: none !important;
   }
+
+  /* Cards keep their resting angle and their colour, lose the lift. */
+  .sol-card { transition: background 220ms ease, border-color 220ms ease !important; }
+  .sol-card:hover { transform: rotate(var(--sol-tilt, 0deg)) !important; }
 
   .polaroid-draw {
     stroke-dashoffset: 0 !important;

@@ -21,7 +21,10 @@ export async function generateMetadata({
   const url = `${SITE_URL}/work/${slug}`;
 
   return {
-    title,
+    // Absolute on purpose: app/work/layout.tsx sets a plain-string title, which
+    // ends the root's "%s — Joshua Bussey" template before it reaches this depth.
+    // Without this, case studies index as bare "Fleet Card".
+    title: { absolute: `${title} — Joshua Bussey` },
     description,
     alternates: { canonical: url },
     openGraph: {

@@ -37,7 +37,6 @@ function BackToTop() {
 const siteLinks = [
   { href: '/', label: 'Homepage' },
   { href: '/work', label: 'The work' },
-  { href: '/work/identity-profiles', label: 'Case study: Identity profiles' },
   { href: '/contact', label: "Let's talk" },
 ];
 

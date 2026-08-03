@@ -10,7 +10,7 @@ import { faDraftingCompass, faFlag } from '@fortawesome/free-solid-svg-icons';
 import Mark from '@/components/Mark';
 import ScrollReveal from '@/components/ScrollReveal';
 import SectionHead from '@/components/SectionHead';
-import { getCaseStudy } from '@/lib/caseStudies';
+import { getCaseStudy, type CaseStudyCard } from '@/lib/caseStudies';
 import { PROJECTS } from '@/lib/data';
 import { imageMeta } from '@/lib/imageMeta';
 import heroStyles from '../../page.module.css';
@@ -296,21 +296,8 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
             marginTop: study.solutionIntro ? 32 : 8,
           }}
         >
-          {study.solutionCards.map((card) => (
-            <div
-              key={card.n}
-              style={{
-                border: '1px solid var(--rule)',
-                padding: 24,
-                background: 'var(--paper)',
-                borderRadius: 'var(--radius)',
-              }}
-            >
-              <div className="tight" style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.025em' }}>
-                {card.h}
-              </div>
-              <p style={{ margin: '12px 0 0', color: 'var(--ink-2)', fontSize: 15, lineHeight: 1.55 }}>{card.b}</p>
-            </div>
+          {study.solutionCards.map((card, i) => (
+            <SolutionCard key={card.n} card={card} idx={i} />
           ))}
         </div>
       </CSection>
@@ -551,6 +538,26 @@ function CSection({ title, eyebrow, children }: { title: ReactNode; eyebrow?: Re
         {children}
       </ScrollReveal>
     </section>
+  );
+}
+
+/**
+ * Solution card, built on the "How I show up" cards from the home page: the copy
+ * stays put and the card carries the interest, sitting at a slight angle until
+ * you point at one. Same tilt values, on paper instead of ink.
+ */
+function SolutionCard({ card, idx }: { card: CaseStudyCard; idx: number }) {
+  const restRot = [-1.8, 1.2, -1.0, 1.6][idx % 4];
+
+  return (
+    <div className="sol-card" style={{ '--sol-tilt': `${restRot}deg` } as CSSProperties}>
+      <span className="mono sol-card-num">{card.n}</span>
+      <h3 className="tight sol-card-title">
+        {card.h}
+        <span aria-hidden className="sol-card-rule" />
+      </h3>
+      <p className="sol-card-body">{card.b}</p>
+    </div>
   );
 }
 
