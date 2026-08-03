@@ -169,6 +169,35 @@ footer { --mk: var(--accent-lift); }
 .btn.ghost { --mk: var(--accent); }
 .btn:hover { --mk: var(--bone); }
 
+/* ---- problem section art ----
+   Reuses the hero/contact draw keyframes, but held until the section arrives:
+   ScrollReveal puts .is-visible on the container, and that starts the strokes. */
+.problem-art {
+  display: block;
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  overflow: visible;
+}
+
+.pa-draw {
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+
+.pa-fade { opacity: 0; }
+
+.is-visible .pa-draw { animation: contactDraw 1.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.is-visible .pa-fade { animation: contactFadeIn 420ms ease forwards; }
+
+.pa-1 { animation-delay: 80ms; }
+.pa-2 { animation-delay: 260ms; }
+.pa-3 { animation-delay: 440ms; }
+.pa-4 { animation-delay: 640ms; }
+.pa-5 { animation-delay: 900ms; }
+
 /* ---- solution cards ----
    The "How I show up" cards from the home page, on paper instead of ink. They sit
    at a slight angle until you point at one, then straighten and lift. The copy
@@ -464,8 +493,14 @@ footer { --mk: var(--accent-lift); }
   flex-wrap: wrap;
 }
 
+/* inline-flex rather than inline: as plain inline text the space before the mark
+   was a break opportunity, and the chevron kept dropping to its own line. */
 .featured-card-more {
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
   font-size: 11px;
   letter-spacing: 0.08em;
   color: var(--ink-2);
@@ -914,6 +949,34 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
   border-color: var(--ink) !important;
 }
 
+/* Solid at every size and state. Ink at rest so it reads as part of the label,
+   accent once the link goes dark — where ink would disappear anyway. */
+.nav-icon {
+  flex-shrink: 0;
+  color: var(--ink);
+  fill: currentColor;
+  transition: color 240ms ease;
+}
+
+/* Door, spine, envelope crease. These are knockouts, so they have to be painted
+   in whatever sits behind the icon: the bar's own colour, which changes per
+   route, until a link fills with ink underneath them. */
+.nav-icon-cut {
+  fill: none;
+  stroke: var(--nav-surface, var(--bone));
+  transition: stroke 240ms ease;
+}
+
+.nav-link-active .nav-icon,
+.nav-link:not(.nav-link-active):hover .nav-icon {
+  color: var(--accent-lift);
+}
+
+.nav-link-active .nav-icon-cut,
+.nav-link:not(.nav-link-active):hover .nav-icon-cut {
+  stroke: var(--ink);
+}
+
 /* ---- faq answer body ---- */
 .faq-answer {
   padding: 0 0 20px 0;
@@ -1079,6 +1142,10 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
     transition: none !important;
     transform: none !important;
   }
+
+  /* The problem art arrives drawn rather than drawing itself. */
+  .pa-draw { stroke-dashoffset: 0 !important; animation: none !important; }
+  .pa-fade { opacity: 1 !important; animation: none !important; }
 
   /* Cards keep their resting angle and their colour, lose the lift. */
   .sol-card { transition: background 220ms ease, border-color 220ms ease !important; }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Mark from '@/components/Mark';
@@ -101,6 +101,56 @@ function LinkedInIcon() {
   );
 }
 
+/**
+ * Nav glyphs, on the same 24 grid and 1.8 stroke as the other icons in here.
+ * Decorative — the label beside each one carries the meaning.
+ */
+function NavIcon({ href }: { href: string }) {
+  // Fill is left to CSS: outline at rest, solid once the link goes dark. Details
+  // marked nav-icon-cut stay unfilled and switch to ink there, so they read as
+  // knockouts in the solid shape instead of vanishing into it.
+  const props = {
+    className: 'nav-icon',
+    width: 15,
+    height: 15,
+    viewBox: '0 0 24 24',
+    stroke: 'currentColor',
+    strokeWidth: 1.8,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+    'aria-hidden': true,
+  };
+
+  if (href === '/') {
+    return (
+      <svg {...props}>
+        <path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19z" />
+        <path className="nav-icon-cut" d="M9.5 20.5v-6h5v6" />
+      </svg>
+    );
+  }
+
+  if (href === '/work') {
+    // An open book: something to read, and a real object like the other two —
+    // the stacked-sheets version read as the generic "copy" glyph.
+    return (
+      <svg {...props}>
+        <path d="M3 5h4.8c2.3 0 4.2 1.2 4.2 2.7v11.5c0-1.5-1.9-2.7-4.2-2.7H3z" />
+        <path d="M21 5h-4.8c-2.3 0-4.2 1.2-4.2 2.7v11.5c0-1.5 1.9-2.7 4.2-2.7H21z" />
+        {/* Sits exactly on the two page edges, so it only shows once filled. */}
+        <path className="nav-icon-cut" d="M12 7.7v11.5" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg {...props}>
+      <rect x="3" y="5.5" width="18" height="13" rx="2" />
+      <path className="nav-icon-cut" d="m3.6 7 8.4 6 8.4-6" />
+    </svg>
+  );
+}
+
 function HamburgerIcon({ open }: { open: boolean }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: 22 }}>
@@ -170,7 +220,8 @@ export default function TopBar() {
     <>
       <header
         className="topbar"
-        style={{ background: bg, top: menuOpen ? 0 : (visible ? 0 : -80) }}
+        // --nav-surface is what the filled icons knock their details out in.
+        style={{ background: bg, '--nav-surface': bg, top: menuOpen ? 0 : (visible ? 0 : -80) } as CSSProperties}
       >
         <div className="container" style={{
           display: 'flex',
@@ -211,9 +262,12 @@ export default function TopBar() {
                     borderRadius: 999,
                     color: isActive ? 'var(--bone)' : 'var(--ink)',
                     background: isActive ? 'var(--ink)' : 'transparent',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 7,
                   }}
                 >
-                  <span style={{ marginRight: 6, color: 'var(--accent)' }}>·</span>
+                  <NavIcon href={item.href} />
                   {item.label}
                 </Link>
               );
@@ -268,6 +322,7 @@ export default function TopBar() {
           height: '100dvh',
           zIndex: 51,
           background: bg,
+          '--nav-surface': bg,
           boxShadow: '-12px 0 40px rgba(17,17,16,0.14)',
           display: 'flex',
           flexDirection: 'column',
@@ -275,7 +330,7 @@ export default function TopBar() {
           overflowY: 'auto',
           transform: menuOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 340ms cubic-bezier(.2,.8,.2,1)',
-        }}
+        } as CSSProperties}
       >
         {/* Panel header row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
@@ -316,9 +371,10 @@ export default function TopBar() {
                   background: isActive ? 'var(--ink)' : 'transparent',
                   display: 'flex',
                   alignItems: 'center',
+                  gap: 10,
                 }}
               >
-                <span style={{ marginRight: 8, color: isActive ? 'var(--bone)' : 'var(--accent)' }}>·</span>
+                <NavIcon href={item.href} />
                 {item.label}
               </Link>
             );

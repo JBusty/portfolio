@@ -247,7 +247,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
 
       <section>
         <div style={{ borderTop: '1px solid var(--ink)' }}>
-          <ScrollReveal as="div" className="container" style={{ padding: '80px 32px 160px' }}>
+          <ScrollReveal as="div" className="container r-problem-full" style={{ padding: '80px 32px 160px', gap: '96px' }}>
             <div>
               <div className="mono upper" style={{
                 fontSize: 12,
@@ -275,6 +275,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
                 ))}
               </div>
             </div>
+            <ProblemArt />
           </ScrollReveal>
         </div>
       </section>
@@ -538,6 +539,74 @@ function CSection({ title, eyebrow, children }: { title: ReactNode; eyebrow?: Re
         {children}
       </ScrollReveal>
     </section>
+  );
+}
+
+/**
+ * A knot that resolves: threads tangle inside the panel and one accent line finds
+ * its way out clean — the "untangling complex software" idea the home page opens
+ * with, which is what every one of these problems turns out to be.
+ *
+ * No state: ScrollReveal puts .is-visible on the section container when it scrolls
+ * up, and that is what starts the strokes drawing.
+ */
+function ProblemArt() {
+  // Four fragments of a product, none of them lined up with each other.
+  const panels = [
+    { x: 14, y: 30, w: 106, h: 68, rot: -7, step: 'pa-1' },
+    { x: 158, y: 18, w: 100, h: 62, rot: 6, step: 'pa-2' },
+    { x: 28, y: 138, w: 102, h: 64, rot: 5, step: 'pa-2' },
+    { x: 176, y: 126, w: 106, h: 72, rot: -5, step: 'pa-3' },
+  ];
+
+  return (
+    <svg className="problem-art" viewBox="0 0 320 240" aria-hidden="true">
+      {panels.map((panel) => {
+        const cx = panel.x + panel.w / 2;
+        const cy = panel.y + panel.h / 2;
+        return (
+          <g key={`${panel.x}-${panel.y}`} transform={`rotate(${panel.rot} ${cx} ${cy})`}>
+            <rect
+              x={panel.x} y={panel.y} width={panel.w} height={panel.h} rx="12"
+              fill="rgba(245,241,230,0.78)"
+              className={`pa-fade ${panel.step}`}
+            />
+            <rect
+              x={panel.x} y={panel.y} width={panel.w} height={panel.h} rx="12"
+              pathLength="100" stroke="rgba(17,17,16,0.22)" strokeWidth="1.25"
+              className={`pa-draw ${panel.step}`}
+            />
+            {/* Header rule, then two lines of "content" — same shorthand the other art uses. */}
+            <line
+              x1={panel.x} y1={panel.y + 20} x2={panel.x + panel.w} y2={panel.y + 20}
+              pathLength="100" stroke="rgba(17,17,16,0.14)" strokeWidth="1.25"
+              className={`pa-draw ${panel.step}`}
+            />
+            <rect
+              x={panel.x + 14} y={panel.y + 32} width={panel.w * 0.42} height="8" rx="4"
+              fill="rgba(17,17,16,0.1)"
+              className={`pa-fade ${panel.step}`}
+            />
+            <rect
+              x={panel.x + 14} y={panel.y + 46} width={panel.w * 0.66} height="8" rx="4"
+              fill="rgba(17,17,16,0.07)"
+              className={`pa-fade ${panel.step}`}
+            />
+          </g>
+        );
+      })}
+
+      {/* The trip you currently have to make to answer one question. */}
+      <path
+        className="pa-draw pa-4" pathLength="100"
+        stroke="var(--accent)" strokeWidth="2" strokeLinejoin="round"
+        d="M67 64 208 49 79 170 229 162"
+      />
+
+      {[[67, 64], [208, 49], [79, 170], [229, 162]].map(([cx, cy]) => (
+        <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="4" fill="var(--accent)" className="pa-fade pa-5" />
+      ))}
+    </svg>
   );
 }
 
