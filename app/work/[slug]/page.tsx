@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDraftingCompass, faFlag } from '@fortawesome/free-solid-svg-icons';
+import Mark from '@/components/Mark';
 import ScrollReveal from '@/components/ScrollReveal';
 import SectionHead from '@/components/SectionHead';
 import { getCaseStudy } from '@/lib/caseStudies';
@@ -109,7 +110,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
           >
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               <Link href="/work" className="link-u" style={{ color: 'var(--ink)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ color: 'var(--accent)', fontSize: 14 }}>←</span>
+                <Mark dir="left" />
                 Work
               </Link>
               <span style={{ color: 'var(--accent)', opacity: 0.5 }}>/</span>
@@ -497,8 +498,9 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
                 {answerTitle}
               </span>
               {!revealed && (
-                <span className="mono upper" aria-hidden="true" style={{ display: 'block', marginTop: 18, fontSize: 10, color: 'rgba(236,231,220,0.55)', letterSpacing: '0.14em' }}>
-                  Click to unlock →
+                <span className="mono upper" aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 18, fontSize: 10, color: 'rgba(236,231,220,0.55)', letterSpacing: '0.14em' }}>
+                  Click to unlock
+                  <Mark color="var(--accent-lift)" />
                 </span>
               )}
             </span>
@@ -1050,8 +1052,30 @@ function NavCard({ dir, p }: { dir: 'prev' | 'next'; p: typeof PROJECTS[number] 
         transition: 'background 160ms, color 160ms',
       }}
     >
-      <div className="mono upper" style={{ fontSize: 11, color: hover ? 'var(--accent)' : 'var(--sub)', letterSpacing: '0.1em' }}>
-        {dir === 'prev' ? '< Previous' : 'Next >'}
+      {/* Which side the dot sits on is the direction cue — leading for back, trailing for on. */}
+      <div
+        className="mono upper"
+        style={{
+          fontSize: 11,
+          color: hover ? 'var(--accent)' : 'var(--sub)',
+          letterSpacing: '0.1em',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          justifyContent: dir === 'prev' ? 'flex-start' : 'flex-end',
+        }}
+      >
+        {dir === 'prev' ? (
+          <>
+            <Mark dir="left" color={hover ? 'var(--accent-lift)' : 'var(--accent)'} />
+            Previous
+          </>
+        ) : (
+          <>
+            Next
+            <Mark color={hover ? 'var(--accent-lift)' : 'var(--accent)'} />
+          </>
+        )}
       </div>
       <div className="mono upper" style={{ fontSize: 11, letterSpacing: '0.08em', color: hover ? 'rgba(236,231,220,0.65)' : 'var(--sub)' }}>
         {p.company} - {p.year}

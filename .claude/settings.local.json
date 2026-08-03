@@ -59,7 +59,9 @@
       "Bash(grep -nB2 -A 18 \"^#### \\\\`preload\\\\`\" node_modules/next/dist/docs/01-app/03-api-reference/02-components/image.md)",
       "Bash(npx kill-port *)",
       "Bash(python3 -)",
-      "Bash(echo \"tsc exit: $?\")"
+      "Bash(echo \"tsc exit: $?\")",
+      "Bash(echo \"exit: $?\")",
+      "Bash(echo \"tsc: $?\")"
     ]
   }
 }

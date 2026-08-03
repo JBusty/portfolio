@@ -99,6 +99,43 @@ main { scroll-margin-top: 96px; }
 .rule-v { border-right: 1px solid var(--rule); }
 .grow   { flex: 1 1 auto; }
 
+/* ---- link mark ----
+   The chevron on every link and button. It points where the link goes — on, back,
+   up, or up-and-away for offsite — and travels that way on hover. Colour resolves
+   through --mk so a dark surface can lift it without every call site knowing
+   where it sits. */
+.mk {
+  flex: none;
+  vertical-align: middle;
+  overflow: visible;  /* the up variant is wider than its box once rotated */
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.mk-path {
+  fill: none;
+  stroke: var(--mk, var(--accent));
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;  /* keeps each direction inside the same box */
+  transform: rotate(var(--mk-rot, 0deg));
+  transition: stroke 160ms ease;
+}
+
+.mk-up   { --mk-rot: -90deg; }
+.mk-left { --mk-rot: 180deg; }
+
+/* Every mark sits inside its own link or button, so that is the whole trigger —
+   no component classes to keep in step. Keyboard focus moves it too. */
+:is(a, button):is(:hover, :focus-visible) .mk       { transform: translateX(3px); }
+:is(a, button):is(:hover, :focus-visible) .mk-left  { transform: translateX(-3px); }
+:is(a, button):is(:hover, :focus-visible) .mk-up    { transform: translateY(-3px); }
+:is(a, button):is(:hover, :focus-visible) .mk-out   { transform: translate(2px, -2px); }
+
+/* The footer is the one full-ink surface — lift the mark off it. */
+footer { --mk: var(--accent-lift); }
+
 /* ---- buttons ---- */
 .btn {
   display: inline-flex;
@@ -113,19 +150,24 @@ main { scroll-margin-top: 96px; }
   font-size: 12px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  transition: transform 120ms ease, background 120ms ease, color 120ms ease, border-color 120ms ease;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
   white-space: nowrap;
 }
+/* The button itself holds still — the chevron is what moves. */
 .btn:hover {
-  transform: translateY(-1px);
   background: var(--accent-ink);
   border-color: var(--accent-ink);
 }
-.btn .arr { display: inline-block; transition: transform 120ms ease; }
-.btn:hover .arr { transform: translate(2px, -2px); }
-
 .btn.ghost { background: transparent; color: var(--ink); }
 .btn.ghost:hover { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+
+/* Solid buttons sit on ink, ghosts sit on paper. Both fill dark on hover — ink
+   or accent-ink — so the mark goes bone to stay legible against either.
+   Order matters: this has to outrank .btn.ghost above, which it only does by
+   coming after it. */
+.btn { --mk: var(--accent-lift); }
+.btn.ghost { --mk: var(--accent); }
+.btn:hover { --mk: var(--bone); }
 
 /* ---- chips ---- */
 .chip {
@@ -176,15 +218,14 @@ main { scroll-margin-top: 96px; }
   border-color: rgba(17,17,16,0.12);
   color: var(--ink-2);
   transition:
-    transform 160ms ease,
     background 160ms ease,
     color 160ms ease,
     border-color 160ms ease,
     box-shadow 160ms ease;
 }
 
+/* Holds still like the pill buttons — colour carries the state. */
 .work-filter-chip:hover {
-  transform: translateY(-1px);
   background: rgba(225,59,20,0.08);
   border-color: rgba(225,59,20,0.34);
   color: var(--ink);
@@ -370,15 +411,6 @@ main { scroll-margin-top: 96px; }
   color: var(--accent-ink);
 }
 
-.featured-card:hover .featured-card-more .arr {
-  transform: translateX(3px);
-}
-
-.featured-card-more .arr {
-  display: inline-block;
-  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
 @media (max-width: 1100px) {
   .featured-grid { grid-template-columns: repeat(2, 1fr); }
   /* Third card would sit alone on a short row — let it span instead. */
@@ -518,8 +550,9 @@ main { scroll-margin-top: 96px; }
   pointer-events: none;
 }
 
-.proj-row-btn .arr { display: inline-block; transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1); }
-.proj-row:hover .proj-row-btn .arr { transform: translateX(4px); }
+/* This one only looks like a solid button — it renders transparent on bone, so it
+   takes the ghost's mark rather than the lifted one .btn hands out. */
+.proj-row-btn { --mk: var(--accent); }
 
 /* Tablet: thumb beside a stacked content column — nothing is hidden. */
 @media (max-width: 1080px) {
@@ -975,6 +1008,12 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
   .polaroid-draw,
   .polaroid-photo {
     animation: none !important;
+  }
+
+  /* The mark keeps its colour change, loses the travel. */
+  .mk {
+    transition: none !important;
+    transform: none !important;
   }
 
   .polaroid-draw {

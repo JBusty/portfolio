@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import Mark from '@/components/Mark';
 
 function BackToTop() {
   const [hover, setHover] = useState(false);
@@ -27,11 +28,7 @@ function BackToTop() {
         transition: 'color 160ms, border-color 160ms',
       }}
     >
-      <span style={{
-        display: 'inline-block',
-        transform: hover ? 'translateY(-2px)' : 'translateY(0)',
-        transition: 'transform 200ms cubic-bezier(.2,.7,.2,1)',
-      }}>↑</span>
+      <Mark dir="up" />
       Back to top
     </button>
   );
@@ -39,14 +36,14 @@ function BackToTop() {
 
 const siteLinks = [
   { href: '/', label: 'Homepage' },
-  { href: '/work', label: 'Selected work' },
+  { href: '/work', label: 'The work' },
   { href: '/work/identity-profiles', label: 'Case study: Identity profiles' },
   { href: '/contact', label: "Let's talk" },
 ];
 
 const elsewhereLinks = [
-  { label: 'LinkedIn ↗', href: 'https://www.linkedin.com/in/joshuabussey/' },
-  { label: 'Github ↗', href: 'https://github.com/JBusty' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/joshuabussey/' },
+  { label: 'Github', href: 'https://github.com/JBusty' },
 ];
 
 export default function Footer() {
@@ -68,8 +65,9 @@ export default function Footer() {
               <span style={{ color: 'var(--accent)' }}>worth shipping.</span>
             </h2>
             <div style={{ marginTop: 28, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              {/* Sits on its own accent fill, where an accent dot would disappear. */}
               <a href="mailto:jbusseywork@gmail.com" className="btn" style={{ background: 'var(--accent-ink)', borderColor: 'var(--accent-ink)' }}>
-                jbusseywork@gmail.com <span className="arr">↗</span>
+                jbusseywork@gmail.com <Mark dir="out" color="var(--bone)" />
               </a>
               <a
                 href="https://drive.google.com/file/d/17OJanguMKHAdKGfoBDpI_eS_1_a5fZEh/view"
@@ -78,7 +76,7 @@ export default function Footer() {
                 className="btn ghost"
                 style={{ color: 'var(--bone)', borderColor: 'rgba(236,231,220,0.4)' }}
               >
-                Resume / CV <span className="arr">↗</span>
+                Resume / CV <Mark dir="out" />
               </a>
             </div>
           </div>
@@ -96,8 +94,13 @@ export default function Footer() {
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
               {siteLinks.map(it => (
                 <li key={it.href}>
-                  <Link href={it.href} className="link-u" style={{ fontFamily: 'var(--font-jetbrains-mono)', fontSize: 13 }}>
-                    → {it.label}
+                  <Link
+                    href={it.href}
+                    className="link-u"
+                    style={{ fontFamily: 'var(--font-jetbrains-mono)', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 9 }}
+                  >
+                    <Mark />
+                    {it.label}
                   </Link>
                 </li>
               ))}
@@ -122,9 +125,10 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="link-u"
-                    style={{ fontFamily: 'var(--font-jetbrains-mono)', fontSize: 13 }}
+                    style={{ fontFamily: 'var(--font-jetbrains-mono)', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 9 }}
                   >
                     {it.label}
+                    <Mark dir="out" />
                   </a>
                 </li>
               ))}

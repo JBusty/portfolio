@@ -1,6 +1,7 @@
 import { CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Mark from '@/components/Mark';
 import { Project } from '@/lib/data';
 
 interface ProjectRowProps {
@@ -64,7 +65,7 @@ export default function ProjectRow({ p, first, index = 0 }: ProjectRowProps) {
       </div>
 
       <span className="btn proj-row-btn">
-        View <span className="arr">→</span>
+        View <Mark />
       </span>
     </Link>
   );

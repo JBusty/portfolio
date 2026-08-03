@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import Mark from '@/components/Mark';
 import { FEATURED_PROJECTS, type Project } from '@/lib/data';
 
 export default function FeaturedWork() {
@@ -18,10 +19,10 @@ export default function FeaturedWork() {
               maxWidth: '18ch',
             }}
           >
-            Selected work<span className="accent">.</span>
+            The work<span className="accent">.</span>
           </h2>
           <Link href="/work" className="btn ghost featured-head-cta">
-            All 7 case studies <span className="arr">→</span>
+            All 7 case studies <Mark />
           </Link>
         </div>
 
@@ -66,7 +67,7 @@ function FeaturedCard({ p }: { p: Project }) {
             ))}
           </div>
           <span className="mono upper featured-card-more">
-            Read <span className="arr">→</span>
+            Read <Mark />
           </span>
         </div>
       </div>

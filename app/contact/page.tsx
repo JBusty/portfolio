@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useState } from 'react';
 import SectionHead from '@/components/SectionHead';
+import Mark from '@/components/Mark';
 
 const CONTACT_FAQ = [
   {
@@ -62,7 +63,7 @@ export default function ContactPage() {
               </p>
               <div style={{ marginTop: 24, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <a href="mailto:jbusseywork@gmail.com" className="btn">
-                  jbusseywork@gmail.com <span className="arr">↗</span>
+                  jbusseywork@gmail.com <Mark dir="out" />
                 </a>
                 <a
                   href="https://drive.google.com/file/d/17OJanguMKHAdKGfoBDpI_eS_1_a5fZEh/view"
@@ -70,7 +71,7 @@ export default function ContactPage() {
                   rel="noopener noreferrer"
                   className="btn ghost"
                 >
-                  Resume / CV <span className="arr">↗</span>
+                  Resume / CV <Mark dir="out" />
                 </a>
               </div>
             </div>

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import SectionHead from '@/components/SectionHead';
 import FeaturedWork from '@/components/FeaturedWork';
+import Mark from '@/components/Mark';
 import { STATS, VALUES, CREW, JOURNEY, FAQ, COMPANIES } from '@/lib/data';
 import styles from './page.module.css';
 
@@ -63,11 +64,11 @@ function HomeHero() {
             </p>
             <div className={styles.heroActions}>
               <Link href="/work" className="btn">
-                View case studies <span className="arr">→</span>
+                View case studies <Mark />
               </Link>
-              {/* Internal link, so it takes the → convention; ↗ is reserved for offsite. */}
+              {/* Internal link, so one dot; three is reserved for offsite. */}
               <Link href="/work/identity-profiles" className="btn ghost">
-                Read the AI case study <span className="arr">→</span>
+                Read the AI case study <Mark />
               </Link>
             </div>
           </div>

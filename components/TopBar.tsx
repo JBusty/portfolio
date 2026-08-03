@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Mark from '@/components/Mark';
 
 const navItems = [
   { href: '/', label: 'Home' },
@@ -86,7 +87,8 @@ function LinkedInButton() {
     >
       <LinkedInIcon />
       <span>LinkedIn</span>
-      <span className="arr" style={{ color: hover ? 'rgba(255,255,255,0.7)' : 'var(--ink)' }}>↗</span>
+      {/* Fills LinkedIn blue on hover, not the usual ink — so the mark picks its own colour. */}
+      <Mark dir="out" color={hover ? 'rgba(255,255,255,0.85)' : 'var(--accent)'} />
     </a>
   );
 }
