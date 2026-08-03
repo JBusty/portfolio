@@ -68,7 +68,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       problem: '/images/identity-profiles/problem-overview.png',
       wireframes: ['/images/identity-profiles/wireframe-1.svg'],
       wireframeCaptions: [
-        { label: 'Early structure', body: 'Wireframes focused on the two-column behavioral split (consistent signals left, anomalies right) before any visual polish was added.' },
+        { label: 'Early structure', body: 'The two-column behavioral split — consistent signals left, anomalies right — tested in grey boxes before any visual polish.' },
       ],
       solution: [
         '/images/identity-profiles/solution-1.png',
@@ -77,10 +77,10 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         '/images/identity-profiles/solution-4.png',
       ],
       solutionCaptions: [
-        { label: 'Benchmarking the field', body: 'I mapped every competitor\'s identity experience to establish the floor (what customers already expected) before deciding where to move ahead of it.' },
-        { label: 'AI summaries, not essays', body: 'GenAI generates a short, high-value wrap-up of identity activity. Enough to act on. Not enough to drown in.' },
-        { label: 'Evidence stays visible', body: 'The raw data didn\'t disappear; it moved below the fold so analysts can still dig in when they need to.' },
-        { label: 'The shipped experience', body: 'A unified identity profile that reduced analyst correlation time by roughly 15% in early customer testing.' },
+        { label: 'The summary, up top', body: 'The AI wrap-up sits directly under the identity header. The date control beside it steps back to an earlier snapshot of the same identity.' },
+        { label: 'Consistent vs. anomalous', body: 'Behavioral signals split two ways: what this identity always does on the left, what broke pattern on the right.' },
+        { label: 'Evidence, one tab down', body: 'Logon insights by geolocation, VPN, browser, and IP. None of it was removed — it just stopped being the first thing you hit.' },
+        { label: 'Loading states, specified', body: 'The skeleton loader, annotated for handoff. The page assembles in pieces, so the empty state needed designing too.' },
       ],
     },
     summary:
@@ -127,8 +127,8 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       },
       {
         n: '03',
-        h: 'Keep the evidence visible',
-        b: 'The old information still had to be available somewhere, so the page balanced quick insight up top with deeper supporting detail below.',
+        h: 'Let analysts rewind',
+        b: 'An identity looks different week to week, so the page keeps dated snapshots. Analysts can step back to how an account looked before the thing they are investigating happened.',
       },
     ],
     explorationBody:
@@ -138,7 +138,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     processStats: [
       { n: '5 months', label: 'Design phase' },
       { n: '6', label: 'Major iterations' },
-      { n: '1', label: 'Designer' },
+      { n: '~15%', label: 'Faster correlation' },
     ],
     processSteps: [
       {
@@ -176,7 +176,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       problem: '/images/security-data-lake/problem-overview.png',
       wireframes: ['/images/security-data-lake/wireframe-1.svg'],
       wireframeCaptions: [
-        { label: 'Query tool skeleton', body: 'Early wireframes established the split between the schema browser and the SQL editor before tackling the quota visibility and results display.' },
+        { label: 'Query tool skeleton', body: 'How much room a schema browser needs beside a SQL editor, settled in grey boxes before quota visibility and results were layered on.' },
       ],
       solution: [
         '/images/security-data-lake/solution-1.png',
@@ -185,10 +185,10 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         '/images/security-data-lake/solution-4.png',
       ],
       solutionCaptions: [
-        { label: 'Usage at a glance', body: 'The first release was a dashboard: integration-level breakdowns, historical trends, and export support for compliance teams.' },
-        { label: 'A familiar query interface', body: 'The search tool was built on SQL patterns customers already knew so the power felt accessible instead of intimidating.' },
-        { label: 'Cost before you commit', body: 'Query size is surfaced before execution. Customers see what they\'re spending before they spend it.' },
-        { label: 'The shipped experience', body: 'SDL launched on schedule and immediately generated positive feedback, including new contracts, from enterprise customers.' },
+        { label: 'Usage at a glance', body: 'Licensed size, ingest broken out by integration, and retention windows in one view — with the export that compliance teams kept asking for.' },
+        { label: 'The editor', body: 'Saved and active searches as tabs, the schema browser down the left, and the daily quota ring parked where you cannot miss it.' },
+        { label: 'Know the table first', body: 'Selecting a table shows its integrations, row count, size, and columns before you write a line of SQL against it.' },
+        { label: 'Saved searches', body: 'Recurring investigations keep their last run, owner, and cost, so the same question does not get rewritten from scratch every week.' },
       ],
     },
     summary:
@@ -235,8 +235,8 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       },
       {
         n: '03',
-        h: 'Warn on big queries',
-        b: 'Searches exposed their expected cost before execution so customers could avoid blowing through query limits by accident.',
+        h: 'Make the data legible first',
+        b: 'Every table exposes its integrations, size, and columns up front, so customers know what they are pointing a query at before they run it against terabytes.',
       },
     ],
     explorationBody:
@@ -284,7 +284,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       problem: '/images/unified-onboarding/problem-overview.png',
       wireframes: ['/images/unified-onboarding/wireframe-1.svg'],
       wireframeCaptions: [
-        { label: 'The accordion shell', body: 'Wireframes validated the numbered step structure and the idea of one expanded active step before any integration-specific content was added.' },
+        { label: 'The accordion shell', body: 'The numbered step structure, and the rule that only one stays open, tested before any integration-specific content went near it.' },
       ],
       solution: [
         '/images/unified-onboarding/solution-1.png',
@@ -292,9 +292,9 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         '/images/unified-onboarding/solution-3.png',
       ],
       solutionCaptions: [
-        { label: 'The shared shell', body: 'A reusable onboarding frame that handles auth, configuration, and validation, with structured room for vendor-specific steps.' },
-        { label: 'Edge cases have a home', body: 'Instead of one-off flows, exceptions slot into a defined part of the pattern. Consistent structure, flexible details.' },
-        { label: 'The shipped pattern', body: 'One system that covers 100+ integrations and makes every new one cheaper to design and build than the last.' },
+        { label: 'A step for provisioning', body: 'Provisioning used to happen silently on save, which left people unsure whether anything had worked. It became its own step with its own button.' },
+        { label: 'Say when it worked', body: 'A confirmation on successful provisioning, with the following steps only appearing once there is something real to act on.' },
+        { label: 'Save that actually validates', body: 'Save now checks every field first. It used to let people walk away leaving an integration in a non-functioning state.' },
       ],
     },
     summary:
@@ -326,21 +326,23 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       ],
     },
     solutionTitle: ['One pattern.', '100+ integrations covered'],
+    solutionIntro:
+      'The pattern is three numbered stages and a set of rules about what may vary inside them. Everything below describes the shape every integration now inherits.',
     solutionCards: [
       {
         n: '01',
-        h: 'Audit every existing flow',
-        b: 'I mapped the full range of existing onboarding patterns to understand what varied across integrations and what the actual common structure was beneath the noise.',
+        h: 'One numbered spine',
+        b: 'Every integration moves through the same three stages — choose how data arrives, configure it, then customize how it is handled — with only one stage open at a time.',
       },
       {
         n: '02',
-        h: 'Design the shared shell',
-        b: 'The reusable skeleton handles the common steps: auth, configuration, and validation, while leaving structured room for vendor-specific variations.',
+        h: 'Vendor detail, contained',
+        b: 'Anything specific to a vendor lives inside a labelled sub-step rather than reshaping the flow around it. The spine stays recognisable no matter whose product is on the other end.',
       },
       {
         n: '03',
-        h: 'Stress-test against edge cases',
-        b: 'The pattern was pressure-tested against the ugliest integrations first so we knew it could hold up before it became the standard.',
+        h: 'Nothing saves half-broken',
+        b: 'Provisioning and validation became explicit states in the pattern, so an integration can no longer look finished while silently doing nothing.',
       },
     ],
     explorationBody:
@@ -365,7 +367,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       },
       {
         n: '03',
-        h: 'Validate with the hardest cases',
+        h: 'Prove it on the worst offenders',
         body: 'The messiest integrations were the test. If the pattern worked for those, it would work for everything else.',
       },
     ],
@@ -387,15 +389,15 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       logo: '/images/shared/red-canary-hero.png',
       wireframes: ['/images/status-checks/wireframe-1.svg'],
       wireframeCaptions: [
-        { label: 'Badge placement in context', body: 'Wireframes explored where the health badge lived in the integration list and what a failing-checks tooltip would need to communicate at a glance.' },
+        { label: 'Badge placement in context', body: 'Where a health badge could sit in the integrations list, and how much a failing-checks tooltip has to say to be worth stopping for.' },
       ],
       solution: [
         '/images/status-checks/carousel-1.png',
         '/images/status-checks/carousel-2.png',
       ],
       solutionCaptions: [
-        { label: 'Health in the list view', body: 'A status badge on the integrations list makes broken integrations visible before customers have to go looking for them.' },
-        { label: 'Checks in context', body: 'The detail page shows exactly which checks are failing, why they matter, and what to do next, no support ticket required.' },
+        { label: 'A sub-status for "active but broken"', body: 'An integration can be active and still failing its checks. The list now says so, and the tooltip explains what it means for ingest.' },
+        { label: 'Failures sorted to the top', body: 'A banner on the config page whenever issues exist, and a Status Checks tab listing each check with its result and how long it has been that way.' },
       ],
     },
     summary:
@@ -451,9 +453,9 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     shippedBody: 'Two weeks of work, live in the product.',
     processTitle: ['Two weeks.', 'A small team'],
     processStats: [
-      { n: '100', label: 'Integrations improved' },
+      { n: '100+', label: 'Integrations monitored' },
       { n: '2 weeks', label: 'Total project time' },
-      { n: '3', label: 'Team size' },
+      { n: '2', label: 'Surfaces touched' },
     ],
     processSteps: [
       {
@@ -491,7 +493,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       problem: '/images/commuter-benefits/problem-overview.png',
       wireframes: ['/images/commuter-benefits/wireframe-1.svg'],
       wireframeCaptions: [
-        { label: 'Participant detail skeleton', body: 'The wireframe nailed down the tab layout, benefit balance chips, and right-panel card info before the visual system was applied.' },
+        { label: 'Participant detail skeleton', body: 'Tab layout, benefit balance chips, and the right-hand card panel were pinned down before the visual system existed to dress them in.' },
       ],
       solution: [
         '/images/commuter-benefits/carousel-2.png',
@@ -500,10 +502,10 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         '/images/commuter-benefits/solution-final.png',
       ],
       solutionCaptions: [
-        { label: 'The unified platform shell', body: 'A single frame capable of housing all commuter applications under one coherent experience instead of a set of disconnected tools.' },
-        { label: 'Reworked end-to-end flows', body: 'I mapped and rewired every workflow so individual tasks felt like one product journey rather than a handoff across apps.' },
-        { label: 'Tiered rollout', body: 'The customer-facing portal launched first, validating the approach in production before the administrative side followed.' },
-        { label: 'The shipped platform', body: 'A scalable foundation that simplified workflows, sharpened demos, and helped win the Google contract.' },
+        { label: 'One participant, one page', body: 'Elections, subsidies, balances, card status, and spend gathered into a single participant view instead of four separate lookups.' },
+        { label: 'Election history', body: 'Every election with its product, status, and total in one filterable table — the record admins were previously reconstructing by hand.' },
+        { label: 'The admin landing', body: 'Program-level numbers up top, the participant roster underneath, and enrolment handled without leaving the page.' },
+        { label: 'Spend, explained', body: 'Category and trend charts sit above the raw purchase history, so "where is the money going" gets answered without an export.' },
       ],
     },
     summary:
@@ -537,11 +539,13 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       ],
     },
     solutionTitle: ['One platform.', 'Less duct tape'],
+    solutionIntro:
+      'Three products had to end up feeling like one. The work split into a frame that could hold them, the flows that ran through it, and the order they went live in.',
     solutionCards: [
       {
         n: '01',
-        h: 'Design the shared shell',
-        b: 'The first move was a platform frame capable of housing all commuter applications under one coherent experience instead of a set of disconnected tools.',
+        h: 'One shell for three products',
+        b: 'The first move was a platform frame that could house every commuter application under one coherent experience instead of a set of disconnected tools.',
       },
       {
         n: '02',
@@ -560,8 +564,8 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     processTitle: ['Discovery first.', 'Then consolidation'],
     processStats: [
       { n: '2 months', label: 'Discovery phase' },
-      { n: '1', label: 'Designer' },
-      { n: '23', label: 'Unique stakeholders' },
+      { n: '3', label: 'Legacy products merged' },
+      { n: '12', label: 'On the core team' },
     ],
     processSteps: [
       {
@@ -587,7 +591,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         'Customers were eager for the updates, which made the iteration cycle productive.',
       ],
       challenges: [
-        'Getting engineering bought in was one of the hardest parts of the project.',
+        'Winning engineering over to a shared system took longer than the design work itself did.',
         'The flow edge cases were everywhere and easy to miss without deep auditing.',
         'The team occasionally lost sight of the core workflows and had to re-center on what mattered most.',
       ],
@@ -599,7 +603,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       problem: '/images/fleet-card/problem-overview.png',
       wireframes: ['/images/fleet-card/wireframe-1.svg'],
       wireframeCaptions: [
-        { label: 'Cards list with status states', body: 'Early wireframes mapped out all card status variants (Active, Frozen, Pending, Fraud) to confirm the table could communicate health without becoming cluttered.' },
+        { label: 'Cards list with status states', body: 'Every card state — active, frozen, pending, fraud — laid out at once, to check the table could carry all of them without turning into noise.' },
       ],
       solution: [
         '/images/fleet-card/solution-1.png',
@@ -608,10 +612,10 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         '/images/fleet-card/solution-4.png',
       ],
       solutionCaptions: [
-        { label: 'Design system first', body: 'Visual tokens, component direction, and spacing rules were locked in before screen work ramped up, keeping both the customer and admin sides aligned.' },
-        { label: 'Real-time card controls', body: 'The cardholder experience centered on spend controls that worked in real time, the core value proposition of the whole product.' },
-        { label: 'Admin at scale', body: 'Fleet managers needed just as much power as cardholders. The admin side was designed to be as intuitive as the consumer-facing experience.' },
-        { label: 'The shipped platform', body: 'Launched in under a year with a VISA partnership in place. Over 200 businesses converted in the first wave.' },
+        { label: 'Every transaction, with context', body: 'Merchant, fuel product, gallons, PIN, odometer, and exception flags on a single row — what a fleet manager needs to spot a bad purchase without opening it.' },
+        { label: 'Card states, all of them', body: 'Active, frozen, canceled, pending, lost, stolen, fraud. The status column had to carry the entire lifecycle and stay scannable.' },
+        { label: 'Real-time spend controls', body: 'Limits per card by transaction, day, week, and month, each showing what has already been spent against it. This was the product.' },
+        { label: 'Exceptions, ranked', body: 'Which policy breaches happen most often, over what range, and on which cards — turning a pile of declines into something a manager can act on.' },
       ],
     },
     summary:
@@ -633,7 +637,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         'The company needed to launch a brand-new product line on an aggressive timeline.',
       ],
       role: [
-        'Led the design of a new platform from 0->1.',
+        'Led the design of a new platform from 0→1.',
         'Built a scalable design system from scratch and aligned with engineering on implementation.',
       ],
       shipped: [
@@ -643,6 +647,8 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       ],
     },
     solutionTitle: ['System first.', 'Product second'],
+    solutionIntro:
+      'With a fixed launch date and a partner watching, the only way to move fast later was to spend the first weeks on things that would not need redoing.',
     solutionCards: [
       {
         n: '01',
@@ -666,7 +672,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     processTitle: ['Concept to launch.', 'Under a year'],
     processStats: [
       { n: '<1 year', label: 'From concept to launch' },
-      { n: '1', label: 'Designer' },
+      { n: '200+', label: 'Businesses converted' },
       { n: '~2 weeks', label: 'Average time per feature' },
     ],
     processSteps: [
@@ -704,7 +710,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       problem: '/images/groundbase/problem-overview.png',
       wireframes: ['/images/groundbase/wireframe-1.svg'],
       wireframeCaptions: [
-        { label: 'Build timeline structure', body: 'Wireframes established the dark sidebar, chronological milestone feed, and right-panel budget summary before a single component was coded.' },
+        { label: 'Build timeline structure', body: 'The dark sidebar, chronological milestone feed, and right-hand budget summary all existed on paper before a single component was coded.' },
       ],
       solution: [
         '/images/groundbase/solution-1.png',
@@ -712,9 +718,9 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         '/images/groundbase/solution-3.png',
       ],
       solutionCaptions: [
-        { label: 'Draws and budget tracking', body: 'Every draw is tracked against the budget with funding source breakdowns. No more reconciling across a spreadsheet and a group chat.' },
-        { label: 'Build timeline', body: 'Milestones, contractor events, and draw approvals live in one timeline so nothing falls through the cracks between trades.' },
-        { label: 'Project health at a glance', body: 'Budget status, equity position, and DTI surface together so owner-builders always know where they stand before approving the next draw.' },
+        { label: 'Draws against the budget', body: 'Each draw splits what you fund from what the bank funds, tracked against the total. The panel beside it says whether the build is still on plan.' },
+        { label: 'The build timeline', body: 'Milestones, contractor events, and draw approvals in one chronology, so nothing falls through the gap between trades.' },
+        { label: 'Where you actually stand', body: 'Project health, budget pressure, draw interest, and DTI together — the numbers you want before approving the next draw, not after.' },
       ],
     },
     summary:
@@ -769,7 +775,8 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     ],
     explorationBody:
       'I sketched the timeline and budget panel first, because if those two didn\'t work together the rest of the app wouldn\'t matter.',
-    processTitle: ['Solo 0->1.', 'Built in the open'],
+    shippedBody: 'What is live today, with a real build running through it.',
+    processTitle: ['Solo 0→1.', 'Built in the open'],
     processStats: [
       { n: '1', label: 'Person team' },
       { n: '2', label: 'User types served' },

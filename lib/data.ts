@@ -134,7 +134,7 @@ export const PROJECTS: Project[] = [
     quarter: 'Q3 2024',
     role: 'Senior Product Designer',
     team: '2 PM · 6 Eng · 1 Designer',
-    tags: ['0→1', 'Innovate'],
+    tags: ['0→1', 'Innovation'],
     metric: 'GA in 9 months',
     thumb: '/images/security-data-lake/solution-4.png',
   },
