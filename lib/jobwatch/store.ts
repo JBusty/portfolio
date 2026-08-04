@@ -18,7 +18,6 @@ import { plural, titleCase } from './format';
 import { companyKey } from './sources';
 import type {
   Company,
-  Industry,
   Job,
   JobMark,
   JobSnapshot,
@@ -44,92 +43,131 @@ const LEGACY_KEY = {
 } as const;
 
 /**
- * Seed watchlist.
+ * Seed watchlist — the fallback when the swept index is unavailable.
  *
- * Every entry was probed against the live API before it went in: 235 candidate
- * slugs × 3 platforms, of which 126 answered and these 71 had at least one
- * design role on the board. A token that 404s is worse than no token — it shows
- * up in the UI as a failing board and looks like a bug.
+ * Every token here was probed against the live API before it went in; a token
+ * that 404s is worse than no token, because it surfaces as a failing board and
+ * reads as a bug. This list is hand-assembled, which is exactly the limitation
+ * that made a live RunPod posting invisible for a while — see `discover.ts`,
+ * which is how boards are actually found now. What survives here is a floor:
+ * enough to make the page useful before the first sweep lands, or if it can't
+ * be reached at all.
  *
- * Boards with no design roles on the day of the sweep were left out. That is a
- * snapshot judgement and the wrong one for a *watcher* in principle, but each
- * extra board costs a request and up to a few MB per sync, so the ones with no
- * track record have to earn their place. All of it is editable from the UI.
- *
- * Labels default to `titleCase(token)`; the third element overrides it where
- * that guess is wrong.
+ * Third element overrides the label where `titleCase(token)` guesses wrong.
  */
-const SEED: Array<[SourceKind, string, Industry, string?]> = [
+const SEED: Array<[SourceKind, string, string?]> = [
   // ---- Greenhouse ----
-  ['greenhouse', 'stripe',     'fintech'],      ['greenhouse', 'figma',      'design'],
-  ['greenhouse', 'okta',       'devtools'],     ['greenhouse', 'oura',       'health', 'Oura'],
-  ['greenhouse', 'duolingo',   'education'],    ['greenhouse', 'datadog',    'devtools', 'Datadog'],
-  ['greenhouse', 'brex',       'fintech'],      ['greenhouse', 'oscar',      'health', 'Oscar Health'],
-  ['greenhouse', 'lyft',       'mobility'],     ['greenhouse', 'robinhood',  'fintech'],
-  ['greenhouse', 'gusto',      'hr'],           ['greenhouse', 'dropbox',    'productivity'],
-  ['greenhouse', 'justworks',  'hr'],           ['greenhouse', 'peloton',    'health'],
-  ['greenhouse', 'mercury',    'fintech'],      ['greenhouse', 'zocdoc',     'health', 'Zocdoc'],
-  ['greenhouse', 'pinterest',  'social'],       ['greenhouse', 'asana',      'productivity'],
-  ['greenhouse', 'instacart',  'commerce'],     ['greenhouse', 'monzo',      'fintech'],
-  ['greenhouse', 'wrike',      'productivity'], ['greenhouse', 'chime',      'fintech'],
-  ['greenhouse', 'samsara',    'mobility'],     ['greenhouse', 'vercel',     'devtools'],
-  ['greenhouse', 'discord',    'social'],       ['greenhouse', 'databricks', 'devtools'],
-  ['greenhouse', 'adyen',      'fintech'],      ['greenhouse', 'gitlab',     'devtools', 'GitLab'],
-  ['greenhouse', 'affirm',     'fintech'],      ['greenhouse', 'twilio',     'devtools'],
-  ['greenhouse', 'coinbase',   'fintech'],      ['greenhouse', 'smartsheet', 'productivity'],
-  ['greenhouse', 'faire',      'commerce'],     ['greenhouse', 'airtable',   'productivity'],
-  ['greenhouse', 'elastic',    'devtools'],     ['greenhouse', 'remotecom',  'hr', 'Remote'],
-  ['greenhouse', 'airbnb',     'commerce'],     ['greenhouse', 'reddit',     'social'],
-  ['greenhouse', 'sezzle',     'fintech'],      ['greenhouse', 'n26',        'fintech', 'N26'],
-  ['greenhouse', 'amplitude',  'devtools'],     ['greenhouse', 'stockx',     'commerce', 'StockX'],
-  ['greenhouse', 'webflow',    'design'],       ['greenhouse', 'lightricks', 'design'],
-  ['greenhouse', 'netlify',    'devtools'],     ['greenhouse', 'calm',       'health'],
+  ['greenhouse', 'stripe'],
+  ['greenhouse', 'figma'],
+  ['greenhouse', 'okta'],
+  ['greenhouse', 'oura', 'Oura'],
+  ['greenhouse', 'duolingo'],
+  ['greenhouse', 'datadog', 'Datadog'],
+  ['greenhouse', 'brex'],
+  ['greenhouse', 'oscar', 'Oscar Health'],
+  ['greenhouse', 'lyft'],
+  ['greenhouse', 'robinhood'],
+  ['greenhouse', 'gusto'],
+  ['greenhouse', 'dropbox'],
+  ['greenhouse', 'justworks'],
+  ['greenhouse', 'peloton'],
+  ['greenhouse', 'mercury'],
+  ['greenhouse', 'zocdoc', 'Zocdoc'],
+  ['greenhouse', 'pinterest'],
+  ['greenhouse', 'asana'],
+  ['greenhouse', 'instacart'],
+  ['greenhouse', 'monzo'],
+  ['greenhouse', 'wrike'],
+  ['greenhouse', 'chime'],
+  ['greenhouse', 'samsara'],
+  ['greenhouse', 'vercel'],
+  ['greenhouse', 'discord'],
+  ['greenhouse', 'databricks'],
+  ['greenhouse', 'adyen'],
+  ['greenhouse', 'gitlab', 'GitLab'],
+  ['greenhouse', 'affirm'],
+  ['greenhouse', 'twilio'],
+  ['greenhouse', 'coinbase'],
+  ['greenhouse', 'smartsheet'],
+  ['greenhouse', 'faire'],
+  ['greenhouse', 'airtable'],
+  ['greenhouse', 'elastic'],
+  ['greenhouse', 'remotecom', 'Remote'],
+  ['greenhouse', 'airbnb'],
+  ['greenhouse', 'reddit'],
+  ['greenhouse', 'sezzle'],
+  ['greenhouse', 'n26', 'N26'],
+  ['greenhouse', 'amplitude'],
+  ['greenhouse', 'stockx', 'StockX'],
+  ['greenhouse', 'webflow'],
+  ['greenhouse', 'lightricks'],
+  ['greenhouse', 'netlify'],
+  ['greenhouse', 'calm'],
+  ['greenhouse', 'coreweave', 'CoreWeave'],
+  ['greenhouse', 'typeface'],
+  ['greenhouse', 'chainguard'],
+  ['greenhouse', 'hightouch'],
+  ['greenhouse', 'fivetran'],
+  ['greenhouse', 'gemini'],
+  ['greenhouse', 'make'],
+  ['greenhouse', 'customerio', 'Customer.io'],
+  ['greenhouse', 'klaviyo'],
+  ['greenhouse', 'glossier'],
 
   // ---- Ashby ----
-  ['ashby', 'airwallex', 'fintech'],      ['ashby', 'whoop',     'health', 'WHOOP'],
-  ['ashby', 'harvey',    'ai'],           ['ashby', 'sierra',    'ai'],
-  ['ashby', 'snowflake', 'devtools'],     ['ashby', 'ramp',      'fintech'],
-  ['ashby', 'zip',       'productivity'], ['ashby', 'notion',    'productivity'],
-  ['ashby', 'miro',      'design'],       ['ashby', 'render',    'devtools'],
-  ['ashby', 'strava',    'social'],       ['ashby', 'linear',    'productivity'],
-  ['ashby', 'supabase',  'devtools'],     ['ashby', 'thumbtack', 'commerce'],
-  ['ashby', 'abridge',   'health'],       ['ashby', 'mural',     'design'],
-  ['ashby', 'plaid',     'fintech'],      ['ashby', 'clickup',   'productivity', 'ClickUp'],
-  ['ashby', 'angi',      'commerce', 'Angi'], ['ashby', 'poshmark', 'commerce'],
-  ['ashby', 'oyster',    'hr'],           ['ashby', 'capsule',   'health'],
-
-  // ---- second pass ----
-  // The first sweep only covered companies that came to mind, which is how a
-  // live RunPod posting was invisible. These fill in AI infra, GPU cloud,
-  // security, observability, crypto and health.
-  ['ashby', 'runpod',       'ai', 'RunPod'],      ['ashby', 'synthesia',   'ai'],
-  ['ashby', 'deepgram',     'ai'],                ['ashby', 'elevenlabs',  'ai', 'ElevenLabs'],
-  ['ashby', 'baseten',      'ai'],                ['greenhouse', 'coreweave', 'ai', 'CoreWeave'],
-  ['greenhouse', 'typeface','ai'],
-  ['ashby', 'vanta',        'devtools'],          ['ashby', 'socket',      'devtools'],
-  ['ashby', 'workos',       'devtools', 'WorkOS'],['ashby', 'resend',      'devtools'],
-  ['ashby', 'stytch',       'devtools'],          ['ashby', 'zed',         'devtools', 'Zed'],
-  ['ashby', 'secureframe',  'devtools'],          ['greenhouse', 'chainguard', 'devtools'],
-  ['greenhouse', 'hightouch','devtools'],         ['greenhouse', 'fivetran','devtools'],
-  ['lever', 'logrocket',    'devtools', 'LogRocket'],
-  ['ashby', 'bubble',       'devtools'],
-  ['ashby', 'phantom',      'fintech'],           ['greenhouse', 'gemini', 'fintech'],
-  ['ashby', 'opensea',      'fintech', 'OpenSea'],['ashby', 'alchemy',     'fintech'],
-  ['ashby', 'uniswap',      'fintech'],
-  ['ashby', 'headway',      'health'],
-  ['ashby', 'gamma',        'productivity'],      ['ashby', 'n8n',         'productivity', 'n8n'],
-  ['greenhouse', 'make',    'productivity'],      ['greenhouse', 'customerio', 'productivity', 'Customer.io'],
-  ['greenhouse', 'klaviyo', 'commerce'],          ['greenhouse', 'glossier', 'commerce'],
-  ['ashby', 'away',         'commerce'],
+  ['ashby', 'airwallex'],
+  ['ashby', 'whoop', 'WHOOP'],
+  ['ashby', 'harvey'],
+  ['ashby', 'sierra'],
+  ['ashby', 'snowflake'],
+  ['ashby', 'ramp'],
+  ['ashby', 'zip'],
+  ['ashby', 'notion'],
+  ['ashby', 'miro'],
+  ['ashby', 'render'],
+  ['ashby', 'strava'],
+  ['ashby', 'linear'],
+  ['ashby', 'supabase'],
+  ['ashby', 'thumbtack'],
+  ['ashby', 'abridge'],
+  ['ashby', 'mural'],
+  ['ashby', 'plaid'],
+  ['ashby', 'clickup', 'ClickUp'],
+  ['ashby', 'angi', 'Angi'],
+  ['ashby', 'poshmark'],
+  ['ashby', 'oyster'],
+  ['ashby', 'capsule'],
+  ['ashby', 'runpod', 'RunPod'],
+  ['ashby', 'synthesia'],
+  ['ashby', 'deepgram'],
+  ['ashby', 'elevenlabs', 'ElevenLabs'],
+  ['ashby', 'baseten'],
+  ['ashby', 'vanta'],
+  ['ashby', 'socket'],
+  ['ashby', 'workos', 'WorkOS'],
+  ['ashby', 'resend'],
+  ['ashby', 'stytch'],
+  ['ashby', 'zed', 'Zed'],
+  ['ashby', 'secureframe'],
+  ['ashby', 'bubble'],
+  ['ashby', 'phantom'],
+  ['ashby', 'opensea', 'OpenSea'],
+  ['ashby', 'alchemy'],
+  ['ashby', 'uniswap'],
+  ['ashby', 'headway'],
+  ['ashby', 'gamma'],
+  ['ashby', 'n8n', 'n8n'],
+  ['ashby', 'away'],
 
   // ---- Lever ----
-  ['lever', 'wealthfront', 'fintech'],    ['lever', 'gopuff', 'commerce', 'Gopuff'],
+  ['lever', 'logrocket', 'LogRocket'],
+  ['lever', 'wealthfront'],
+  ['lever', 'gopuff', 'Gopuff'],
 ];
 
-export const SEED_COMPANIES: Company[] = SEED.map(([source, token, industry, label]) => ({
+export const SEED_COMPANIES: Company[] = SEED.map(([source, token, label]) => ({
   source,
   token,
-  industry,
   label: label ?? titleCase(token),
   key: companyKey(source, token),
 }));
@@ -170,12 +208,6 @@ export function loadCompanies(): Company[] {
   return saved.filter((c) => c && c.source && c.token).map((c) => ({
     ...c,
     key: c.key || companyKey(c.source, c.token),
-    // Watchlists saved before industries existed have none. Rather than guess,
-    // recover it from the seed where the board is one we ship.
-    industry:
-      c.industry ??
-      SEED_COMPANIES.find((s) => s.key === (c.key || companyKey(c.source, c.token)))?.industry ??
-      'other',
   }));
 }
 

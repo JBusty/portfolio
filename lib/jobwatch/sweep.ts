@@ -44,7 +44,6 @@ function asCompany({ source, token }: BoardRef): Company {
     source,
     token,
     label: token,
-    industry: 'other',
   };
 }
 

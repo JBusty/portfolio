@@ -50,17 +50,14 @@ export type Job = {
 export type JobSnapshot = Omit<Job, 'descriptionHtml'>;
 
 /**
- * Sector, assigned per company on the watchlist.
+ * One entry on the watchlist: a board to poll.
  *
- * None of the three ATS APIs expose anything like this — there is no industry
- * field to read — so it is a property of the board, hand-assigned, not derived
- * from the posting. Boards added from the UI start as `other`.
+ * There is no industry on here. It was hand-assigned per company, which worked
+ * while the watchlist was a hundred boards somebody had classified — and stopped
+ * meaning anything the moment discovery started finding sixteen hundred. No ATS
+ * publishes a sector, so there was nothing to derive the rest from, leaving a
+ * filter where almost every row read "other".
  */
-export type Industry =
-  | 'fintech' | 'health' | 'devtools' | 'design' | 'productivity'
-  | 'social' | 'commerce' | 'mobility' | 'ai' | 'hr' | 'education' | 'other';
-
-/** One entry on the watchlist: a board to poll. */
 export type Company = {
   /** `${source}:${token}` — stable identity across renames. */
   key: string;
@@ -68,7 +65,6 @@ export type Company = {
   token: string;
   /** Display name; falls back to the token until a fetch reports the real one. */
   label: string;
-  industry: Industry;
 };
 
 export type FetchStatus = 'idle' | 'loading' | 'ok' | 'error';

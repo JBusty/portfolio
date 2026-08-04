@@ -6,9 +6,9 @@
  * — and tested — on its own.
  */
 
-import { LEVEL_LABELS, LEVEL_ORDER, isDesignRole, salaryFloor } from './classify';
+import { LEVEL_LABELS, LEVEL_ORDER, isDesignRole, salaryFloor, usEligibility } from './classify';
 import { DEFAULT_PREFS, PRE_EXISTING } from './store';
-import type { Industry, Job, JobState, Prefs, SourceKind } from './types';
+import type { Job, JobState, Prefs, SourceKind } from './types';
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -27,12 +27,8 @@ export type View = {
   /** An ATS platform, or 'all'. Orthogonal to `company`: this is the board a
       posting came from, not who posted it. */
   source: SourceKind | 'all';
-  /** A sector, or 'all'. Read off the company, not the posting. */
-  industry: Industry | 'all';
   /** A company key, or 'all'. */
   company: string;
-  /** companyKey -> industry, so the filter doesn't re-scan the watchlist. */
-  industryOf: Map<string, Industry>;
   /** Lowercased search terms, AND'd. */
   terms: string[];
   /** jobId -> prebuilt lowercase haystack, so search doesn't re-derive it. */
@@ -44,9 +40,7 @@ export const EMPTY_VIEW: View = {
   savedOnly: false,
   showHidden: false,
   source: 'all',
-  industry: 'all',
   company: 'all',
-  industryOf: new Map(),
   terms: [],
   index: new Map(),
 };
@@ -94,7 +88,13 @@ export function filterJobs(
     // board has any business returning.
     if (!job.remote) return false;
 
-    // 7 — pay. A floor can only judge a posting that published a number, and
+    // 7 — US only, on the same footing as remote for the same reason. A posting
+    // that names no geography at all is kept rather than guessed at: it is a
+    // sixth of the remote set, and marked in the row so the list never implies
+    // a confirmation it doesn't have.
+    if (usEligibility(job.location) === 'non-us') return false;
+
+    // 8 — pay. A floor can only judge a posting that published a number, and
     // roughly two-thirds of them don't; dropping those by default would look
     // like a broken fetch rather than a filter.
     const floor = salaryFloor(job.salary);
@@ -104,7 +104,7 @@ export function filterJobs(
       return false;
     }
 
-    // 8 — age. Prefers our own first-seen stamp, because Greenhouse exposes
+    // 9 — age. Prefers our own first-seen stamp, because Greenhouse exposes
     // only `updated_at` and that bumps on any description edit.
     //
     // But everything present at the first sync is stamped PRE_EXISTING, so on a
@@ -130,7 +130,6 @@ export function filterJobs(
     if (view.savedOnly && !entry?.saved) return false;
     if (view.source !== 'all' && job.source !== view.source) return false;
     if (view.company !== 'all' && job.companyKey !== view.company) return false;
-    if (view.industry !== 'all' && view.industryOf.get(job.companyKey) !== view.industry) return false;
     if (view.terms.length > 0) {
       const hay = view.index.get(job.id) ?? '';
       if (!view.terms.every((t) => hay.includes(t))) return false;
@@ -139,7 +138,7 @@ export function filterJobs(
     return true;
   });
 
-  // 9 — sort.
+  // 10 — sort.
   return sortJobs(kept, prefs, state);
 }
 
@@ -247,7 +246,6 @@ export function appliedRecords(state: JobState, jobs: Job[], view: View): Applie
 
     if (view.source !== 'all' && job.source !== view.source) continue;
     if (view.company !== 'all' && job.companyKey !== view.company) continue;
-    if (view.industry !== 'all' && view.industryOf.get(job.companyKey) !== view.industry) continue;
     if (view.terms.length > 0) {
       const hay = view.index.get(id) ?? `${job.title} ${job.company} ${job.location}`.toLowerCase();
       if (!view.terms.every((t) => hay.includes(t))) continue;
@@ -287,26 +285,17 @@ export function countTuned(prefs: Prefs): number {
 
 /* ---------------------------------------------------------------- reason */
 
-const INDUSTRY_LABELS: Record<Industry, string> = {
-  fintech: 'fintech', health: 'health', devtools: 'dev tools', design: 'design tools',
-  productivity: 'productivity', social: 'social', commerce: 'commerce',
-  mobility: 'mobility', ai: 'AI', hr: 'HR', education: 'education', other: '',
-};
-
 /**
  * One line of plain text explaining why a posting surfaced, assembled from the
- * things that let it through: "staff · fintech · $180k+". Deterministic and
- * local — no API call, no model, nothing that can be wrong in an interesting
- * way.
+ * things that let it through: "staff · $180k+". Deterministic and local — no
+ * API call, no model, nothing that can be wrong in an interesting way.
  *
  * "remote" is not in it: every row is remote now, and a fact true of every line
- * on screen tells you nothing.
+ * on screen tells you nothing. Sector isn't either — see the note on why
+ * industries came out.
  */
-export function explainMatch(job: Job, prefs: Prefs, industry?: Industry): string {
+export function explainMatch(job: Job, prefs: Prefs): string {
   const parts: string[] = [LEVEL_LABELS[job.level].toLowerCase()];
-
-  const sector = industry ? INDUSTRY_LABELS[industry] : '';
-  if (sector) parts.push(sector);
 
   const floor = salaryFloor(job.salary);
   if (floor != null) parts.push(`$${Math.round(floor / 1000)}k+`);
@@ -314,5 +303,3 @@ export function explainMatch(job: Job, prefs: Prefs, industry?: Industry): strin
 
   return parts.join(' · ');
 }
-
-export { INDUSTRY_LABELS };

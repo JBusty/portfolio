@@ -31,7 +31,6 @@ import { titleCase } from '@/lib/jobwatch/format';
 import type {
   Company,
   CompanyResult,
-  Industry,
   Job,
   JobState,
   Prefs,
@@ -278,7 +277,7 @@ export function useJobwatch() {
   /* ------------------------------------------------------------ watchlist */
 
   const addCompany = useCallback(
-    (source: SourceKind, rawToken: string, rawLabel?: string, industry: Industry = 'other') => {
+    (source: SourceKind, rawToken: string, rawLabel?: string) => {
       const token = rawToken.trim();
       if (!token) return { ok: false, message: 'Enter a board token' };
 
@@ -287,9 +286,7 @@ export function useJobwatch() {
         return { ok: false, message: 'That board is already on the list' };
       }
 
-      const entry: Company = {
-        key, source, token, industry, label: rawLabel?.trim() || titleCase(token),
-      };
+      const entry: Company = { key, source, token, label: rawLabel?.trim() || titleCase(token) };
       setCompanies((prev) => (prev.some((c) => c.key === key) ? prev : [...prev, entry]));
       // Fetch the newcomer on its own rather than re-polling every board.
       void runSync([entry]);
@@ -399,9 +396,8 @@ export function useJobwatch() {
    *
    * On the index path this is derived from the postings themselves — the sweep
    * discovers boards rather than reading them off a watchlist, so there is no
-   * list to read. Industries come from the seeded map where the company is one
-   * we classified, and are `other` otherwise; nothing hand-assigns a sector for
-   * several hundred auto-discovered companies.
+   * list to read. Labels prefer the seeded spelling where we have one, since a
+   * few of those are corrections the ATS payload doesn't make ("n8n", "WHOOP").
    */
   const boards = useMemo<Company[]>(() => {
     if (!indexJobs) return companies;
@@ -410,13 +406,11 @@ export function useJobwatch() {
     const out = new Map<string, Company>();
     for (const job of indexJobs) {
       if (out.has(job.companyKey)) continue;
-      const known = seeded.get(job.companyKey);
       out.set(job.companyKey, {
         key: job.companyKey,
         source: job.source,
         token: job.companyKey.slice(job.companyKey.indexOf(':') + 1),
-        label: known?.label ?? job.company,
-        industry: known?.industry ?? 'other',
+        label: seeded.get(job.companyKey)?.label ?? job.company,
       });
     }
     return [...out.values()].sort((a, b) => a.label.localeCompare(b.label));

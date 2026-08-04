@@ -623,6 +623,22 @@
 
 .dot { opacity: 0.4; }
 
+/*
+ * A posting that named no country. Borrows the dashed-underline reading of
+ * `.pillEstimated` — the value is real, what it implies is not confirmed.
+ */
+.locationUnconfirmed {
+  text-decoration: underline dashed;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--rule-strong);
+  opacity: 0.85;
+}
+
+.unconfirmedMark {
+  margin-left: 3px;
+  opacity: 0.7;
+}
+
 .pill {
   display: inline-flex;
   align-items: center;

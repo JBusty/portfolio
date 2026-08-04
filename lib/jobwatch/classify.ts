@@ -90,6 +90,84 @@ export function inferRemote(location: string, workplaceType?: string | null): bo
   return REMOTE_HIT.test(location);
 }
 
+/* --------------------------------------------------------------- location */
+
+/**
+ * Whether a posting can be worked from the US.
+ *
+ * `unconfirmed` is a real answer, not a failure: roughly a sixth of remote
+ * postings give no geography whatsoever (the bare string "Remote"), and many of
+ * those are US companies that simply didn't say so. Guessing either way is
+ * wrong, so they are kept and marked in the UI.
+ */
+export type UsEligibility = 'us' | 'unconfirmed' | 'non-us';
+
+/** Periods are stripped first, so `U.S.` and `U.S.A.` reduce to `US`/`USA`. */
+const US_COUNTRY = /\b(us|usa|united\s+states|stateside)\b/i;
+
+/**
+ * Case-sensitive and anchored to a comma or bracket, because half the state
+ * codes are also English words. Matching `\bor\b` case-insensitively reads
+ * "Cardiff, London or Remote (UK)" as Oregon — it did, on six real postings.
+ */
+const US_STATE_CODE =
+  /[,(]\s*(A[LKZR]|C[AOT]|DE|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|PA|RI|S[CD]|T[NX]|UT|V[AT]|W[AIVY]|DC)\b/;
+
+const US_STATE_NAME =
+  /\b(alabama|alaska|arizona|arkansas|california|colorado|connecticut|delaware|florida|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new\s+hampshire|new\s+jersey|new\s+mexico|new\s+york|north\s+carolina|north\s+dakota|ohio|oklahoma|oregon|pennsylvania|rhode\s+island|south\s+carolina|south\s+dakota|tennessee|texas|utah|vermont|virginia|washington|west\s+virginia|wisconsin|wyoming)\b/i;
+
+const US_CITY =
+  /\b(nyc|brooklyn|san\s+francisco|bay\s+area|los\s+angeles|chicago|boston|seattle|austin|denver|atlanta|miami|phoenix|dallas|houston|philadelphia|san\s+diego|san\s+jose|palo\s+alto|mountain\s+view|sunnyvale|santa\s+monica|salt\s+lake|minneapolis|detroit|nashville|charlotte|raleigh|pittsburgh|baltimore|orlando|tampa|las\s+vegas|sacramento|columbus|indianapolis|kansas\s+city|cincinnati)\b/i;
+
+/**
+ * Words that describe an arrangement rather than a place.
+ *
+ * This is the whole trick: rather than blacklisting every country that isn't
+ * America — a list that is never finished, and quietly let Bogota, Gibraltar and
+ * Helsinki through when it was tried — a string is `unconfirmed` only when
+ * *nothing* is left after these are removed. Anything with a real place name
+ * still standing, and no US marker, is somewhere else.
+ *
+ * `north`/`america` sit here deliberately: "North America" includes the US, so
+ * it is unconfirmed rather than a rejection.
+ */
+const NON_GEOGRAPHIC = new Set([
+  'remote', 'anywhere', 'worldwide', 'world', 'wide', 'global', 'globally',
+  'distributed', 'virtual', 'wfh', 'work', 'from', 'home', 'based',
+  'international', 'contract', 'contractor', 'permanent', 'full', 'part',
+  'time', 'all', 'location', 'locations', 'any', 'none', 'not', 'specified',
+  'unspecified', 'na', 'n', 'a', 'hybrid', 'onsite', 'on', 'site', 'office',
+  'hq', 'headquarters', 'north', 'america', 'americas', 'multiple', 'various',
+  'several', 'flexible', 'eligible', 'only', 'or', 'and', 'the', 'in', 'at',
+  'of', 'to', 'within', 'other', 'tbd', 'open', 'position', 'first',
+]);
+
+/** True when a string carries no place name at all once the above are removed. */
+function isPlaceless(location: string): boolean {
+  const tokens = location.toLowerCase().split(/[^a-z]+/).filter(Boolean);
+  return tokens.every((token) => NON_GEOGRAPHIC.has(token));
+}
+
+/**
+ * An explicit US marker wins even in a mixed string: a posting reading
+ * "…Portland, OR, or Remote within Canada or United States" is one a US
+ * applicant can take, whatever else it also lists.
+ */
+export function usEligibility(location: string): UsEligibility {
+  const flat = (location ?? '').replace(/\./g, '');
+
+  if (
+    US_COUNTRY.test(flat) ||
+    US_STATE_CODE.test(flat) ||
+    US_STATE_NAME.test(flat) ||
+    US_CITY.test(flat)
+  ) {
+    return 'us';
+  }
+
+  return isPlaceless(flat) ? 'unconfirmed' : 'non-us';
+}
+
 /* ----------------------------------------------------------------- salary */
 
 /** Annualization factors for the intervals these APIs actually emit. */

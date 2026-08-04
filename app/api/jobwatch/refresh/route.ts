@@ -23,12 +23,19 @@ const SHARD_COUNT = 12;
 /** Stop sweeping with time left to merge and write, rather than being killed. */
 const WRITE_BUDGET_MS = 25_000;
 
+/**
+ * Vercel Cron sends `Authorization: Bearer $CRON_SECRET` on every firing once
+ * that variable is set on the project.
+ *
+ * Fails closed: a missing secret refuses the request rather than leaving the
+ * route open. This endpoint spends real time and money — fifteen thousand
+ * outbound requests a run — so an unconfigured deployment should do nothing at
+ * all, not run the sweep for anyone who finds the URL. Local development is
+ * exempt so the sweep stays testable without a token.
+ */
 function authorized(request: Request): boolean {
   const secret = process.env.CRON_SECRET;
-  // Vercel Cron sends `Authorization: Bearer $CRON_SECRET` when it is set. With
-  // no secret configured the route is open, which is fine for a private tool
-  // but worth knowing.
-  if (!secret) return true;
+  if (!secret) return process.env.NODE_ENV === 'development';
   return request.headers.get('authorization') === `Bearer ${secret}`;
 }
 
@@ -42,9 +49,14 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const override = url.searchParams.get('shard');
   // Default to the clock so consecutive cron firings walk the whole list.
+  //
+  // The bucket has to match the cron interval or the walk stops walking. This
+  // was a 5-minute bucket while the cron fired every 5 minutes; against the
+  // daily schedule it pinned every run to the same shard, because a day is
+  // exactly 288 buckets and 288 % 12 === 0. One bucket per day advances by one.
   const shard = override != null
     ? Number(override) % SHARD_COUNT
-    : Math.floor(started / (5 * 60 * 1000)) % SHARD_COUNT;
+    : Math.floor(started / (24 * 60 * 60 * 1000)) % SHARD_COUNT;
 
   // Held outside the try so a failed *write* still reports what the sweep
   // found. Those are separate failures and conflating them makes a missing

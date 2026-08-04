@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { LEVEL_LABELS } from '@/lib/jobwatch/classify';
+import { LEVEL_LABELS, usEligibility } from '@/lib/jobwatch/classify';
 import { timeAgo, timeAgoFrom } from '@/lib/jobwatch/format';
 import { SOURCE_CODES, SOURCE_LABELS } from '@/lib/jobwatch/sources';
 import type { Job, JobStateEntry } from '@/lib/jobwatch/types';
@@ -27,6 +27,8 @@ type Props = {
  */
 function JobRow({ job, selected, isNew, entry, reason, appliedAt, onSelect, onUnapply }: Props) {
   const isApplied = entry?.applied ?? false;
+  // Only two values reach a row: anything non-US was dropped in `filterJobs`.
+  const locationUnconfirmed = usEligibility(job.location) === 'unconfirmed';
 
   return (
     <div
@@ -86,7 +88,15 @@ function JobRow({ job, selected, isNew, entry, reason, appliedAt, onSelect, onUn
           )}
 
           <span className={styles.dot}>/</span>
-          <span>{job.location}</span>
+          <span
+            className={locationUnconfirmed ? styles.locationUnconfirmed : undefined}
+            // The posting named no country, so the row says so rather than
+            // letting a US-only board imply one.
+            title={locationUnconfirmed ? 'No location given — US eligibility unconfirmed' : undefined}
+          >
+            {job.location}
+            {locationUnconfirmed && <span className={styles.unconfirmedMark}>?</span>}
+          </span>
         </span>
       </button>
 

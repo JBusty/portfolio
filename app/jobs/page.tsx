@@ -2,14 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  appliedRecords, countTuned, explainMatch, filterJobs,
-  INDUSTRY_LABELS, type Tab, type View,
+  appliedRecords, countTuned, explainMatch, filterJobs, type Tab, type View,
 } from '@/lib/jobwatch/filter';
 import { clockTime, plural } from '@/lib/jobwatch/format';
 import { stripTags } from '@/lib/jobwatch/html';
 import { SOURCE_LABELS, SOURCE_ORDER } from '@/lib/jobwatch/sources';
 import { isNewSince } from '@/lib/jobwatch/store';
-import type { Industry, Job, SourceKind } from '@/lib/jobwatch/types';
+import type { Job, SourceKind } from '@/lib/jobwatch/types';
 import JobDetail from './_components/JobDetail';
 import JobRow from './_components/JobRow';
 import PrefsPanel from './_components/PrefsPanel';
@@ -32,7 +31,6 @@ export default function JobsPage() {
 
   const [query, setQuery] = useState('');
   const [source, setSource] = useState<SourceKind | 'all'>('all');
-  const [industry, setIndustry] = useState<Industry | 'all'>('all');
   const [company, setCompany] = useState('all');
   const [tab, setTab] = useState<Tab>('open');
   const [savedOnly, setSavedOnly] = useState(false);
@@ -86,12 +84,6 @@ export default function JobsPage() {
 
   /* -------------------------------------------------------------- filter */
 
-  /** companyKey -> industry. Rebuilt only when the watchlist changes. */
-  const industryOf = useMemo(
-    () => new Map(companies.map((c) => [c.key, c.industry])),
-    [companies],
-  );
-
   const view = useMemo<View>(() => {
     const q = query.trim().toLowerCase();
     return {
@@ -99,29 +91,18 @@ export default function JobsPage() {
       savedOnly,
       showHidden,
       source,
-      industry,
       company,
-      industryOf,
       terms: q ? q.split(/\s+/) : [],
       index,
     };
-  }, [tab, savedOnly, showHidden, source, industry, company, industryOf, query, index]);
+  }, [tab, savedOnly, showHidden, source, company, query, index]);
 
-  /** Tracked postings per platform and per sector, for the picker counts. */
+  /** Tracked postings per platform, for the board picker's counts. */
   const sourceCounts = useMemo(() => {
     const counts = new Map<SourceKind, number>();
     for (const job of jobs) counts.set(job.source, (counts.get(job.source) ?? 0) + 1);
     return counts;
   }, [jobs]);
-
-  const industryCounts = useMemo(() => {
-    const counts = new Map<Industry, number>();
-    for (const job of jobs) {
-      const sector = industryOf.get(job.companyKey);
-      if (sector) counts.set(sector, (counts.get(sector) ?? 0) + 1);
-    }
-    return counts;
-  }, [jobs, industryOf]);
 
   // Prefs only ever re-run this. Nothing here refetches.
   //
@@ -210,10 +191,7 @@ export default function JobsPage() {
   // postings are gone from every board by then.
   const total = tab === 'applied' ? counts.applied : jobs.length;
 
-  const reasonFor = useCallback(
-    (job: Job) => explainMatch(job, prefs, industryOf.get(job.companyKey)),
-    [prefs, industryOf],
-  );
+  const reasonFor = useCallback((job: Job) => explainMatch(job, prefs), [prefs]);
   const tunedCount = useMemo(() => countTuned(prefs), [prefs]);
 
   return (
@@ -350,24 +328,6 @@ export default function JobsPage() {
                 {SOURCE_LABELS[s]} ({sourceCounts.get(s)})
               </option>
             ))}
-          </select>
-
-          {/* Sector is a property of the board, not the posting — no ATS
-              publishes one — so it comes off the watchlist entry. */}
-          <select
-            className={styles.metaSelect}
-            value={industry}
-            onChange={(e) => setIndustry(e.target.value as Industry | 'all')}
-            aria-label="Filter by industry"
-          >
-            <option value="all">All industries</option>
-            {[...industryCounts.entries()]
-              .sort((a, b) => b[1] - a[1])
-              .map(([sector, n]) => (
-                <option key={sector} value={sector}>
-                  {INDUSTRY_LABELS[sector] || 'Other'} ({n})
-                </option>
-              ))}
           </select>
 
           <select

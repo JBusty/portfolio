@@ -3,17 +3,14 @@
 import { useState, type KeyboardEvent } from 'react';
 import { clockTime, plural } from '@/lib/jobwatch/format';
 import { SOURCE_CODES, SOURCE_LABELS } from '@/lib/jobwatch/sources';
-import { INDUSTRY_LABELS } from '@/lib/jobwatch/filter';
-import type { Company, CompanyResult, Industry, SourceKind } from '@/lib/jobwatch/types';
+import type { Company, CompanyResult, SourceKind } from '@/lib/jobwatch/types';
 import { TrashIcon } from './icons';
 import styles from '../jobwatch.module.css';
 
 type Props = {
   companies: Company[];
   results: Record<string, CompanyResult>;
-  onAdd: (
-    source: SourceKind, token: string, label?: string, industry?: Industry,
-  ) => { ok: boolean; message: string };
+  onAdd: (source: SourceKind, token: string, label?: string) => { ok: boolean; message: string };
   onRemove: (key: string) => void;
 };
 
@@ -27,11 +24,10 @@ export default function SourceDrawer({ companies, results, onAdd, onRemove }: Pr
   const [source, setSource] = useState<SourceKind>('greenhouse');
   const [token, setToken] = useState('');
   const [label, setLabel] = useState('');
-  const [industry, setIndustry] = useState<Industry>('other');
   const [error, setError] = useState('');
 
   function submit() {
-    const result = onAdd(source, token, label, industry);
+    const result = onAdd(source, token, label);
     setError(result.ok ? '' : result.message);
     if (result.ok) {
       setToken('');
@@ -83,7 +79,7 @@ export default function SourceDrawer({ companies, results, onAdd, onRemove }: Pr
                         ? 'loading…'
                         : empty
                           ? `0 roles · ${clockTime(r?.fetchedAt ?? null)} · check the token`
-                          : `${count} open · ${INDUSTRY_LABELS[c.industry] || 'other'}`}
+                          : `${count} open · ${clockTime(r?.fetchedAt ?? null)}`}
                   </div>
                 </div>
                 <button
@@ -130,18 +126,6 @@ export default function SourceDrawer({ companies, results, onAdd, onRemove }: Pr
             aria-label="Display name"
             style={{ flex: '0 1 160px' }}
           />
-
-          {/* No ATS publishes a sector, so it is assigned here or not at all. */}
-          <select
-            className={styles.select}
-            value={industry}
-            onChange={(e) => setIndustry(e.target.value as Industry)}
-            aria-label="Industry"
-          >
-            {(Object.keys(INDUSTRY_LABELS) as Industry[]).map((key) => (
-              <option key={key} value={key}>{INDUSTRY_LABELS[key] || 'Other'}</option>
-            ))}
-          </select>
 
           <button type="button" className="btn ghost" onClick={submit}>Add board</button>
           {error && (
