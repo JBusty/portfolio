@@ -17,8 +17,22 @@ import { sweepBoards } from '@/lib/jobwatch/sweep';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
 
-/** One shard per run; the whole watchlist is covered every SHARD_COUNT runs. */
-const SHARD_COUNT = 12;
+/**
+ * One shard per run; the whole watchlist is covered every SHARD_COUNT runs.
+ *
+ * Measured, not guessed: a shard of 1,321 boards took ~30s against a usable
+ * budget of 275s, so twelve shards was about ten times more cautious than the
+ * timeout required — and on a daily cron that meant a twelve-day lap, long
+ * enough for a closed req to sit in the index for a week and a half. Three
+ * shards is ~5,300 boards and ~120s, still better than 2x headroom, and the
+ * lap drops to three days.
+ *
+ * This does not raise the request *rate* against the three ATS APIs — same
+ * concurrency, same total requests, just fewer and fuller invocations. Going
+ * further (one daily full sweep) would mean raising `CONCURRENCY`, which
+ * `sweep.ts` deliberately declines to do.
+ */
+const SHARD_COUNT = 3;
 
 /** Stop sweeping with time left to merge and write, rather than being killed. */
 const WRITE_BUDGET_MS = 25_000;
@@ -86,7 +100,14 @@ export async function GET(request: Request) {
     // has reported. No read-modify-write, so shards can never clobber each
     // other — see the note in index-store.
     await writeShard({ shard, at: Date.now(), probed: result.probed, jobs: result.jobs });
-    const merged = mergeShards(await readShards());
+
+    // Shard files from a previous, finer split are still sitting in Blob and
+    // `readShards` returns every one it finds. Left in, they would contribute
+    // postings that no run ever refreshes again — permanently stale rows that
+    // look live. The current shards already cover the whole watchlist between
+    // them, so anything numbered beyond the count is discarded.
+    const reported = (await readShards()).filter((file) => file.shard < SHARD_COUNT);
+    const merged = mergeShards(reported);
     await writeIndex(merged);
 
     return Response.json({

@@ -13,7 +13,8 @@ import JobDetail from './_components/JobDetail';
 import JobRow from './_components/JobRow';
 import PrefsPanel from './_components/PrefsPanel';
 import SourceDrawer from './_components/SourceDrawer';
-import { RefreshIcon, SlidersIcon } from './_components/icons';
+import { SlidersIcon } from './_components/icons';
+import { useClickOff } from './_components/useClickOff';
 import { useJobwatch } from './_components/useJobwatch';
 import styles from './jobwatch.module.css';
 
@@ -24,7 +25,7 @@ export default function JobsPage() {
   const {
     ready, companies, results, jobs, jobState, prefs, syncing, lastSynced, errorCount,
     descriptions, usingIndex, indexMeta,
-    sync, addCompany, removeCompany, loadDescription,
+    addCompany, removeCompany, loadDescription,
     markApplied, unapply, toggleSaved, toggleHidden,
     updatePrefs, resetPrefs,
   } = useJobwatch();
@@ -42,6 +43,14 @@ export default function JobsPage() {
 
   const barRef = useRef<HTMLDivElement>(null);
   const shellRef = useRef<HTMLElement>(null);
+
+  const prefsRef = useRef<HTMLDivElement>(null);
+  const prefsBtnRef = useRef<HTMLButtonElement>(null);
+  const sourcesRef = useRef<HTMLDivElement>(null);
+  const sourcesBtnRef = useRef<HTMLButtonElement>(null);
+
+  useClickOff(showPrefs, () => setShowPrefs(false), prefsRef, prefsBtnRef);
+  useClickOff(showSources, () => setShowSources(false), sourcesRef, sourcesBtnRef);
 
   /**
    * The filter bar wraps to a different number of rows depending on viewport
@@ -346,6 +355,7 @@ export default function JobsPage() {
 
           <button
             type="button"
+            ref={prefsBtnRef}
             className={styles.toggle}
             data-active={showPrefs}
             onClick={() => setShowPrefs((s) => !s)}
@@ -358,6 +368,7 @@ export default function JobsPage() {
 
           <button
             type="button"
+            ref={sourcesBtnRef}
             className={styles.toggle}
             data-active={showSources}
             onClick={() => setShowSources((s) => !s)}
@@ -367,33 +378,39 @@ export default function JobsPage() {
             <span className={styles.count}>{errorCount > 0 ? `${errorCount}!` : companies.length}</span>
           </button>
 
-          <button type="button" className={styles.syncBtn} onClick={sync} disabled={syncing}>
-            <RefreshIcon />
-            {syncing ? 'Syncing…' : 'Sync'}
-          </button>
         </div>
+
+        {/*
+          Inside the sticky bar on purpose. As siblings below it these sat at
+          their own place in the document, so once the page had scrolled the bar
+          stayed pinned and opening a panel revealed it somewhere off-screen
+          above. Nested, they pin with the bar — and because the ResizeObserver
+          measures this element into `--jw-bar`, the detail pane beneath
+          re-offsets itself instead of being overlapped.
+        */}
+        {showPrefs && (
+          <PrefsPanel
+            ref={prefsRef}
+            prefs={prefs}
+            // Always the Open list: preferences have no bearing on the
+            // application log, so counting it here would make toggles look inert.
+            shown={open.length}
+            total={jobs.length}
+            onChange={updatePrefs}
+            onReset={resetPrefs}
+          />
+        )}
+
+        {showSources && (
+          <SourceDrawer
+            ref={sourcesRef}
+            companies={companies}
+            results={results}
+            onAdd={addCompany}
+            onRemove={removeCompany}
+          />
+        )}
       </div>
-
-      {showPrefs && (
-        <PrefsPanel
-          prefs={prefs}
-          // Always the Open list: preferences have no bearing on the
-          // application log, so counting it here would make toggles look inert.
-          shown={open.length}
-          total={jobs.length}
-          onChange={updatePrefs}
-          onReset={resetPrefs}
-        />
-      )}
-
-      {showSources && (
-        <SourceDrawer
-          companies={companies}
-          results={results}
-          onAdd={addCompany}
-          onRemove={removeCompany}
-        />
-      )}
 
       {/* ---- body ---- */}
       <div className={`${styles.wrap} ${styles.body}`}>
@@ -427,7 +444,7 @@ export default function JobsPage() {
                   : total === 0
                     ? syncing
                       ? 'Pulling boards now — this takes a few seconds on first load.'
-                      : 'Add a board from the Boards panel above, then hit Sync.'
+                      : 'Add a board from the Boards panel above; it is fetched as soon as the sweep reaches it.'
                     : 'Loosen something in Filters — the level switches and Remote only are the strictest.'}
               </p>
             </div>

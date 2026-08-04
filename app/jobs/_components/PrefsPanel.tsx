@@ -8,7 +8,7 @@
  * what has already been fetched — nothing in here triggers a network call.
  */
 
-import { useState, type KeyboardEvent } from 'react';
+import { useState, type KeyboardEvent, type Ref } from 'react';
 import { LEVEL_LABELS, LEVEL_ORDER } from '@/lib/jobwatch/classify';
 import type { Level, Prefs, SortBy } from '@/lib/jobwatch/types';
 import { CloseIcon } from './icons';
@@ -20,6 +20,8 @@ type Props = {
   total: number;
   onChange: (patch: Partial<Prefs>) => void;
   onReset: () => void;
+  /** So the page can tell a press inside the panel from one that dismisses it. */
+  ref?: Ref<HTMLDivElement>;
 };
 
 const SALARY_STEPS: Array<[number | null, string]> = [
@@ -113,12 +115,12 @@ function TermList({
   );
 }
 
-export default function PrefsPanel({ prefs, shown, total, onChange, onReset }: Props) {
+export default function PrefsPanel({ prefs, shown, total, onChange, onReset, ref }: Props) {
   const setLevel = (level: Level) =>
     onChange({ levels: { ...prefs.levels, [level]: !prefs.levels[level] } });
 
   return (
-    <div className={styles.panel}>
+    <div className={styles.panel} ref={ref}>
       <div className={`${styles.wrap} ${styles.panelInner}`}>
         <div className={styles.panelHead}>
           <span className={styles.groupLabel}>Preferences</span>

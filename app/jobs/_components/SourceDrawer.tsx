@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type KeyboardEvent } from 'react';
+import { useState, type KeyboardEvent, type Ref } from 'react';
 import { clockTime, plural } from '@/lib/jobwatch/format';
 import { SOURCE_CODES, SOURCE_LABELS } from '@/lib/jobwatch/sources';
 import type { Company, CompanyResult, SourceKind } from '@/lib/jobwatch/types';
@@ -12,6 +12,8 @@ type Props = {
   results: Record<string, CompanyResult>;
   onAdd: (source: SourceKind, token: string, label?: string) => { ok: boolean; message: string };
   onRemove: (key: string) => void;
+  /** So the page can tell a press inside the drawer from one that dismisses it. */
+  ref?: Ref<HTMLDivElement>;
 };
 
 const STATUS_CLASS: Record<string, string> = {
@@ -20,7 +22,7 @@ const STATUS_CLASS: Record<string, string> = {
   loading: styles.statusLoading,
 };
 
-export default function SourceDrawer({ companies, results, onAdd, onRemove }: Props) {
+export default function SourceDrawer({ companies, results, onAdd, onRemove, ref }: Props) {
   const [source, setSource] = useState<SourceKind>('greenhouse');
   const [token, setToken] = useState('');
   const [label, setLabel] = useState('');
@@ -42,7 +44,7 @@ export default function SourceDrawer({ companies, results, onAdd, onRemove }: Pr
   };
 
   return (
-    <div className={styles.drawer}>
+    <div className={styles.drawer} ref={ref}>
       <div className={`${styles.wrap} ${styles.drawerInner}`}>
         <div className={styles.groupLabel}>
           Watchlist — {companies.length} {plural(companies.length, 'board')}

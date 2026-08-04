@@ -40,13 +40,56 @@ export const LEVEL_ORDER: Level[] = ['exec', 'principal', 'staff', 'lead', 'seni
 
 /* ------------------------------------------------------------ design role */
 
+/**
+ * An explicit product-design signal.
+ *
+ * Deliberately does not include a bare `designer`: that one token matched every
+ * design discipline there is, and half the board came back graphic, brand,
+ * motion and game roles. A title has to say what kind of designer it wants.
+ */
 const DESIGN_HIT = new RegExp(
   [
     'product\\s+design', 'design\\s+system', 'interaction\\s+design',
-    'visual\\s+design', 'brand\\s+design', 'content\\s+design', 'service\\s+design',
-    'experience\\s+design', 'design\\s+lead', 'design\\s+manager', 'design\\s+director',
-    'head\\s+of\\s+design', 'designer', '\\bux\\b', '\\bui\\b', 'user\\s+experience',
-    'user\\s+research', 'ux\\s+writ', 'design\\s+technologist', 'creative\\s+director',
+    'experience\\s+design', 'content\\s+design', 'service\\s+design',
+    '\\bux\\b', '\\bui\\b', 'user\\s+experience', 'user\\s+research',
+    'ux\\s+writ', 'design\\s+technologist',
+  ].join('|'),
+  'i',
+);
+
+/**
+ * Design, but a different craft. Rejected only when nothing in `DESIGN_HIT`
+ * also matched, so "Product Designer, Brand" survives while "Brand Designer"
+ * does not.
+ *
+ * `creative` covers Creative Director, which is an advertising and marketing
+ * role rather than a product one — it was the third most common title on the
+ * board and never the search.
+ */
+const OTHER_DISCIPLINE = new RegExp(
+  [
+    'graphic', 'motion', 'brand', 'creative', 'marketing', 'packaging',
+    'production\\s+design', '\\bgame\\b', '\\b3d\\b', 'illustrat', 'animat',
+    'video', 'presentation', 'apparel', 'textile', 'fashion', 'jewel',
+    'architect', 'environmental', 'exhibit', 'print', 'industrial',
+    'structural', 'technical\\s+design', 'level\\s+design', 'combat',
+    'narrative', 'quest', 'sound', 'audio', 'lighting', 'set\\s+design',
+    '\\bcad\\b', 'landscape', 'civil',
+  ].join('|'),
+  'i',
+);
+
+/**
+ * Leading a design org is this search even when the title never says "product",
+ * so these are kept on their own. A bare `Senior Designer` is not: it is as
+ * often graphic as product, and there is nothing in the title to tell them
+ * apart — see the note on `DESIGN_HIT`.
+ */
+const DESIGN_LEADERSHIP = new RegExp(
+  [
+    'head\\s+of\\s+design', 'design\\s+director', 'director,?\\s+of?\\s*design',
+    'design\\s+manager', 'design\\s+lead', 'principal\\s+designer',
+    'founding\\s+designer', 'vp,?\\s+design', 'design\\s+principal',
   ].join('|'),
   'i',
 );
@@ -67,8 +110,19 @@ const DESIGN_MISS = new RegExp(
   'i',
 );
 
+/**
+ * Order is the whole logic here:
+ *
+ *   1. never a design job at all (engineering, sales) — out
+ *   2. explicitly product design — in, whatever else the title also says
+ *   3. a different design craft — out
+ *   4. otherwise only design leadership survives; generic titles do not
+ */
 export function isDesignRole(title: string): boolean {
-  return DESIGN_HIT.test(title) && !DESIGN_MISS.test(title);
+  if (DESIGN_MISS.test(title)) return false;
+  if (DESIGN_HIT.test(title)) return true;
+  if (OTHER_DISCIPLINE.test(title)) return false;
+  return DESIGN_LEADERSHIP.test(title);
 }
 
 /* ----------------------------------------------------------------- remote */
