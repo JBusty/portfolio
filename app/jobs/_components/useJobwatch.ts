@@ -11,6 +11,7 @@ import { companyKey, fetchCompany, fetchDescription } from '@/lib/jobwatch/sourc
 import {
   DEFAULT_PREFS,
   hydrate,
+
   loadCache,
   loadCompanies,
   loadJobState,
@@ -26,6 +27,7 @@ import {
   toSnapshot,
 } from '@/lib/jobwatch/store';
 import type { JobIndex } from '@/lib/jobwatch/sweep';
+import { useRemoteState } from './useRemoteState';
 
 import { titleCase } from '@/lib/jobwatch/format';
 import type {
@@ -75,6 +77,7 @@ export function useJobwatch() {
   const [syncing, setSyncing] = useState(false);
   /** localStorage is client-only, so nothing renders as real until this flips. */
   const [ready, setReady] = useState(false);
+  const [wasEmpty, setWasEmpty] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
   const didInit = useRef(false);
@@ -158,6 +161,12 @@ export function useJobwatch() {
     companiesRef.current = savedCompanies;
     jobStateRef.current = savedState;
 
+    // Whether this browser has ever been used for Jobwatch. It decides which
+    // copy wins on first contact with the database — see `useRemoteState`.
+    // Companies alone is not the test: the seed list means they are never
+    // empty, so triage state is what says "this browser has been used".
+    setWasEmpty(Object.keys(savedState).length === 0);
+
     setCompanies(savedCompanies);
     setJobState(savedState);
     setPrefs(savedPrefs);
@@ -180,6 +189,32 @@ export function useJobwatch() {
   useEffect(() => {
     if (ready) savePrefs(prefs);
   }, [prefs, ready]);
+
+  /**
+   * The durable copy. localStorage above is still the working copy — this
+   * mirrors it so clearing a browser, switching machines, or Safari evicting
+   * storage no longer takes the application history with it.
+   */
+  useRemoteState({
+    ready,
+    empty: wasEmpty,
+    prefs,
+    jobState,
+    companies,
+    onRestore: (remote) => {
+      // Only reached on a browser with no triage state of its own, so there is
+      // nothing local to overwrite.
+      if (remote.prefs) setPrefs(remote.prefs);
+      if (remote.jobState) {
+        jobStateRef.current = remote.jobState;
+        setJobState(remote.jobState);
+      }
+      if (remote.companies?.length) {
+        companiesRef.current = remote.companies;
+        setCompanies(remote.companies);
+      }
+    },
+  });
 
   /* ----------------------------------------------------------------- sync */
 

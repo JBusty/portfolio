@@ -1016,3 +1016,29 @@
   .row:hover .rowOpen { padding-left: 24px; }
   .statusLoading { animation: none; }
 }
+
+/* ----------------------------------------------------------------- login */
+
+.login {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 96px 32px 0;
+  max-width: 420px;
+}
+
+.loginForm {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.loginForm .input { flex: 1 1 auto; }
+
+.loginError {
+  min-height: 18px;
+  margin: 10px 0 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--accent-ink);
+}

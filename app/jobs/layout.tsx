@@ -20,6 +20,11 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * No auth check here on purpose: this layout also wraps /jobs/login, so a
+ * redirect at this level would bounce the login screen to itself. The gate
+ * lives in `page.tsx`, which is a server component for exactly that reason.
+ */
 export default function JobsLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
