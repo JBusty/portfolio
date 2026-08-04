@@ -11,8 +11,8 @@
  */
 
 import { discoverBoards, shardOf } from '@/lib/jobwatch/discover';
-import { readIndex, writeIndex } from '@/lib/jobwatch/index-store';
-import { mergeShard, sweepBoards } from '@/lib/jobwatch/sweep';
+import { mergeShards, readShards, writeIndex, writeShard } from '@/lib/jobwatch/index-store';
+import { sweepBoards } from '@/lib/jobwatch/sweep';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -70,7 +70,11 @@ export async function GET(request: Request) {
       designRoles: result.jobs.length,
     };
 
-    const merged = mergeShard(await readIndex(), shard, result, slice);
+    // Write our own shard, then rebuild the merged index from every shard that
+    // has reported. No read-modify-write, so shards can never clobber each
+    // other — see the note in index-store.
+    await writeShard({ shard, at: Date.now(), probed: result.probed, jobs: result.jobs });
+    const merged = mergeShards(await readShards());
     await writeIndex(merged);
 
     return Response.json({
