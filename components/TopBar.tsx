@@ -11,6 +11,8 @@ const navItems = [
   { href: '/contact', label: 'Contact' },
 ];
 
+// /jobs is absent on purpose: it has no masthead for the bar to match, so it
+// falls through to the page background below.
 const heroBgMap: Record<string, string> = {
   '/':        'var(--hero-home)',
   '/work':    'var(--hero-work)',

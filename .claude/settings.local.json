@@ -61,7 +61,30 @@
       "Bash(python3 -)",
       "Bash(echo \"tsc exit: $?\")",
       "Bash(echo \"exit: $?\")",
-      "Bash(echo \"tsc: $?\")"
+      "Bash(echo \"tsc: $?\")",
+      "Bash(grep -no \"body: '[A-Za-z ]\\\\{0,28\\\\}\" lib/caseStudies.ts)",
+      "Bash(grep -o \"body: '[^,]\\\\{0,34\\\\}\")",
+      "Bash(grep -o \"'[^']\\\\{20,\\\\}'\")",
+      "Bash(grep -o \"^[0-9]*[-:] *'[^']\\\\{15,\\\\}\")",
+      "Bash(grep -o \"'[^']\\\\{40,\\\\}'\\\\|\\\\\"[^\\\\\"]\\\\{40,\\\\}\\\\\"\" app/contact/page.tsx)",
+      "PowerShell(cd C:\\\\Users\\\\jbuss\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--dev-portfolio\\\\0f026dfc-59ca-4be9-ac36-85299b60a58d\\\\scratchpad; $env:NODE_PATH=\"C:\\\\dev\\\\portfolio\\\\node_modules\"; node -e \"require\\('C:/dev/portfolio/node_modules/playwright'\\)\" ; if \\($?\\) { node verify.js })",
+      "PowerShell(cd C:\\\\Users\\\\jbuss\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--dev-portfolio\\\\0f026dfc-59ca-4be9-ac36-85299b60a58d\\\\scratchpad; $env:NODE_PATH=\"C:\\\\dev\\\\portfolio\\\\node_modules\"; node verify2.js)",
+      "Read(//tmp/**)",
+      "Bash(awk 'NF && $4>0 {printf \"%s:%s:%s\\\\n\", $1, $2, $4}')",
+      "Bash(sort -t: -k1,1 -k2,2)",
+      "Bash(awk -F: '{printf \"  [%s, %s], // %s design\\\\n\", \"'\"'\"'\"$1\"'\"'\"'\", \"'\"'\"'\"$2\"'\"'\"'\", $3}')",
+      "Bash(echo \"clean: $?\")",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(nslookup joshuabussey.com 8.8.8.8)",
+      "Bash(nslookup www.joshuabussey.com 8.8.8.8)",
+      "Bash(nslookup -type=AAAA joshuabussey.com 8.8.8.8)",
+      "Bash(nslookup -type=AAAA www.joshuabussey.com 8.8.8.8)",
+      "Bash(nslookup -type=ANY joshuabussey.com 8.8.8.8)",
+      "Bash(nslookup -type=TXT joshuabussey.com 8.8.8.8)",
+      "Bash(vercel --version)",
+      "Bash(vercel whoami *)",
+      "Bash(npx vercel *)"
     ]
   }
 }

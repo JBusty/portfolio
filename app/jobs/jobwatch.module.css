@@ -1,0 +1,988 @@
+/* Jobwatch — a dense, two-pane reading surface built on the site's palette.
+   This is a tool rather than a page, so it runs tighter than the rest of the
+   site: smaller type, more per screen, less air. */
+
+.shell {
+  min-height: 100vh;
+  background: var(--bone);
+  /* One knob for the whole page — bar, panel, drawer, and the two-pane body
+     all measure off it, so they stay aligned whatever it's set to. */
+  --jw-wrap: 1360px;
+}
+
+/* Bounded rather than full-bleed: at full width the two panes drift so far
+   apart that scanning the list and reading the posting stop feeling like one
+   screen. Still a shade under the site's 1440 .container — this is a tool, and
+   it shouldn't sit as wide as a marketing page. */
+.wrap {
+  width: 100%;
+  max-width: var(--jw-wrap);
+  margin: 0 auto;
+}
+
+/* ---------------------------------------------------------------- header */
+
+/* Deliberately not sticky and deliberately not a masthead. It carries the
+   numbers the filter bar has no room for — how much is being watched, how much
+   of it is new, whether a board is failing — and then gets out of the way. */
+.header {
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+}
+
+.headerInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 28px;
+  flex-wrap: wrap;
+  padding: 16px 24px 15px;
+}
+
+.headerId {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* Enough weight to anchor the page under the site nav, nowhere near the 64px
+   display line this used to be. */
+.wordmark {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.headerStats {
+  display: flex;
+  align-items: baseline;
+  gap: 6px 16px;
+  flex-wrap: wrap;
+  min-width: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--sub);
+}
+
+.headerStat { white-space: nowrap; }
+.headerStat strong { color: var(--ink); font-weight: 600; }
+
+.headerAlert,
+.headerAlert strong { color: var(--accent-ink); }
+
+/* ------------------------------------------------------------------- bar */
+
+/* There is no masthead: the filter bar is the page's own chrome and the first
+   thing under the site nav. It deliberately outranks the TopBar (z-index 50)
+   and pins to 0 rather than sitting below it — the global bar auto-hides on
+   scroll-down anyway, and on a dense tool the filters are what has to stay
+   reachable. Scroll back to the top to get the nav back. */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 51;
+  border-bottom: 1px solid var(--rule);
+  background: rgba(236, 231, 220, 0.92);
+  backdrop-filter: saturate(160%) blur(12px);
+}
+
+.barInner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 9px 24px;
+}
+
+/* Capped rather than greedy. On flex:1 it grew to fill the row and became the
+   loudest thing on the page, which is not what a search box is for. */
+.search {
+  flex: 0 1 360px;
+  min-width: 200px;
+  padding: 9px 15px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 12px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.search::placeholder { color: var(--sub); }
+
+.search:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(225, 59, 20, 0.18);
+}
+
+.select {
+  padding: 8px 12px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink-2);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.select:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(225, 59, 20, 0.18);
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.groupLabel {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sub);
+}
+
+/* Toggle chip. Shares the look of .work-filter-chip on the work index so the
+   two filter surfaces read as the same control. */
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border: 1px solid rgba(17, 17, 16, 0.12);
+  border-radius: 999px;
+  background: rgba(17, 17, 16, 0.03);
+  color: var(--ink-2);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.toggle:hover {
+  background: rgba(225, 59, 20, 0.08);
+  border-color: rgba(225, 59, 20, 0.34);
+  color: var(--ink);
+}
+
+.toggle:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(225, 59, 20, 0.18);
+}
+
+.toggle[data-active='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bone);
+}
+
+.toggle[data-active='true']:hover,
+.toggle[data-active='true']:focus-visible {
+  background: var(--accent-ink);
+  border-color: var(--accent-ink);
+}
+
+.count {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.toggle:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.toggle:disabled:hover {
+  background: rgba(17, 17, 16, 0.03);
+  border-color: rgba(17, 17, 16, 0.12);
+  color: var(--ink-2);
+}
+
+/* Pushes the trailing controls to the far end of a bar row, and collapses to
+   nothing once the row starts scrolling sideways on mobile. */
+.barGap { flex: 1 1 auto; min-width: 0; }
+
+/* --------------------------------------------------------------- segments */
+
+/* Open / Applied is the only navigational choice on the page, so it gets a
+   control of its own rather than two more chips in a row of chips. */
+.tabs {
+  display: inline-flex;
+  gap: 2px;
+  flex-shrink: 0;
+  padding: 3px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: rgba(17, 17, 16, 0.05);
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 15px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--sub);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.tab:hover { color: var(--ink); }
+
+.tab:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.tab[data-active='true'] {
+  background: var(--ink);
+  color: var(--bone);
+}
+
+.tabCount {
+  min-width: 20px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(17, 17, 16, 0.1);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.tab[data-active='true'] .tabCount {
+  background: rgba(253, 246, 238, 0.2);
+  color: var(--bone);
+}
+
+/* Same shape as the site .btn, one size down so it sits in a filter row. */
+.syncBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.syncBtn:hover:not(:disabled) { background: var(--accent-ink); border-color: var(--accent-ink); }
+.syncBtn:disabled { opacity: 0.5; cursor: progress; }
+
+.syncBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(225, 59, 20, 0.35);
+}
+
+/* ------------------------------------------------------- secondary controls */
+
+.showing {
+  margin: 0 4px 0 10px;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sub);
+  white-space: nowrap;
+}
+
+.showing strong { color: var(--ink); font-weight: 600; }
+
+.metaToggle {
+  padding: 3px 7px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--sub);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 160ms ease, background 160ms ease;
+}
+
+.metaToggle:hover:not(:disabled) { color: var(--ink); background: rgba(17, 17, 16, 0.05); }
+
+/* An underline rather than a fill: on is legible at a glance without another
+   solid block competing with the segmented control above it. */
+.metaToggle[data-active='true'] {
+  color: var(--ink);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.metaToggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(225, 59, 20, 0.45);
+}
+
+.metaToggle:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.metaSelect {
+  padding: 3px 4px;
+  border: none;
+  background: transparent;
+  color: var(--sub);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  max-width: 160px;
+}
+
+.metaSelect:hover { color: var(--ink); }
+
+.metaSelect:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(225, 59, 20, 0.45);
+  border-radius: 4px;
+}
+
+
+/* ------------------------------------------------------------ prefs panel */
+
+.panel {
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+}
+
+.panelInner { padding: 16px 24px 20px; }
+
+.panelHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.panelHead .showing { margin-right: auto; }
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+  gap: 18px 26px;
+  margin-top: 16px;
+}
+
+.field { min-width: 0; }
+
+.fieldHint {
+  margin: 4px 0 8px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--sub);
+  max-width: 42ch;
+}
+
+.termChip {
+  gap: 2px;
+  padding-right: 3px;
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-size: 10px;
+}
+
+.termRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--sub);
+  line-height: 0;
+  cursor: pointer;
+  transition: color 160ms ease, background 160ms ease;
+}
+
+.termRemove:hover { color: var(--accent-ink); background: rgba(225, 59, 20, 0.1); }
+
+.termRemove:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(225, 59, 20, 0.5);
+}
+
+/* ------------------------------------------------------------------ body */
+
+/* Side rules so the bounded column reads as a deliberate edge rather than
+   content that ran out. The chrome above stays full-bleed. */
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  align-items: start;
+  gap: 0;
+  min-height: 60vh;
+  border-left: 1px solid var(--rule);
+  border-right: 1px solid var(--rule);
+}
+
+.list {
+  border-right: 1px solid var(--rule);
+  min-width: 0;
+}
+
+.listMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px 9px 24px;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sub);
+}
+
+/* ------------------------------------------------------------------- row */
+
+/* A wrapper rather than the button itself: the Applied tab hangs an Unapply
+   control off the end of each row, and a button inside a button is not markup
+   a browser will keep. */
+.row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  transition: background 160ms ease;
+}
+
+.row:hover { background: var(--bone-2); }
+
+.row[data-selected='true'] { background: var(--paper); }
+
+.rowOpen {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: block;
+  text-align: left;
+  padding: 13px 14px 13px 24px;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: padding-left 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.row:hover .rowOpen { padding-left: 30px; }
+
+.rowOpen:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px rgba(225, 59, 20, 0.4);
+}
+
+.rowAction {
+  flex-shrink: 0;
+  align-self: center;
+  margin-right: 18px;
+}
+
+.rowBar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.row:hover .rowBar,
+.row[data-selected='true'] .rowBar { transform: scaleY(1); }
+
+.row[data-dimmed='true'] { opacity: 0.45; }
+
+/* The row is a <button>, so its children are spans — they need explicit
+   display or the vertical margins below collapse to nothing. */
+.rowTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rowCompany {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+
+/* Which ATS a posting came from. Two letters because it belongs on every row
+   without competing with the company name; the title attribute carries the
+   full platform name. */
+.src {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 22px;
+  padding: 1px 4px;
+  margin-right: 7px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 3px;
+  background: rgba(17, 17, 16, 0.04);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ink-2);
+  cursor: help;
+}
+
+.rowAge {
+  flex-shrink: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--sub);
+}
+
+.rowTitle {
+  display: block;
+  margin: 5px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+/* Why this posting is in front of you, assembled from the preferences that let
+   it through. One line, always in the same order, so it can be skimmed down the
+   column rather than read row by row. */
+.reason {
+  display: block;
+  margin: 4px 0 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 10.5px;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--sub);
+}
+
+.rowFacts {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 7px;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--sub);
+}
+
+.dot { opacity: 0.4; }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.pillNew {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bone);
+}
+
+.pillSalary {
+  background: rgba(17, 17, 16, 0.04);
+  border-color: rgba(17, 17, 16, 0.14);
+  color: var(--ink);
+}
+
+.pillEstimated { border-style: dashed; opacity: 0.85; }
+
+.pillRemote {
+  border-color: rgba(225, 59, 20, 0.4);
+  color: var(--accent-ink);
+}
+
+.pillSaved { background: var(--ink); border-color: var(--ink); color: var(--bone); }
+
+.pillApplied {
+  background: rgba(17, 17, 16, 0.08);
+  border-color: var(--rule-strong);
+  color: var(--ink-2);
+}
+
+/* ---------------------------------------------------------------- detail */
+
+/* --jw-bar is measured from the real filter bar at runtime — it wraps to two
+   or three rows depending on width, so a hardcoded offset would be wrong at
+   most viewport sizes. The fallback covers first paint. */
+.detail {
+  position: sticky;
+  top: var(--jw-bar, 104px);
+  max-height: calc(100vh - var(--jw-bar, 104px));
+  overflow-y: auto;
+  padding: 26px 36px 56px;
+  min-width: 0;
+}
+
+.detailHead {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.detailTitle + .reason { margin-top: 8px; }
+
+.detailTitle {
+  margin: 7px 0 0;
+  font-size: clamp(21px, 2vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+
+.detailFacts {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 13px;
+}
+
+.detailActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+/* Third-party markup. Only spacing and colour are imposed — the source's own
+   structure is left intact, since every board nests differently. */
+.prose {
+  margin-top: 22px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: 76ch;
+  overflow-wrap: break-word;
+}
+
+.prose :global(h1),
+.prose :global(h2),
+.prose :global(h3),
+.prose :global(h4) {
+  margin: 30px 0 10px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+.prose :global(p) { margin: 0 0 14px; }
+.prose :global(ul),
+.prose :global(ol) { margin: 0 0 16px; padding-left: 22px; }
+.prose :global(li) { margin-bottom: 7px; }
+.prose :global(strong) { color: var(--ink); font-weight: 600; }
+.prose :global(a) { color: var(--accent-ink); text-decoration: underline; }
+.prose :global(hr) { border: none; border-top: 1px solid var(--rule); margin: 24px 0; }
+.prose :global(table) { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+.prose :global(td),
+.prose :global(th) { border: 1px solid var(--rule); padding: 7px 10px; text-align: left; }
+.prose :global(img) { max-width: 100%; height: auto; }
+
+/* ----------------------------------------------------------------- empty */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 56px 24px;
+  text-align: center;
+  color: var(--sub);
+}
+
+.emptyTitle {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.emptyBody { font-size: 14px; line-height: 1.55; max-width: 44ch; }
+
+/* --------------------------------------------------------------- sources */
+
+.drawer {
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+}
+
+.drawerInner { padding: 18px 24px 22px; }
+
+.sourceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.sourceCard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--bone);
+}
+
+/* A board that answered cleanly with nothing on it. Worth calling out: a
+   revoked token and a genuine hiring freeze produce the same empty list, and
+   this is the only place the difference is visible. */
+.sourceCard[data-empty='true'] {
+  border-color: rgba(225, 59, 20, 0.34);
+  border-style: dashed;
+}
+
+.sourceInfo { min-width: 0; flex: 1 1 auto; }
+
+.sourceName {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sourceMeta {
+  display: flex;
+  align-items: center;
+  margin-top: 3px;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--sub);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sourceMetaError { color: var(--accent-ink); }
+
+.statusDot {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--bone-3);
+}
+
+.statusOk { background: #2E7D4F; }
+.statusError { background: var(--accent); }
+.statusLoading { background: var(--accent); animation: jwPulse 1s ease-in-out infinite; }
+
+@keyframes jwPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+.iconBtn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--sub);
+  line-height: 0;
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.iconBtn:hover {
+  color: var(--accent-ink);
+  border-color: rgba(225, 59, 20, 0.34);
+  background: rgba(225, 59, 20, 0.07);
+}
+
+.iconBtn:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(225, 59, 20, 0.18);
+}
+
+.addRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+
+.input {
+  padding: 8px 13px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--bone);
+  color: var(--ink);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 12px;
+  min-width: 0;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(225, 59, 20, 0.18);
+}
+
+.hint {
+  margin-top: 10px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--sub);
+  max-width: 76ch;
+}
+
+.hint code {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(17, 17, 16, 0.06);
+  color: var(--ink-2);
+}
+
+/* ------------------------------------------------------------ responsive */
+
+@media (max-width: 1024px) {
+  .body { grid-template-columns: minmax(0, 1fr); }
+  .list { border-right: none; }
+
+  /* Below the split, the detail pane becomes a sheet over the list. */
+  .detail {
+    position: fixed;
+    inset: 0;
+    top: 0;
+    z-index: 60;
+    max-height: none;
+    height: 100dvh;
+    background: var(--bone);
+    padding: 22px 20px 56px;
+    border-left: none;
+  }
+
+  .detailClosed { display: none; }
+
+  /* No second column to fence in once the panes stack. */
+  .body { border-left: none; border-right: none; }
+}
+
+@media (max-width: 640px) {
+  .headerInner { padding: 13px 16px 12px; gap: 12px; }
+  .headerStats { gap: 5px 12px; }
+  .wordmark { font-size: 19px; }
+  .barInner { padding: 8px 16px; gap: 5px; }
+  .rowOpen { padding: 12px 10px 12px 18px; }
+  .row:hover .rowOpen { padding-left: 22px; }
+  .rowAction { margin-right: 12px; }
+  .listMeta { padding: 10px 14px 9px 18px; }
+  .drawerInner { padding: 16px; }
+  .panelInner { padding: 14px 16px 18px; }
+  .panelGrid { gap: 16px; }
+
+  /* Full width under the wordmark rather than squeezed beside it. */
+  .search { flex: 1 1 100%; }
+
+  /* The bar rows scroll sideways below this width, so a growing spacer would
+     just push the trailing controls out of reach. */
+  .barGap { display: none; }
+
+  /* Filters stay reachable as one scrollable row rather than wrapping away. */
+  .scrollRow {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scrollRow::-webkit-scrollbar { display: none; }
+  .scrollRow > * { flex-shrink: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row,
+  .rowOpen,
+  .rowBar,
+  .toggle,
+  .tab,
+  .syncBtn,
+  .metaToggle,
+  .iconBtn,
+  .termRemove { transition: none !important; }
+  .row:hover .rowOpen { padding-left: 24px; }
+  .statusLoading { animation: none; }
+}
