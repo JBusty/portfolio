@@ -31,11 +31,7 @@ function JobRow({ job, selected, isNew, entry, reason, appliedAt, onSelect, onUn
   const locationUnconfirmed = usEligibility(job.location) === 'unconfirmed';
 
   return (
-    <div
-      className={styles.row}
-      data-selected={selected}
-      data-dimmed={entry?.hidden === true}
-    >
+    <div className={styles.row} data-selected={selected}>
       <span className={styles.rowBar} aria-hidden="true" />
 
       <button
@@ -69,7 +65,6 @@ function JobRow({ job, selected, isNew, entry, reason, appliedAt, onSelect, onUn
 
         <span className={styles.rowFacts}>
           {isNew && <span className={`${styles.pill} ${styles.pillNew}`}>New</span>}
-          {entry?.saved && <span className={`${styles.pill} ${styles.pillSaved}`}>Saved</span>}
           {isApplied && <span className={`${styles.pill} ${styles.pillApplied}`}>Applied</span>}
 
           <span className={styles.pill}>{LEVEL_LABELS[job.level]}</span>

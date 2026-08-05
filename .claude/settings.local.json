@@ -89,7 +89,12 @@
       "Bash(perl -0pi -e 's|\\\\n\\\\s*<span className=\\\\{styles\\\\.barGap\\\\} />\\\\n||' app/jobs/_components/JobwatchApp.tsx)",
       "Bash(perl -0pi -e 's|\\(ref=\\\\{prefsBtnRef\\\\}\\\\s*\\\\n\\\\s*\\)className=\\\\{styles\\\\.toggle\\\\}|$1className={`\\\\${styles.toggle} \\\\${styles.barBtn}`}|' app/jobs/_components/JobwatchApp.tsx)",
       "Bash(perl -0pi -e 's|\\(ref=\\\\{sourcesBtnRef\\\\}\\\\s*\\\\n\\\\s*\\)className=\\\\{styles\\\\.toggle\\\\}|$1className={`\\\\${styles.toggle} \\\\${styles.barBtn}`}|' app/jobs/_components/JobwatchApp.tsx)",
-      "Bash(echo \"TS=$?\")"
+      "Bash(echo \"TS=$?\")",
+      "Bash(perl -0pi -e 's|\\\\n *// Whether this browser holds any decision of yours.*?\\\\n *setWasEmpty\\\\\\([^;]*\\\\\\);\\\\n||s' app/jobs/_components/useJobwatch.ts)",
+      "Bash(sed -i '/const \\\\[wasEmpty, setWasEmpty\\\\] = useState\\(false\\);/d' app/jobs/_components/useJobwatch.ts)",
+      "Bash(perl -0pi *)",
+      "Bash(perl -0pi -e \"s|import \\\\{ DEFAULT_PREFS, SEED_COMPANIES \\\\} from '\\\\@/lib/jobwatch/store';|import { mergeJobState } from '\\\\@/lib/jobwatch/merge';\\\\nimport { DEFAULT_PREFS, SEED_COMPANIES } from '\\\\@/lib/jobwatch/store';|\" app/jobs/_components/useRemoteState.ts)",
+      "Bash(cd *)"
     ]
   }
 }

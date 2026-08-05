@@ -8,7 +8,7 @@ import { sanitizeHtml } from '@/lib/jobwatch/html';
 import { SOURCE_CODES, SOURCE_LABELS } from '@/lib/jobwatch/sources';
 import type { Job, JobStateEntry } from '@/lib/jobwatch/types';
 import type { DescriptionEntry } from './useJobwatch';
-import { CheckIcon, CloseIcon, HideIcon, StarIcon } from './icons';
+import { CheckIcon, CloseIcon, HideIcon } from './icons';
 import styles from '../jobwatch.module.css';
 
 type Props = {
@@ -19,13 +19,12 @@ type Props = {
   description: DescriptionEntry | undefined;
   onApply: (job: Job) => void;
   onUnapply: (id: string) => void;
-  onToggleSaved: (id: string) => void;
   onToggleHidden: (id: string) => void;
   onClose: () => void;
 };
 
 export default function JobDetail({
-  job, entry, reason, description, onApply, onUnapply, onToggleSaved, onToggleHidden, onClose,
+  job, entry, reason, description, onApply, onUnapply, onToggleHidden, onClose,
 }: Props) {
   const raw = description?.html || job?.descriptionHtml || '';
 
@@ -105,17 +104,6 @@ export default function JobDetail({
           ) : (
             <span className={styles.fieldHint}>No link on record</span>
           )}
-
-          <button
-            type="button"
-            className={styles.toggle}
-            data-active={entry?.saved === true}
-            onClick={() => onToggleSaved(job.id)}
-            aria-pressed={entry?.saved === true}
-          >
-            <StarIcon filled={entry?.saved === true} />
-            {entry?.saved ? 'Saved' : 'Save'}
-          </button>
 
           <button
             type="button"

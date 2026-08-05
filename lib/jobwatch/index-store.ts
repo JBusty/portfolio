@@ -17,7 +17,7 @@
  * posting.
  *
  * Nothing personal is stored here. The index is public job postings; applied,
- * saved and hidden state stays in the visitor's own localStorage.
+ * applied and hidden state stays in the visitor's own localStorage.
  */
 
 import { head, list, put } from '@vercel/blob';

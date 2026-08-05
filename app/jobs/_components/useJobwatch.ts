@@ -366,10 +366,6 @@ export function useJobwatch() {
     patchEntry(id, ({ appliedAt: _drop, ...entry }) => ({ ...entry, applied: false }));
   }, [patchEntry]);
 
-  const toggleSaved = useCallback((id: string) => {
-    patchEntry(id, (entry) => ({ ...entry, saved: !entry.saved }));
-  }, [patchEntry]);
-
   const toggleHidden = useCallback((id: string) => {
     patchEntry(id, (entry) => ({ ...entry, hidden: !entry.hidden }));
   }, [patchEntry]);
@@ -406,11 +402,14 @@ export function useJobwatch() {
   /* ---------------------------------------------------------------- prefs */
 
   /** Prefs only ever reshape what's already fetched — this never triggers a sync. */
+  /** Stamped so the database can tell which browser's filters are newer. */
   const updatePrefs = useCallback((patch: Partial<Prefs>) => {
-    setPrefs((prev) => ({ ...prev, ...patch }));
+    setPrefs((prev) => ({ ...prev, ...patch, updatedAt: Date.now() }));
   }, []);
 
-  const resetPrefs = useCallback(() => setPrefs(DEFAULT_PREFS), []);
+  // A reset is an edit too — otherwise clearing filters here would lose to a
+  // stale set from another browser on the next reconcile.
+  const resetPrefs = useCallback(() => setPrefs({ ...DEFAULT_PREFS, updatedAt: Date.now() }), []);
 
   /* -------------------------------------------------------------- derived */
 
@@ -464,7 +463,7 @@ export function useJobwatch() {
     ready, companies: boards, results, jobs, jobState, prefs, syncing, lastSynced, errorCount,
     descriptions, usingIndex, indexMeta,
     sync, addCompany, removeCompany, loadDescription,
-    markApplied, unapply, toggleSaved, toggleHidden,
+    markApplied, unapply, toggleHidden,
     updatePrefs, resetPrefs,
   };
 }

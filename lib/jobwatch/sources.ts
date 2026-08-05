@@ -39,6 +39,22 @@ export const SOURCE_CODES: Record<SourceKind, string> = {
   ashby: 'AB',
 };
 
+/**
+ * Platform marks, for the one place that names the sources rather than coding
+ * them — the header. Checked into `public/` rather than hotlinked: three files
+ * that change about never, against a request to someone else's CDN on every
+ * load of the page.
+ *
+ * Each is the platform's own app icon, so each arrives with its own background
+ * fill. That is why they need no plate behind them on the dark band, and why
+ * they are sized in the stylesheet rather than trimmed to a glyph.
+ */
+export const SOURCE_MARKS: Record<SourceKind, string> = {
+  greenhouse: '/images/jobwatch/greenhouse.png',
+  lever: '/images/jobwatch/lever.png',
+  ashby: '/images/jobwatch/ashby.png',
+};
+
 export function endpointFor(source: SourceKind, token: string): string {
   const t = encodeURIComponent(token);
   switch (source) {

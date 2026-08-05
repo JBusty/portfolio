@@ -99,7 +99,6 @@ export type JobStateEntry = {
   /** Absent on entries migrated from the old marks map, which carried no time. */
   appliedAt?: number;
   hidden?: boolean;
-  saved?: boolean;
   /** Written when a job is marked applied, refreshed while it stays fetchable. */
   snapshot?: JobSnapshot;
   /**
@@ -139,6 +138,12 @@ export type LevelPrefs = Record<Level, boolean>;
  */
 export type Prefs = {
   version: number;
+  /**
+   * When these were last changed, so two browsers can be reconciled by which
+   * edit is newer. Preferences are one document with no per-field history, so
+   * there is nothing finer to compare than the whole thing.
+   */
+  updatedAt?: number;
   levels: LevelPrefs;
   /** Lowercase substring matches against the title, OR'd. A title hitting any
       of these is dropped before anything else looks at it. */

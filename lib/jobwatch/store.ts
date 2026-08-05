@@ -6,7 +6,7 @@
  * be able to reach the application log:
  *
  *   jobwatch:prefs:v1      what gets shown and in what order
- *   jobwatch:jobstate:v1   per-job triage — first seen, applied, saved, hidden
+ *   jobwatch:jobstate:v1   per-job triage — first seen, applied, hidden
  *   jobwatch:companies:v1  the watchlist
  *
  * `jobwatch:cache:v1` is a fourth key but not user data: it is a warm-start
@@ -332,7 +332,6 @@ function coerceEntry(raw: unknown): JobStateEntry | null {
   if (e.applied) entry.applied = true;
   if (typeof e.appliedAt === 'number' && Number.isFinite(e.appliedAt)) entry.appliedAt = e.appliedAt;
   if (e.hidden) entry.hidden = true;
-  if (e.saved) entry.saved = true;
   if (e.snapshot && typeof e.snapshot === 'object') entry.snapshot = e.snapshot;
   return entry;
 }
@@ -366,7 +365,6 @@ function migrate(): JobState {
   }
 
   let applied = 0;
-  let saved = 0;
   let hidden = 0;
 
   for (const [id, mark] of Object.entries(marks)) {
@@ -374,8 +372,10 @@ function migrate(): JobState {
     // The old marks map had no timestamps, so `appliedAt` stays undefined
     // rather than being invented. The Applied tab renders those as an unknown
     // date and sorts them last, which is at least true.
+    //
+    // `saved` marks are read and dropped: the feature is gone, and carrying the
+    // flag forward would only put a field in the store that nothing reads.
     if (mark === 'applied') { entry.applied = true; applied += 1; }
-    else if (mark === 'saved') { entry.saved = true; saved += 1; }
     else if (mark === 'hidden') { entry.hidden = true; hidden += 1; }
   }
 
@@ -383,7 +383,7 @@ function migrate(): JobState {
   if (total > 0) {
     console.info(
       `[jobwatch] migrated ${total} job records into ${KEY.jobState} — ` +
-      `${applied} applied, ${saved} saved, ${hidden} hidden. Legacy keys left in place.`,
+      `${applied} applied, ${hidden} hidden. Legacy keys left in place.`,
     );
     write(KEY.jobState, next);
   }
@@ -444,7 +444,7 @@ export function isNewSince(
 export function pruneJobState(state: JobState, liveIds: Set<string>): JobState {
   const next: JobState = {};
   for (const [id, entry] of Object.entries(state)) {
-    if (liveIds.has(id) || entry.applied || entry.saved || entry.hidden) next[id] = entry;
+    if (liveIds.has(id) || entry.applied || entry.hidden) next[id] = entry;
   }
   return next;
 }

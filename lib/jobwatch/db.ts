@@ -49,9 +49,15 @@ export async function writePrefs(prefs: Prefs): Promise<void> {
 
 /* -------------------------------------------------------------- job state */
 
+/**
+ * `saved` is deliberately not selected. The column is still there — it is
+ * `not null default false`, so leaving it alone costs nothing and dropping it
+ * would throw away the only record of what was starred — but the feature is
+ * gone and nothing reads the flag.
+ */
 export async function readJobState(): Promise<JobState> {
   const rows = await sql()`
-    select job_id, first_seen, applied, applied_at, hidden, saved, snapshot, changed_at
+    select job_id, first_seen, applied, applied_at, hidden, snapshot, changed_at
     from job_state
   `;
 
@@ -65,7 +71,6 @@ export async function readJobState(): Promise<JobState> {
     if (row.applied) entry.applied = true;
     if (row.applied_at != null) entry.appliedAt = toMs(row.applied_at as Date) ?? undefined;
     if (row.hidden) entry.hidden = true;
-    if (row.saved) entry.saved = true;
     if (row.snapshot) entry.snapshot = row.snapshot as JobSnapshot;
     if (row.changed_at != null) entry.updatedAt = toMs(row.changed_at as Date) ?? undefined;
     state[row.job_id as string] = entry;
@@ -98,7 +103,6 @@ export async function writeJobState(state: JobState): Promise<void> {
   const appliedAt = ids.map((id) =>
     state[id].appliedAt != null ? new Date(state[id].appliedAt as number).toISOString() : null);
   const hidden = ids.map((id) => state[id].hidden === true);
-  const saved = ids.map((id) => state[id].saved === true);
   const snapshot = ids.map((id) =>
     state[id].snapshot ? JSON.stringify(state[id].snapshot) : null);
   // The client's own stamp, not now(): `updated_at` records when the row was
@@ -108,24 +112,22 @@ export async function writeJobState(state: JobState): Promise<void> {
     state[id].updatedAt != null ? new Date(state[id].updatedAt as number).toISOString() : null);
 
   await sql()`
-    insert into job_state (job_id, first_seen, applied, applied_at, hidden, saved, snapshot, changed_at, updated_at)
-    select t.job_id, t.first_seen, t.applied, t.applied_at, t.hidden, t.saved, t.snapshot, t.changed_at, now()
+    insert into job_state (job_id, first_seen, applied, applied_at, hidden, snapshot, changed_at, updated_at)
+    select t.job_id, t.first_seen, t.applied, t.applied_at, t.hidden, t.snapshot, t.changed_at, now()
     from unnest(
       ${ids}::text[],
       ${firstSeen}::timestamptz[],
       ${applied}::boolean[],
       ${appliedAt}::timestamptz[],
       ${hidden}::boolean[],
-      ${saved}::boolean[],
       ${snapshot}::jsonb[],
       ${changedAt}::timestamptz[]
-    ) as t(job_id, first_seen, applied, applied_at, hidden, saved, snapshot, changed_at)
+    ) as t(job_id, first_seen, applied, applied_at, hidden, snapshot, changed_at)
     on conflict (job_id) do update set
       first_seen = excluded.first_seen,
       applied    = excluded.applied,
       applied_at = excluded.applied_at,
       hidden     = excluded.hidden,
-      saved      = excluded.saved,
       snapshot   = excluded.snapshot,
       changed_at = excluded.changed_at,
       updated_at = now()

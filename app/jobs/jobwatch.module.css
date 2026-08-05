@@ -192,6 +192,54 @@
 
 .headerAlert strong { color: var(--accent-lift); }
 
+/* Both provenance lines on one gutter of their own, well inside the 30px the
+   header uses between its parts, so they read as one note. */
+.headerProvenance {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* The three platforms, named. Set in the same mono uppercase as the stat
+   labels so it reads as part of the readout rather than as a logo strip — the
+   marks are here to identify, not to endorse. */
+.headerSources {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Recedes to the weight of the synced footnote: it is the sentence's verb, and
+   the platform names are what you are meant to come away with. */
+.headerSourcesLabel { color: rgba(231, 236, 237, 0.4); }
+
+.headerSource {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  color: rgba(231, 236, 237, 0.72);
+}
+
+/* Each mark ships with its own background fill, so it needs no plate behind
+   it — only the corner radius, to keep three icons drawn to three different
+   conventions sitting on one line. */
+.headerSourceMark {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
 .headerSynced {
   margin: 0;
   font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
@@ -627,7 +675,10 @@
 .row:hover .rowBar,
 .row[data-selected='true'] .rowBar { transform: scaleY(1); }
 
-.row[data-dimmed='true'] { opacity: 0.45; }
+/* Dimming a hidden row made sense when hidden postings sat mixed in with live
+   ones and the opacity was the only thing telling them apart. The switch is a
+   partition now, so every row in that view is hidden and dimming all of them
+   would only make the list look disabled. */
 
 /* The row is a <button>, so its children are spans — they need explicit
    display or the vertical margins below collapse to nothing. */
@@ -765,7 +816,6 @@
   color: var(--accent-ink);
 }
 
-.pillSaved { background: var(--ink); border-color: var(--ink); color: var(--bone); }
 
 .pillApplied {
   background: rgba(11, 20, 23, 0.08);
@@ -1064,6 +1114,13 @@
   .headerInner { padding: 13px 16px 12px; gap: 12px; }
   .headerStats { gap: 5px 12px; }
   .wordmark { font-size: 19px; }
+
+  /* Tightened rather than dropped — this is the line that says what the tool
+     is looking at, and it fits on one row at this size. */
+  .headerProvenance { gap: 8px; }
+  .headerSources { gap: 6px 14px; font-size: 10px; letter-spacing: 0.1em; }
+  .headerSource { gap: 6px; }
+  .headerSourceMark { width: 15px; height: 15px; border-radius: 3px; }
   .barInner { padding: 8px 16px; gap: 5px; }
   .rowOpen { padding: 12px 10px 12px 18px; }
   .row:hover .rowOpen { padding-left: 22px; }

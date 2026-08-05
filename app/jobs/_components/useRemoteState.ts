@@ -33,9 +33,37 @@ type Options = Snapshot & {
   onReconcile: (merged: Partial<Snapshot>) => void;
 };
 
-/** True when nothing here has been changed from what ships by default. */
+/**
+ * True when nothing here has been changed from what ships by default. Used only
+ * for prefs that predate stamping — once both sides carry `updatedAt` the
+ * comparison is a real one and this is not consulted.
+ */
 function prefsUntouched(prefs: Prefs): boolean {
-  return JSON.stringify({ ...prefs, version: 0 }) === JSON.stringify({ ...DEFAULT_PREFS, version: 0 });
+  const strip = ({ version: _v, updatedAt: _u, ...rest }: Prefs) => JSON.stringify(rest);
+  return strip(prefs) === strip(DEFAULT_PREFS);
+}
+
+/**
+ * Newer edit wins, ties to local — the same rule as job state.
+ *
+ * The old rule was "remote wins only if this browser is still on the defaults",
+ * which meant that the moment two browsers had both touched their filters
+ * neither would ever accept the other's again. Preferences would silently stop
+ * syncing at exactly the point they started mattering.
+ */
+function pickPrefs(local: Prefs, remote: Prefs | null): Prefs | null {
+  if (!remote) return null;
+
+  const a = local.updatedAt ?? 0;
+  const b = remote.updatedAt ?? 0;
+  if (b > a) return remote;
+
+  // Neither side is stamped: everything written before today. Fall back to the
+  // old test so a browser still on the defaults adopts a saved set rather than
+  // pushing the defaults over it.
+  if (a === 0 && b === 0 && prefsUntouched(local)) return remote;
+
+  return null;
 }
 
 export function useRemoteState({ ready, prefs, jobState, companies, onReconcile }: Options) {
@@ -64,10 +92,8 @@ export function useRemoteState({ ready, prefs, jobState, companies, onReconcile 
       if (remote) {
         merged.jobState = mergeJobState(jobState, remote.jobState ?? {});
 
-        // Prefs are one document with no per-field history, so there is nothing
-        // to merge. Remote wins only when this browser is still on the shipped
-        // defaults, which is the case that matters — a new machine.
-        if (remote.prefs && prefsUntouched(prefs)) merged.prefs = remote.prefs;
+        const winningPrefs = pickPrefs(prefs, remote.prefs);
+        if (winningPrefs) merged.prefs = winningPrefs;
 
         // Same rule for the watchlist: an untouched browser is still on the
         // seed list, and anything else is a list you built.

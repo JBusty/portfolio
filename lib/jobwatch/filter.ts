@@ -13,8 +13,8 @@ import type { Job, JobState, Prefs } from './types';
 const DAY = 24 * 60 * 60 * 1000;
 
 /**
- * The two lists. Saved and hidden are narrowings applied on top of these rather
- * than destinations of their own — see `savedOnly` and `showHidden`.
+ * The two lists. Hidden is a narrowing applied on top of these rather than a
+ * destination of its own — see `hiddenOnly`.
  */
 export type Tab = 'open' | 'applied';
 
@@ -24,10 +24,14 @@ export type Tab = 'open' | 'applied';
  */
 export type View = {
   tab: Tab;
-  /** Narrows to starred roles without spending a whole tab on them. */
-  savedOnly: boolean;
-  /** The only way back to a hidden posting, since step 1 drops them outright. */
-  showHidden: boolean;
+  /**
+   * Flips the list over rather than widening it: on, the hidden postings are
+   * the only ones shown, which is the way back to un-hiding one. Off, they are
+   * the only ones never shown. A switch, not a reveal — mixing hidden rows in
+   * with live ones gave a list where the dimming was the only thing telling you
+   * which was which.
+   */
+  hiddenOnly: boolean;
   /** Lowercased search terms, AND'd. */
   terms: string[];
   /** jobId -> prebuilt lowercase haystack, so search doesn't re-derive it. */
@@ -36,8 +40,7 @@ export type View = {
 
 export const EMPTY_VIEW: View = {
   tab: 'open',
-  savedOnly: false,
-  showHidden: false,
+  hiddenOnly: false,
   terms: [],
   index: new Map(),
 };
@@ -61,8 +64,9 @@ export function filterJobs(
     const entry = state[job.id];
     const title = job.title.toLowerCase();
 
-    // 1 — hidden. The Hidden toggle is the only way back to one.
-    if (entry?.hidden && !view.showHidden) return false;
+    // 1 — hidden. One equality rather than two branches, because the switch is
+    // exactly a partition: every posting is on one side of it or the other.
+    if ((entry?.hidden ?? false) !== view.hiddenOnly) return false;
 
     // 2 — applied. The Applied tab is assembled from job state rather than from
     // the fetch (see `appliedRecords`), so in practice this only ever clears
@@ -124,7 +128,6 @@ export function filterJobs(
 
     // View-scoped narrowing, after the preferences so the order above is the
     // one documented.
-    if (view.savedOnly && !entry?.saved) return false;
     if (view.terms.length > 0) {
       const hay = view.index.get(job.id) ?? '';
       if (!view.terms.every((t) => hay.includes(t))) return false;

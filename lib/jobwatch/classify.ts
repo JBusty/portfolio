@@ -111,14 +111,92 @@ const DESIGN_MISS = new RegExp(
 );
 
 /**
+ * Engineering titles that are this search anyway.
+ *
+ * `DESIGN_MISS` rejects `engineer` outright, which is right for the silicon and
+ * software roles that pick up a design word by accident — but wrong for the
+ * design-engineer hybrid, where the title names the craft on purpose. A live
+ * "Senior Product Design Engineer" at Cortex was invisible for exactly that
+ * reason, so this is checked ahead of the miss list.
+ *
+ * It deliberately requires the explicit signal. A bare "Design Engineer" stays
+ * out: it is as often mechanical, hardware or civil as it is product, and there
+ * is nothing in the title to tell them apart — the same reason `DESIGN_HIT`
+ * refuses a bare "designer".
+ */
+const DESIGN_ENGINEER = new RegExp(
+  [
+    'product\\s+design\\s+engineer', 'design\\s+systems?\\s+engineer',
+    '\\bux\\s+engineer', '\\bui\\s+engineer', 'user\\s+experience\\s+engineer',
+  ].join('|'),
+  'i',
+);
+
+/**
+ * Titles the allow-list above lets through that are still not this search.
+ *
+ * "Manager, Software Engineering, Fullstack (Repayment UX Engineering)" reaches
+ * it through `ux engineer`, and "Director of Sensor Product Design Engineering"
+ * through `product design engineer` — both are engineering-org roles that name
+ * a design surface, not design roles.
+ */
+const NOT_REALLY_DESIGN = /software\s+engineer|\bsensor\b|\bfirmware\b/i;
+
+/**
  * Order is the whole logic here:
  *
- *   1. never a design job at all (engineering, sales) — out
- *   2. explicitly product design — in, whatever else the title also says
- *   3. a different design craft — out
- *   4. otherwise only design leadership survives; generic titles do not
+ *   1. an engineering title that names design as the craft — in, unless it is
+ *      a different craft ("Game UX Engineer")
+ *   2. never a design job at all (engineering, sales) — out
+ *   3. explicitly product design — in, whatever else the title also says
+ *   4. a different design craft — out
+ *   5. otherwise only design leadership survives; generic titles do not
  */
+/* ------------------------------------------------------------- job types */
+
+const ESCAPE = /[.*+?^${}()|[\]\\]/g;
+
+/**
+ * Compiled once per term — this runs across the whole index on every keystroke
+ * in the search box, so rebuilding a regex per posting per term is the one
+ * thing here that would actually be felt.
+ */
+const patternCache = new Map<string, RegExp>();
+
+/**
+ * Anchored at the start of a word, open at the end.
+ *
+ * Both halves are deliberate. Without the leading boundary, `ui` matches Build,
+ * Guide and Recruiter — which is why the hardcoded list it replaces had to
+ * write `\bui\b`. With a *trailing* boundary, "product design" would stop
+ * matching "Product Designer", which is the single most common title on the
+ * board. Prefix-of-word is what people mean when they type a job type: enter
+ * "design" and you want designer, enter "engineer" and you want engineering.
+ */
+function termPattern(term: string): RegExp {
+  let pattern = patternCache.get(term);
+  if (!pattern) {
+    pattern = new RegExp(`(?<!\\w)${term.replace(ESCAPE, '\\$&')}`, 'i');
+    patternCache.set(term, pattern);
+  }
+  return pattern;
+}
+
+/**
+ * Whether a title is one of the kinds of job being looked for.
+ *
+ * An empty list means no narrowing at all, the same way all levels off reads as
+ * no level filter — the alternative, an empty board, is never what was meant.
+ */
+export function matchesJobType(title: string, types: string[]): boolean {
+  if (types.length === 0) return true;
+  return types.some((term) => termPattern(term).test(title));
+}
+
 export function isDesignRole(title: string): boolean {
+  if (DESIGN_ENGINEER.test(title)) {
+    return !OTHER_DISCIPLINE.test(title) && !NOT_REALLY_DESIGN.test(title);
+  }
   if (DESIGN_MISS.test(title)) return false;
   if (DESIGN_HIT.test(title)) return true;
   if (OTHER_DISCIPLINE.test(title)) return false;

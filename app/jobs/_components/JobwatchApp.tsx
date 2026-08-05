@@ -1,10 +1,12 @@
 'use client';
 
+import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   appliedRecords, countTuned, explainMatch, filterJobs, type Tab, type View,
 } from '@/lib/jobwatch/filter';
 import { clockTime, plural } from '@/lib/jobwatch/format';
+import { SOURCE_LABELS, SOURCE_MARKS, SOURCE_ORDER } from '@/lib/jobwatch/sources';
 import { isNewSince } from '@/lib/jobwatch/store';
 import type { Job } from '@/lib/jobwatch/types';
 import ConfirmDialog from './ConfirmDialog';
@@ -21,17 +23,13 @@ import styles from '../jobwatch.module.css';
 /** A posting counts as new for a week after Jobwatch first saw it. */
 const NEW_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
-/** The two lists. Saved and hidden narrow whichever of these is showing. */
+/** The two lists. Hidden flips whichever of these is showing. */
 const TABS: Array<[Tab, string]> = [
   ['open', 'Open'],
   ['applied', 'Applied'],
 ];
 
-/**
- * Per-tab empty states. Each tab is empty for its own reason, and "No postings
- * match" on the Saved tab reads as a broken filter rather than as "you have not
- * saved anything yet".
- */
+/** Per-tab empty states. Each tab is empty for its own reason. */
 const EMPTY_TITLE: Record<Tab, (total: number) => string> = {
   open: (total) => (total === 0 ? 'Nothing tracked yet' : 'No postings match'),
   applied: () => 'No applications logged',
@@ -53,14 +51,13 @@ export default function JobwatchApp() {
     ready, companies, results, jobs, jobState, prefs, syncing, lastSynced, errorCount,
     descriptions, usingIndex, indexMeta,
     addCompany, removeCompany, loadDescription,
-    markApplied, unapply, toggleSaved, toggleHidden,
+    markApplied, unapply, toggleHidden,
     updatePrefs, resetPrefs,
   } = useJobwatch();
 
   const [query, setQuery] = useState('');
   const [tab, setTab] = useState<Tab>('open');
-  const [savedOnly, setSavedOnly] = useState(false);
-  const [showHidden, setShowHidden] = useState(false);
+  const [hiddenOnly, setHiddenOnly] = useState(false);
   const [showPrefs, setShowPrefs] = useState(false);
   const [showSources, setShowSources] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -125,12 +122,11 @@ export default function JobwatchApp() {
     const q = query.trim().toLowerCase();
     return {
       tab,
-      savedOnly,
-      showHidden,
+      hiddenOnly,
       terms: q ? q.split(/\s+/) : [],
       index,
     };
-  }, [tab, savedOnly, showHidden, query, index]);
+  }, [tab, hiddenOnly, query, index]);
 
   // Prefs only ever re-run this. Nothing here refetches.
   //
@@ -148,16 +144,48 @@ export default function JobwatchApp() {
     [jobState, jobs, view],
   );
 
+  /**
+   * The figure on the Open tab, which is not the length of the list when the
+   * Hidden switch is on.
+   *
+   * Same rule as the tab pinning above: the number on a button you are not
+   * looking at has to describe what pressing it gives you. Flipping Hidden and
+   * watching Open drop from 22 to 6 reads as postings disappearing, when all
+   * that happened is you looked somewhere else. Only pays for the extra pass
+   * while the switch is on.
+   */
+  const openCount = useMemo(
+    () => (hiddenOnly
+      ? filterJobs(jobs, prefs, jobState, { ...view, tab: 'open', hiddenOnly: false }).length
+      : open.length),
+    [hiddenOnly, open, jobs, prefs, jobState, view],
+  );
+
+  /**
+   * What the Hidden switch would actually show.
+   *
+   * Counting hidden flags in job state instead gives a number the list can
+   * never match: it includes postings that have since closed, and ones the
+   * other filters drop for being the wrong level or not remote. The badge has
+   * to promise what flipping it delivers, so it is measured through the same
+   * pipeline with the switch forced on — forced, so the number doesn't vanish
+   * the moment you flip it.
+   */
+  const hiddenAvailable = useMemo(
+    () => filterJobs(jobs, prefs, jobState, { ...view, tab: 'open', hiddenOnly: true }).length,
+    [jobs, prefs, jobState, view],
+  );
+
   /* --------------------------------------------------------------- counts */
 
   const counts = useMemo(() => {
+    // Applied is counted off job state on purpose — the log is the record, and
+    // most of those postings are gone from every board by the time you look.
+    // Hidden is not counted here: see `hiddenAvailable`, which measures it
+    // through the pipeline so the badge matches the list.
     let applied = 0;
-    let saved = 0;
-    let hidden = 0;
     for (const entry of Object.values(jobState)) {
       if (entry.applied) applied += 1;
-      if (entry.saved) saved += 1;
-      if (entry.hidden) hidden += 1;
     }
 
     // Counted off the live set rather than job state, so it means "new and
@@ -169,7 +197,7 @@ export default function JobwatchApp() {
       if (isNewSince(jobState, job.id, NEW_WINDOW_MS)) fresh += 1;
     }
 
-    return { applied, saved, hidden, fresh };
+    return { applied, fresh };
   }, [jobState, jobs]);
 
   const rows = useMemo(
@@ -181,7 +209,7 @@ export default function JobwatchApp() {
   );
 
   const tabCounts: Record<Tab, number> = {
-    open: open.length,
+    open: openCount,
     applied: counts.applied,
   };
 
@@ -224,9 +252,6 @@ export default function JobwatchApp() {
   const shown = rows.length;
   // On Applied the denominator is the log, not the fetch — most of those
   // postings are gone from every board by then.
-  // On Applied the denominator is the log, not the fetch — most of those
-  // postings are gone from every board by then. Saved and Hidden are the same
-  // shape of question: how many of that set, not how many were fetched.
   const total = tab === 'applied' ? counts.applied : jobs.length;
 
   /**
@@ -292,14 +317,41 @@ export default function JobwatchApp() {
               )}
             </div>
 
-            <p
-              className={styles.headerSynced}
-              title={usingIndex
-                ? `Swept server-side — ${indexMeta?.shards ?? 0} of 12 shards reported`
-                : 'Fetched in this browser from the local watchlist'}
-            >
-              {usingIndex ? 'indexed' : 'local'} · synced {clockTime(lastSynced)}
-            </p>
+            {/* Where the list came from: which platforms, and how fresh. Kept
+                as one block on a tighter gutter than the rest of the header,
+                because two dim footnotes spaced like headings read as two
+                unrelated afterthoughts. */}
+            <div className={styles.headerProvenance}>
+              {/* Named and marked rather than coded. GH/LV/AB is shorthand that
+                  works on a row only once you already know the three, and this
+                  is the one place on the page that says what they are. */}
+              <p className={styles.headerSources}>
+                <span className={styles.headerSourcesLabel}>sourced from</span>
+                {SOURCE_ORDER.map((source) => (
+                  <span key={source} className={styles.headerSource}>
+                    {/* Decorative: the platform's name is set right beside it,
+                        so announcing the mark too would only say it twice. */}
+                    <Image
+                      className={styles.headerSourceMark}
+                      src={SOURCE_MARKS[source]}
+                      alt=""
+                      width={18}
+                      height={18}
+                    />
+                    {SOURCE_LABELS[source]}
+                  </span>
+                ))}
+              </p>
+
+              <p
+                className={styles.headerSynced}
+                title={usingIndex
+                  ? `Swept server-side — ${indexMeta?.shards ?? 0} of 12 shards reported`
+                  : 'Fetched in this browser from the local watchlist'}
+              >
+                {usingIndex ? 'indexed' : 'local'} · synced {clockTime(lastSynced)}
+              </p>
+            </div>
           </div>
 
         </div>
@@ -338,32 +390,22 @@ export default function JobwatchApp() {
             type="search"
           />
 
-          {/* Narrowings, not destinations — they refine whichever list is
-              showing, which is why they sit with the panel triggers rather than
-              inside the switcher. Disabled on Applied, where neither applies. */}
+          {/* A switch, not a narrowing: it swaps the list for the hidden pile
+              rather than adding to it, which is the only way back to a posting
+              you hid. Sits with the panel triggers rather than in the switcher
+              because it is orthogonal to Open/Applied. Disabled on Applied,
+              where the log is the record and nothing is hidden from it. */}
           <button
             type="button"
             className={`${styles.toggle} ${styles.barBtn}`}
-            data-active={savedOnly}
-            onClick={() => setSavedOnly((v) => !v)}
-            aria-pressed={savedOnly}
+            data-active={hiddenOnly}
+            onClick={() => setHiddenOnly((v) => !v)}
+            aria-pressed={hiddenOnly}
             disabled={tab === 'applied'}
-          >
-            Saved
-            {counts.saved > 0 && <span className={styles.count}>{counts.saved}</span>}
-          </button>
-
-          <button
-            type="button"
-            className={`${styles.toggle} ${styles.barBtn}`}
-            data-active={showHidden}
-            onClick={() => setShowHidden((v) => !v)}
-            aria-pressed={showHidden}
-            disabled={tab === 'applied'}
-            title="Bring hidden postings back into the list so you can unhide them"
+            title="Show only the postings you have hidden, so you can unhide them"
           >
             Hidden
-            {counts.hidden > 0 && <span className={styles.count}>{counts.hidden}</span>}
+            {hiddenAvailable > 0 && <span className={styles.count}>{hiddenAvailable}</span>}
           </button>
 
           <button
@@ -444,8 +486,21 @@ export default function JobwatchApp() {
 
           {ready && shown === 0 && (
             <div className={styles.empty}>
-              <span className={styles.emptyTitle}>{EMPTY_TITLE[tab](total)}</span>
-              <p className={styles.emptyBody}>{EMPTY_BODY[tab](total, syncing)}</p>
+              {/* An empty hidden pile is not a filter that needs loosening —
+                  it is the ordinary state of having hidden nothing yet. */}
+              {hiddenOnly ? (
+                <>
+                  <span className={styles.emptyTitle}>Nothing hidden</span>
+                  <p className={styles.emptyBody}>
+                    Hide a posting and it moves here, out of Open until you flip this back.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <span className={styles.emptyTitle}>{EMPTY_TITLE[tab](total)}</span>
+                  <p className={styles.emptyBody}>{EMPTY_BODY[tab](total, syncing)}</p>
+                </>
+              )}
             </div>
           )}
 
@@ -472,7 +527,6 @@ export default function JobwatchApp() {
           description={selected ? descriptions[selected.id] : undefined}
           onApply={markApplied}
           onUnapply={confirmUnapply}
-          onToggleSaved={toggleSaved}
           onToggleHidden={toggleHidden}
           onClose={() => setSelectedId(null)}
         />

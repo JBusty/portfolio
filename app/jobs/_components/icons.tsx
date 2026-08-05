@@ -17,14 +17,6 @@ const base = (size: number) => ({
   'aria-hidden': true,
 });
 
-export function StarIcon({ size = 14, filled = false }: IconProps & { filled?: boolean }) {
-  return (
-    <svg {...base(size)} fill={filled ? 'currentColor' : 'none'}>
-      <path d="m12 3.6 2.6 5.27 5.82.85-4.21 4.1.99 5.79L12 16.87l-5.2 2.74.99-5.79-4.21-4.1 5.82-.85z" />
-    </svg>
-  );
-}
-
 export function CheckIcon({ size = 14 }: IconProps) {
   return (
     <svg {...base(size)}>
