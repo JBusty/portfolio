@@ -1210,3 +1210,140 @@
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ------------------------------------------------------------------- nav */
+
+/* Sits on the hero's own ground so the two read as one dark block, with the
+   masthead below it. Not sticky — the toolbar is what pins. */
+.nav {
+  background: var(--hero-top, #10262B);
+}
+
+.navInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 32px;
+}
+
+/* A type logo: the word, tight, with the accent stop it already uses in the
+   hero. Small enough to be chrome rather than a second masthead. */
+.navLogo {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--paper);
+}
+
+.navLogoStop { color: var(--accent-lift); }
+
+.navAccount { position: relative; }
+
+.navProfile {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 12px 5px 5px;
+  border: 1px solid rgba(231, 236, 237, 0.16);
+  border-radius: 999px;
+  background: rgba(231, 236, 237, 0.06);
+  color: rgba(231, 236, 237, 0.82);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.navProfile:hover {
+  background: rgba(231, 236, 237, 0.12);
+  border-color: rgba(231, 236, 237, 0.3);
+  color: var(--paper);
+}
+
+.navProfile:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(238, 90, 30, 0.4);
+}
+
+/* Initials rather than a photo: there is one account, and a face here would be
+   decoration where a label is information. */
+.navAvatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--accent-ink);
+  color: var(--paper);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.navMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  min-width: 208px;
+  padding: 6px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--paper);
+  box-shadow: 0 14px 32px rgba(11, 20, 23, 0.26);
+}
+
+.navMenuHead {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+  padding: 9px 11px 11px;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sub);
+}
+
+.navMenuHead span {
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+}
+
+.navMenuItem {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 9px 11px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.navMenuItem:hover { background: rgba(238, 90, 30, 0.1); color: var(--accent-ink); }
+
+.navMenuItem:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+@media (max-width: 640px) {
+  .navName { display: none; }
+  .navInner { padding: 12px 20px; }
+}

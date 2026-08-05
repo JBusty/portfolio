@@ -77,7 +77,6 @@ export function useJobwatch() {
   const [syncing, setSyncing] = useState(false);
   /** localStorage is client-only, so nothing renders as real until this flips. */
   const [ready, setReady] = useState(false);
-  const [wasEmpty, setWasEmpty] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
   const didInit = useRef(false);
@@ -161,12 +160,6 @@ export function useJobwatch() {
     companiesRef.current = savedCompanies;
     jobStateRef.current = savedState;
 
-    // Whether this browser has ever been used for Jobwatch. It decides which
-    // copy wins on first contact with the database — see `useRemoteState`.
-    // Companies alone is not the test: the seed list means they are never
-    // empty, so triage state is what says "this browser has been used".
-    setWasEmpty(Object.keys(savedState).length === 0);
-
     setCompanies(savedCompanies);
     setJobState(savedState);
     setPrefs(savedPrefs);
@@ -197,21 +190,18 @@ export function useJobwatch() {
    */
   useRemoteState({
     ready,
-    empty: wasEmpty,
     prefs,
     jobState,
     companies,
-    onRestore: (remote) => {
-      // Only reached on a browser with no triage state of its own, so there is
-      // nothing local to overwrite.
-      if (remote.prefs) setPrefs(remote.prefs);
-      if (remote.jobState) {
-        jobStateRef.current = remote.jobState;
-        setJobState(remote.jobState);
+    onReconcile: (merged) => {
+      if (merged.prefs) setPrefs(merged.prefs);
+      if (merged.jobState) {
+        jobStateRef.current = merged.jobState;
+        setJobState(merged.jobState);
       }
-      if (remote.companies?.length) {
-        companiesRef.current = remote.companies;
-        setCompanies(remote.companies);
+      if (merged.companies?.length) {
+        companiesRef.current = merged.companies;
+        setCompanies(merged.companies);
       }
     },
   });
@@ -341,11 +331,17 @@ export function useJobwatch() {
 
   /* ------------------------------------------------------------ job state */
 
+  /**
+   * Every deliberate change to an entry is stamped. `observeJobs` deliberately
+   * does not go through here — a firstSeen stamp is the tool noticing a posting,
+   * not you deciding anything about it, and stamping those would make every
+   * browser look like it had just made 12,000 decisions.
+   */
   const patchEntry = useCallback(
     (id: string, patch: (entry: JobState[string]) => JobState[string]) => {
       setJobState((prev) => {
         const current = prev[id] ?? { firstSeen: PRE_EXISTING };
-        return { ...prev, [id]: patch(current) };
+        return { ...prev, [id]: { ...patch(current), updatedAt: Date.now() } };
       });
     },
     [],

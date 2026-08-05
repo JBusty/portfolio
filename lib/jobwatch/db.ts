@@ -51,7 +51,7 @@ export async function writePrefs(prefs: Prefs): Promise<void> {
 
 export async function readJobState(): Promise<JobState> {
   const rows = await sql()`
-    select job_id, first_seen, applied, applied_at, hidden, saved, snapshot
+    select job_id, first_seen, applied, applied_at, hidden, saved, snapshot, changed_at
     from job_state
   `;
 
@@ -67,6 +67,7 @@ export async function readJobState(): Promise<JobState> {
     if (row.hidden) entry.hidden = true;
     if (row.saved) entry.saved = true;
     if (row.snapshot) entry.snapshot = row.snapshot as JobSnapshot;
+    if (row.changed_at != null) entry.updatedAt = toMs(row.changed_at as Date) ?? undefined;
     state[row.job_id as string] = entry;
   }
   return state;
@@ -77,17 +78,20 @@ export async function readJobState(): Promise<JobState> {
  *
  * `unnest` turns the arrays into rows so this stays a single round trip
  * regardless of size — the alternative, one insert per job, is thousands of
- * network hops on a serverless connection. Rows absent from `state` are
- * deleted, so the table is a mirror of the client's map rather than an
- * ever-growing union of everything ever written.
+ * network hops on a serverless connection.
+ *
+ * Upsert only: rows absent from `state` are left alone rather than deleted.
+ * This started as a mirror, on the reasoning that the table should not grow
+ * without bound — which is correct for one browser and destructive for two. A
+ * second browser pushing its own map deleted the first one's applied and saved
+ * flags, and neither the user nor the code had any way to notice. Flags still
+ * propagate correctly without the delete, because clearing one leaves the row
+ * present with the flag false; only a wholesale prune needs removal, and that
+ * should be an explicit act rather than a side effect of every save.
  */
 export async function writeJobState(state: JobState): Promise<void> {
   const ids = Object.keys(state);
-
-  if (ids.length === 0) {
-    await sql()`delete from job_state`;
-    return;
-  }
+  if (ids.length === 0) return;
 
   const firstSeen = ids.map((id) => new Date(state[id].firstSeen ?? Date.now()).toISOString());
   const applied = ids.map((id) => state[id].applied === true);
@@ -97,10 +101,15 @@ export async function writeJobState(state: JobState): Promise<void> {
   const saved = ids.map((id) => state[id].saved === true);
   const snapshot = ids.map((id) =>
     state[id].snapshot ? JSON.stringify(state[id].snapshot) : null);
+  // The client's own stamp, not now(): `updated_at` records when the row was
+  // written, `changed_at` records when you last decided something. Only the
+  // second is comparable across browsers, which is what reconciling needs.
+  const changedAt = ids.map((id) =>
+    state[id].updatedAt != null ? new Date(state[id].updatedAt as number).toISOString() : null);
 
   await sql()`
-    insert into job_state (job_id, first_seen, applied, applied_at, hidden, saved, snapshot, updated_at)
-    select t.job_id, t.first_seen, t.applied, t.applied_at, t.hidden, t.saved, t.snapshot, now()
+    insert into job_state (job_id, first_seen, applied, applied_at, hidden, saved, snapshot, changed_at, updated_at)
+    select t.job_id, t.first_seen, t.applied, t.applied_at, t.hidden, t.saved, t.snapshot, t.changed_at, now()
     from unnest(
       ${ids}::text[],
       ${firstSeen}::timestamptz[],
@@ -108,8 +117,9 @@ export async function writeJobState(state: JobState): Promise<void> {
       ${appliedAt}::timestamptz[],
       ${hidden}::boolean[],
       ${saved}::boolean[],
-      ${snapshot}::jsonb[]
-    ) as t(job_id, first_seen, applied, applied_at, hidden, saved, snapshot)
+      ${snapshot}::jsonb[],
+      ${changedAt}::timestamptz[]
+    ) as t(job_id, first_seen, applied, applied_at, hidden, saved, snapshot, changed_at)
     on conflict (job_id) do update set
       first_seen = excluded.first_seen,
       applied    = excluded.applied,
@@ -117,10 +127,9 @@ export async function writeJobState(state: JobState): Promise<void> {
       hidden     = excluded.hidden,
       saved      = excluded.saved,
       snapshot   = excluded.snapshot,
+      changed_at = excluded.changed_at,
       updated_at = now()
   `;
-
-  await sql()`delete from job_state where job_id <> all(${ids}::text[])`;
 }
 
 /* -------------------------------------------------------------- companies */

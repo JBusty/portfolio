@@ -102,6 +102,16 @@ export type JobStateEntry = {
   saved?: boolean;
   /** Written when a job is marked applied, refreshed while it stays fetchable. */
   snapshot?: JobSnapshot;
+  /**
+   * When you last changed this entry — the field that lets two browsers be
+   * reconciled instead of one silently overwriting the other.
+   *
+   * Absent on everything written before the database existed. Those are treated
+   * as older than nothing, and a tie goes to the local copy, which is what makes
+   * the first sync seed the database from this browser rather than from a table
+   * of bare firstSeen stamps.
+   */
+  updatedAt?: number;
 };
 
 export type JobState = Record<string, JobStateEntry>;

@@ -9,6 +9,7 @@ import { isNewSince } from '@/lib/jobwatch/store';
 import type { Job } from '@/lib/jobwatch/types';
 import ConfirmDialog from './ConfirmDialog';
 import JobDetail from './JobDetail';
+import JobwatchNav from './JobwatchNav';
 import JobRow from './JobRow';
 import PrefsPanel from './PrefsPanel';
 import SourceDrawer from './SourceDrawer';
@@ -249,6 +250,8 @@ export default function JobwatchApp() {
 
   return (
     <main id="main-content" tabIndex={-1} ref={shellRef} className={`page-enter ${styles.shell}`}>
+      <JobwatchNav />
+
       {/* ---- header ----
           Identity and the standing figures, nothing interactive. Scrolls away;
           only the filter bar is pinned, which is why search moved down there —

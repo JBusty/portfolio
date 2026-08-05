@@ -1,20 +1,23 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { mergeJobState } from '@/lib/jobwatch/merge';
+import { DEFAULT_PREFS, SEED_COMPANIES } from '@/lib/jobwatch/store';
 import type { Company, JobState, Prefs } from '@/lib/jobwatch/types';
 
 /**
- * Mirrors preferences, triage, and the watchlist to the database.
+ * Keeps this browser and the database in agreement.
  *
- * localStorage is deliberately left in place and unchanged. It still renders
- * the page instantly and offline, and rewriting the store to async would make
- * every read a suspense boundary for no gain. This runs alongside it: the
- * browser stays the working copy, the database becomes the durable one.
+ * The database is the durable copy; localStorage stays the working one, because
+ * it renders instantly and offline and making every read async would buy
+ * nothing. On load both are reconciled, and from then on changes are mirrored
+ * up.
  *
- * On a browser that already has data, the local copy wins and is pushed up —
- * that is the stated source of truth. The pull only happens on a browser with
- * nothing in it at all, which is what makes a second device or a cleared cache
- * come back with its history instead of empty.
+ * The earlier version only ever pulled into a browser that looked untouched,
+ * and pushed from every other one. That was wrong twice over: `firstSeen` made
+ * every browser look touched, so nothing ever pulled, and the pushes then
+ * overwrote each other. Reconciling both directions removes the need to decide
+ * which browser is "the" browser at all.
  */
 
 const ENDPOINT = '/api/jobwatch/state';
@@ -23,75 +26,91 @@ const ENDPOINT = '/api/jobwatch/state';
 const DEBOUNCE_MS = 1200;
 
 type Snapshot = { prefs: Prefs; jobState: JobState; companies: Company[] };
+type Remote = { prefs: Prefs | null; jobState?: JobState; companies?: Company[] };
 
 type Options = Snapshot & {
   ready: boolean;
-  /** True when localStorage had nothing — the only case where remote wins. */
-  empty: boolean;
-  onRestore: (remote: Partial<Snapshot>) => void;
+  onReconcile: (merged: Partial<Snapshot>) => void;
 };
 
-export type RemoteStatus = 'idle' | 'saving' | 'saved' | 'error';
+/** True when nothing here has been changed from what ships by default. */
+function prefsUntouched(prefs: Prefs): boolean {
+  return JSON.stringify({ ...prefs, version: 0 }) === JSON.stringify({ ...DEFAULT_PREFS, version: 0 });
+}
 
-export function useRemoteState({ ready, empty, prefs, jobState, companies, onRestore }: Options) {
-  const status = useRef<RemoteStatus>('idle');
+export function useRemoteState({ ready, prefs, jobState, companies, onReconcile }: Options) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const started = useRef(false);
-  const restore = useRef(onRestore);
-  restore.current = onRestore;
+  const synced = useRef(false);
+  const reconcile = useRef(onReconcile);
+  reconcile.current = onReconcile;
 
-  // First contact: either seed an empty browser from the database, or push the
-  // browser's copy up as the authority. Runs once.
+  // Reconcile once, on arrival.
   useEffect(() => {
-    if (!ready || started.current) return;
-    started.current = true;
+    if (!ready || synced.current) return;
+    synced.current = true;
 
     void (async () => {
+      let remote: Remote | null = null;
       try {
-        if (empty) {
-          const res = await fetch(ENDPOINT);
-          if (!res.ok) return;
-          const remote = (await res.json()) as Partial<Snapshot> & { prefs: Prefs | null };
-          const hasRemote =
-            remote.prefs != null ||
-            Object.keys(remote.jobState ?? {}).length > 0 ||
-            (remote.companies ?? []).length > 0;
-          if (hasRemote) restore.current(remote);
-          return;
-        }
+        const res = await fetch(ENDPOINT);
+        if (res.ok) remote = (await res.json()) as Remote;
+      } catch {
+        // Offline, or the session expired. localStorage still holds everything,
+        // so this is a missed sync rather than lost work.
+      }
 
+      const merged: Partial<Snapshot> = {};
+
+      if (remote) {
+        merged.jobState = mergeJobState(jobState, remote.jobState ?? {});
+
+        // Prefs are one document with no per-field history, so there is nothing
+        // to merge. Remote wins only when this browser is still on the shipped
+        // defaults, which is the case that matters — a new machine.
+        if (remote.prefs && prefsUntouched(prefs)) merged.prefs = remote.prefs;
+
+        // Same rule for the watchlist: an untouched browser is still on the
+        // seed list, and anything else is a list you built.
+        const untouchedList = companies.length === SEED_COMPANIES.length;
+        if (remote.companies?.length && untouchedList) merged.companies = remote.companies as Company[];
+
+        reconcile.current(merged);
+      }
+
+      // Push the reconciled result straight back, so the database ends up
+      // holding the union rather than whichever side happened to load first.
+      try {
         await fetch(ENDPOINT, {
           method: 'PUT',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ prefs, jobState, companies }),
+          body: JSON.stringify({
+            prefs: merged.prefs ?? prefs,
+            jobState: merged.jobState ?? jobState,
+            companies: merged.companies ?? companies,
+          }),
         });
       } catch {
-        // Offline, or the gate expired mid-session. localStorage still holds
-        // everything, so this is a missed mirror rather than lost data.
+        // As above.
       }
     })();
-  }, [ready, empty, prefs, jobState, companies]);
+    // Deliberately keyed on `ready` alone: this runs once, and re-running it on
+    // every state change would re-reconcile against the copy it just wrote.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
 
-  // Ongoing mirror. Debounced, and deliberately sends all three rather than
-  // diffing: the payload is small and a partial write that raced a toggle would
-  // be harder to reason about than one that always reflects current state.
+  // Ongoing mirror.
   useEffect(() => {
-    if (!ready || !started.current) return;
+    if (!ready || !synced.current) return;
 
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => {
-      status.current = 'saving';
       void fetch(ENDPOINT, {
         method: 'PUT',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ prefs, jobState, companies }),
-      })
-        .then((res) => { status.current = res.ok ? 'saved' : 'error'; })
-        .catch(() => { status.current = 'error'; });
+      }).catch(() => {});
     }, DEBOUNCE_MS);
 
     return () => { if (timer.current) clearTimeout(timer.current); };
   }, [ready, prefs, jobState, companies]);
-
-  return status;
 }
