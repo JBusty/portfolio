@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Instrument_Serif } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
-import TopBar from '@/components/TopBar';
-import Footer from '@/components/Footer';
+import { SiteNav, SiteFooter } from '@/components/SiteChrome';
 import SectionRevealObserver from '@/components/SectionRevealObserver';
 import { SITE_URL } from '@/lib/site';
 import './globals.css';
@@ -73,9 +72,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <a href="#main-content" className="skip-link">Skip to content</a>
         <SectionRevealObserver />
-        <TopBar />
+        {/* Both bow out on /jobs — see SiteChrome. */}
+        <SiteNav />
         {children}
-        <Footer />
+        <SiteFooter />
         <Analytics />
       </body>
     </html>

@@ -85,7 +85,11 @@
       "Bash(vercel --version)",
       "Bash(vercel whoami *)",
       "Bash(npx vercel *)",
-      "Bash(vercel project *)"
+      "Bash(vercel project *)",
+      "Bash(perl -0pi -e 's|\\\\n\\\\s*<span className=\\\\{styles\\\\.barGap\\\\} />\\\\n||' app/jobs/_components/JobwatchApp.tsx)",
+      "Bash(perl -0pi -e 's|\\(ref=\\\\{prefsBtnRef\\\\}\\\\s*\\\\n\\\\s*\\)className=\\\\{styles\\\\.toggle\\\\}|$1className={`\\\\${styles.toggle} \\\\${styles.barBtn}`}|' app/jobs/_components/JobwatchApp.tsx)",
+      "Bash(perl -0pi -e 's|\\(ref=\\\\{sourcesBtnRef\\\\}\\\\s*\\\\n\\\\s*\\)className=\\\\{styles\\\\.toggle\\\\}|$1className={`\\\\${styles.toggle} \\\\${styles.barBtn}`}|' app/jobs/_components/JobwatchApp.tsx)",
+      "Bash(echo \"TS=$?\")"
     ]
   }
 }

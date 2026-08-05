@@ -8,10 +8,14 @@
 
 import { LEVEL_LABELS, LEVEL_ORDER, isDesignRole, salaryFloor, usEligibility } from './classify';
 import { DEFAULT_PREFS, PRE_EXISTING } from './store';
-import type { Job, JobState, Prefs, SourceKind } from './types';
+import type { Job, JobState, Prefs } from './types';
 
 const DAY = 24 * 60 * 60 * 1000;
 
+/**
+ * The two lists. Saved and hidden are narrowings applied on top of these rather
+ * than destinations of their own — see `savedOnly` and `showHidden`.
+ */
 export type Tab = 'open' | 'applied';
 
 /**
@@ -24,11 +28,6 @@ export type View = {
   savedOnly: boolean;
   /** The only way back to a hidden posting, since step 1 drops them outright. */
   showHidden: boolean;
-  /** An ATS platform, or 'all'. Orthogonal to `company`: this is the board a
-      posting came from, not who posted it. */
-  source: SourceKind | 'all';
-  /** A company key, or 'all'. */
-  company: string;
   /** Lowercased search terms, AND'd. */
   terms: string[];
   /** jobId -> prebuilt lowercase haystack, so search doesn't re-derive it. */
@@ -39,8 +38,6 @@ export const EMPTY_VIEW: View = {
   tab: 'open',
   savedOnly: false,
   showHidden: false,
-  source: 'all',
-  company: 'all',
   terms: [],
   index: new Map(),
 };
@@ -64,7 +61,7 @@ export function filterJobs(
     const entry = state[job.id];
     const title = job.title.toLowerCase();
 
-    // 1 — hidden.
+    // 1 — hidden. The Hidden toggle is the only way back to one.
     if (entry?.hidden && !view.showHidden) return false;
 
     // 2 — applied. The Applied tab is assembled from job state rather than from
@@ -128,8 +125,6 @@ export function filterJobs(
     // View-scoped narrowing, after the preferences so the order above is the
     // one documented.
     if (view.savedOnly && !entry?.saved) return false;
-    if (view.source !== 'all' && job.source !== view.source) return false;
-    if (view.company !== 'all' && job.companyKey !== view.company) return false;
     if (view.terms.length > 0) {
       const hay = view.index.get(job.id) ?? '';
       if (!view.terms.every((t) => hay.includes(t))) return false;
@@ -244,8 +239,6 @@ export function appliedRecords(state: JobState, jobs: Job[], view: View): Applie
       live.get(id) ??
       (entry.snapshot ? { ...entry.snapshot, descriptionHtml: '' } : placeholder(id));
 
-    if (view.source !== 'all' && job.source !== view.source) continue;
-    if (view.company !== 'all' && job.companyKey !== view.company) continue;
     if (view.terms.length > 0) {
       const hay = view.index.get(id) ?? `${job.title} ${job.company} ${job.location}`.toLowerCase();
       if (!view.terms.every((t) => hay.includes(t))) continue;

@@ -1,13 +1,50 @@
-/* Jobwatch — a dense, two-pane reading surface built on the site's palette.
-   This is a tool rather than a page, so it runs tighter than the rest of the
-   site: smaller type, more per screen, less air. */
 
+/*
+ * Jobwatch runs the site's design system on its own palette.
+ *
+ * Same components, same rules and pills and mono labels — different colour.
+ * The portfolio is warm: cream, ink, vermilion. This is an instrument, so it is
+ * cool: chart-paper greys with a marine cast, and one warm signal that only
+ * ever marks something live or something you are in. Orange against petrol
+ * reads as a light that is on; against warm cream it was just the brand colour
+ * again.
+ *
+ * The tokens are redefined here rather than in globals.css, so they cascade to
+ * every rule in this file without touching a single page of the site.
+ */
 .shell {
+  /* surfaces, lightest to deepest */
+  --paper:       #F8FAFA;  /* cards, inputs */
+  --bone:        #E7ECED;  /* the page */
+  --bone-2:      #DDE5E6;  /* row hover */
+  --bone-3:      #D2DCDE;  /* the toolbar band */
+
+  /* type */
+  --ink:         #0B1417;
+  --ink-2:       #1E2C30;
+  --sub:         #4E6064;  /* tuned until it clears 4.5 on the band, its worst case */
+
+  --rule:        rgba(11, 20, 23, 0.14);
+  --rule-strong: rgba(11, 20, 23, 0.42);
+
+  /* the signal. --accent is for fills and marks, never small text on light;
+     --accent-ink is the contrast-safe fill behind small type; --accent-lift is
+     the one that survives on the dark hero. */
+  --accent:      #EE5A1E;
+  --accent-ink:  #B8400B;
+  --accent-lift: #FF7C46;
+
   min-height: 100vh;
   background: var(--bone);
   /* One knob for the whole page — bar, panel, drawer, and the two-pane body
      all measure off it, so they stay aligned whatever it's set to. */
   --jw-wrap: 1360px;
+  /* Every control that sits in the filter bar is this tall. Padding and font
+     size alone will not line two of them up: the switcher's height comes from
+     13px uppercase text plus two rings of padding, the search field's from a
+     12px input, and matching those by arithmetic breaks the moment either
+     changes. One height, set on both. */
+  --jw-control: 46px;
 }
 
 /* Bounded rather than full-bleed: at full width the two panes drift so far
@@ -22,59 +59,147 @@
 
 /* ---------------------------------------------------------------- header */
 
-/* Deliberately not sticky and deliberately not a masthead. It carries the
-   numbers the filter bar has no room for — how much is being watched, how much
-   of it is new, whether a board is failing — and then gets out of the way. */
+/* The masthead — the site's TopBar bows out on /jobs, so this is the only page
+   chrome above the tool. Not sticky: it says where you are on arrival, then
+   scrolls away and lets the toolbar pin.
+ *
+ * The accent rule along the bottom is the light source; the band glows up off
+   it. One source, not two — the earlier version washed accent in from both
+   corners and the two fronts met in the middle as haze.
+ *
+ * The accent is kept low and near the edge on purpose. Orange over near-black
+ * composites to brown long before it looks like light: 42% of --accent over
+ * --ink is #682312, which is mud. Below about 30%, and only where the type
+ * isn't, it reads as glow instead.
+ *
+ * Under the glow is a plain vertical ramp from a slightly lifted ink to true
+ * ink, which is what gives the band depth. The colour does the atmosphere; the
+ * value does the space. */
 .header {
-  border-bottom: 1px solid var(--rule);
-  background: var(--paper);
+  position: relative;
+  isolation: isolate;
+
+  /* Deep petrol rather than neutral charcoal. --accent sits near hue 12, so its
+     complement is the 190s; against a cool ground the orange reads as light,
+     where against grey it only read as a warmer grey. Both stops are dark
+     enough to be near-black at a glance — this is a cast, not a colour field.
+     Swap these two to retune the whole band. */
+  --hero-top: #10262B;
+  --hero-bottom: #08161A;
+
+  background:
+    radial-gradient(125% 62% at 50% 100%,
+      rgba(238, 90, 30, 0.30) 0%,
+      rgba(238, 90, 30, 0.10) 34%,
+      rgba(238, 90, 30, 0) 68%),
+    linear-gradient(180deg, var(--hero-top) 0%, var(--hero-bottom) 62%);
+}
+
+/* Brightest where the glow is strongest, so the rule and the light it casts
+   are plainly the same thing. */
+.header::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(238, 90, 30, 0) 0%,
+    rgba(238, 90, 30, 0.55) 28%,
+    var(--accent) 50%,
+    rgba(238, 90, 30, 0.55) 72%,
+    rgba(238, 90, 30, 0) 100%
+  );
 }
 
 .headerInner {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 14px 28px;
-  flex-wrap: wrap;
-  padding: 16px 24px 15px;
+  text-align: center;
+  gap: 26px;
+  padding: 76px 32px 68px;
 }
 
 .headerId {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 30px;
   min-width: 0;
 }
 
-/* Enough weight to anchor the page under the site nav, nowhere near the 64px
-   display line this used to be. */
+/* Sized up now that it is the only thing at the top of the page rather than a
+   second label under the site nav. */
 .wordmark {
   margin: 0;
-  font-size: 21px;
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1;
-  color: var(--ink);
+  font-size: clamp(48px, 8vw, 92px);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  color: var(--bone);
 }
 
+/* --accent on ink fails contrast; --accent-lift is the palette's answer for
+   exactly this, so the dot stays the accent without going illegible. */
+.wordmark :global(.accent) { color: var(--accent-lift); }
+
+/* An instrument readout rather than a marketing stat row: figure over label,
+   hairline gutters between them, and nothing else competing. */
 .headerStats {
   display: flex;
-  align-items: baseline;
-  gap: 6px 16px;
+  align-items: stretch;
+  justify-content: center;
   flex-wrap: wrap;
   min-width: 0;
-  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--sub);
 }
 
-.headerStat { white-space: nowrap; }
-.headerStat strong { color: var(--ink); font-weight: 600; }
+.headerStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0 clamp(20px, 3.5vw, 44px);
+  white-space: nowrap;
+}
 
-.headerAlert,
-.headerAlert strong { color: var(--accent-ink); }
+/* Gutters between figures, not around the group. */
+.headerStat + .headerStat {
+  border-left: 1px solid rgba(231, 236, 237, 0.18);
+}
+
+.headerStat strong {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: clamp(30px, 4vw, 44px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--paper);
+  /* Figures change as the sweep lands; tabular keeps them from jittering. */
+  font-variant-numeric: tabular-nums;
+}
+
+.headerStatLabel {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(231, 236, 237, 0.55);
+}
+
+/* The one number you act on. */
+.headerStatLive strong { color: var(--accent-lift); }
+
+.headerAlert strong { color: var(--accent-lift); }
+
+.headerSynced {
+  margin: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(231, 236, 237, 0.4);
+}
 
 /* ------------------------------------------------------------------- bar */
 
@@ -83,13 +208,17 @@
    and pins to 0 rather than sitting below it — the global bar auto-hides on
    scroll-down anyway, and on a dense tool the filters are what has to stay
    reachable. Scroll back to the top to get the nav back. */
+/* Its own surface, deliberately the darkest of the three: --paper above it in
+   the header, --bone below it in the content, --bone-3 here. Opaque rather than
+   the old translucent-plus-blur — it is sticky, so it has to mask what scrolls
+   under it, and a solid fill does that without a compositing layer. */
 .bar {
   position: sticky;
   top: 0;
   z-index: 51;
+  border-top: 1px solid var(--rule);
   border-bottom: 1px solid var(--rule);
-  background: rgba(236, 231, 220, 0.92);
-  backdrop-filter: saturate(160%) blur(12px);
+  background: var(--bone-3);
 }
 
 .barInner {
@@ -102,16 +231,21 @@
 
 /* Capped rather than greedy. On flex:1 it grew to fill the row and became the
    loudest thing on the page, which is not what a search box is for. */
+/* Takes every pixel the row has left over instead of sitting at a fixed 360.
+   The trailing buttons no longer need a spacer to push them right — a search
+   field that grows does the same job and uses the space rather than wasting it. */
 .search {
-  flex: 0 1 360px;
-  min-width: 200px;
-  padding: 9px 15px;
+  flex: 1 1 auto;
+  min-width: 220px;
+  box-sizing: border-box;
+  height: var(--jw-control);
+  padding: 0 18px;
   border: 1px solid var(--rule-strong);
   border-radius: 999px;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-  font-size: 12px;
+  font-size: 13px;
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
@@ -120,7 +254,7 @@
 .search:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(225, 59, 20, 0.18);
+  box-shadow: 0 0 0 3px rgba(238, 90, 30, 0.18);
 }
 
 .select {
@@ -138,7 +272,7 @@
 .select:focus-visible {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(225, 59, 20, 0.18);
+  box-shadow: 0 0 0 3px rgba(238, 90, 30, 0.18);
 }
 
 .group {
@@ -163,9 +297,9 @@
   align-items: center;
   gap: 6px;
   padding: 5px 11px;
-  border: 1px solid rgba(17, 17, 16, 0.12);
+  border: 1px solid rgba(11, 20, 23, 0.12);
   border-radius: 999px;
-  background: rgba(17, 17, 16, 0.03);
+  background: rgba(11, 20, 23, 0.03);
   color: var(--ink-2);
   font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
   font-size: 11px;
@@ -175,15 +309,15 @@
 }
 
 .toggle:hover {
-  background: rgba(225, 59, 20, 0.08);
-  border-color: rgba(225, 59, 20, 0.34);
+  background: rgba(238, 90, 30, 0.08);
+  border-color: rgba(238, 90, 30, 0.34);
   color: var(--ink);
 }
 
 .toggle:focus-visible {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(225, 59, 20, 0.18);
+  box-shadow: 0 0 0 3px rgba(238, 90, 30, 0.18);
 }
 
 .toggle[data-active='true'] {
@@ -209,8 +343,8 @@
 }
 
 .toggle:disabled:hover {
-  background: rgba(17, 17, 16, 0.03);
-  border-color: rgba(17, 17, 16, 0.12);
+  background: rgba(11, 20, 23, 0.03);
+  border-color: rgba(11, 20, 23, 0.12);
   color: var(--ink-2);
 }
 
@@ -218,31 +352,55 @@
    nothing once the row starts scrolling sideways on mobile. */
 .barGap { flex: 1 1 auto; min-width: 0; }
 
+/* Filters and Boards are .toggle chips, which are shared with the prefs panel
+   where chip size is right. In the bar they stand beside a 46px switcher and a
+   46px search field, and at chip size they read as an afterthought — so only
+   the bar's copies take the shared control height. */
+.barBtn {
+  box-sizing: border-box;
+  height: var(--jw-control);
+  padding: 0 18px;
+  font-size: 12px;
+  flex-shrink: 0;
+  /* The chip's faint 3%-ink fill vanishes against the darker bar, so on this
+     surface the buttons take the same paper background as the search field. */
+  background: var(--paper);
+  border-color: var(--rule);
+}
+
 /* --------------------------------------------------------------- segments */
 
-/* Open / Applied is the only navigational choice on the page, so it gets a
-   control of its own rather than two more chips in a row of chips. */
+/* The whole view choice — open, applied, saved, hidden — in one control rather
+   than a tab pair plus two loose toggles further along the row. It is the only
+   navigational decision on the page, so it is the one thing in the bar allowed
+   to be big. */
 .tabs {
   display: inline-flex;
+  align-items: center;
   gap: 2px;
   flex-shrink: 0;
-  padding: 3px;
+  box-sizing: border-box;
+  height: var(--jw-control);
+  padding: 4px;
   border: 1px solid var(--rule-strong);
   border-radius: 999px;
-  background: rgba(17, 17, 16, 0.05);
+  background: rgba(11, 20, 23, 0.05);
 }
 
 .tab {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 7px 15px;
+  /* Fills the track rather than setting its own height, so the segment and the
+     search field beside it are the same object. */
+  align-self: stretch;
+  gap: 8px;
+  padding: 0 22px;
   border: none;
   border-radius: 999px;
   background: transparent;
   color: var(--sub);
   font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -258,16 +416,22 @@
   box-shadow: 0 0 0 2px var(--accent);
 }
 
+/* Vermilion rather than ink — the view you are in should be the liveliest thing
+   in the bar, and near-black read as another piece of furniture.
+   --accent-ink, not --accent: at 13px the label needs 4.5:1, and the bright
+   accent fails against every foreground there is — white lands at 4.34, ink at
+   4.35. The darker vermilion clears it at 5.75 against paper. */
 .tab[data-active='true'] {
-  background: var(--ink);
-  color: var(--bone);
+  background: var(--accent-ink);
+  color: var(--paper);
+  box-shadow: 0 1px 2px rgba(11, 20, 23, 0.28);
 }
 
 .tabCount {
   min-width: 20px;
   padding: 2px 6px;
   border-radius: 999px;
-  background: rgba(17, 17, 16, 0.1);
+  background: rgba(11, 20, 23, 0.1);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -275,36 +439,8 @@
 }
 
 .tab[data-active='true'] .tabCount {
-  background: rgba(253, 246, 238, 0.2);
-  color: var(--bone);
-}
-
-/* Same shape as the site .btn, one size down so it sits in a filter row. */
-.syncBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  flex-shrink: 0;
-  padding: 7px 14px;
-  border: 1px solid var(--ink);
-  border-radius: 999px;
-  background: var(--ink);
-  color: var(--bone);
-  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 160ms ease, border-color 160ms ease;
-}
-
-.syncBtn:hover:not(:disabled) { background: var(--accent-ink); border-color: var(--accent-ink); }
-.syncBtn:disabled { opacity: 0.5; cursor: progress; }
-
-.syncBtn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(225, 59, 20, 0.35);
+  background: rgba(248, 250, 250, 0.22);
+  color: var(--paper);
 }
 
 /* ------------------------------------------------------- secondary controls */
@@ -320,58 +456,6 @@
 }
 
 .showing strong { color: var(--ink); font-weight: 600; }
-
-.metaToggle {
-  padding: 3px 7px;
-  border: none;
-  border-radius: 4px;
-  background: transparent;
-  color: var(--sub);
-  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: color 160ms ease, background 160ms ease;
-}
-
-.metaToggle:hover:not(:disabled) { color: var(--ink); background: rgba(17, 17, 16, 0.05); }
-
-/* An underline rather than a fill: on is legible at a glance without another
-   solid block competing with the segmented control above it. */
-.metaToggle[data-active='true'] {
-  color: var(--ink);
-  box-shadow: inset 0 -2px 0 var(--accent);
-}
-
-.metaToggle:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(225, 59, 20, 0.45);
-}
-
-.metaToggle:disabled { opacity: 0.35; cursor: not-allowed; }
-
-.metaSelect {
-  padding: 3px 4px;
-  border: none;
-  background: transparent;
-  color: var(--sub);
-  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  cursor: pointer;
-  max-width: 160px;
-}
-
-.metaSelect:hover { color: var(--ink); }
-
-.metaSelect:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(225, 59, 20, 0.45);
-  border-radius: 4px;
-}
 
 
 /* ------------------------------------------------------------ prefs panel */
@@ -443,11 +527,11 @@
   transition: color 160ms ease, background 160ms ease;
 }
 
-.termRemove:hover { color: var(--accent-ink); background: rgba(225, 59, 20, 0.1); }
+.termRemove:hover { color: var(--accent-ink); background: rgba(238, 90, 30, 0.1); }
 
 .termRemove:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(225, 59, 20, 0.5);
+  box-shadow: 0 0 0 2px rgba(238, 90, 30, 0.5);
 }
 
 /* ------------------------------------------------------------------ body */
@@ -519,7 +603,7 @@
 
 .rowOpen:focus-visible {
   outline: none;
-  box-shadow: inset 0 0 0 2px rgba(225, 59, 20, 0.4);
+  box-shadow: inset 0 0 0 2px rgba(238, 90, 30, 0.4);
 }
 
 .rowAction {
@@ -578,7 +662,7 @@
   margin-right: 7px;
   border: 1px solid var(--rule-strong);
   border-radius: 3px;
-  background: rgba(17, 17, 16, 0.04);
+  background: rgba(11, 20, 23, 0.04);
   font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
   font-size: 9px;
   font-weight: 600;
@@ -669,22 +753,22 @@
 }
 
 .pillSalary {
-  background: rgba(17, 17, 16, 0.04);
-  border-color: rgba(17, 17, 16, 0.14);
+  background: rgba(11, 20, 23, 0.04);
+  border-color: rgba(11, 20, 23, 0.14);
   color: var(--ink);
 }
 
 .pillEstimated { border-style: dashed; opacity: 0.85; }
 
 .pillRemote {
-  border-color: rgba(225, 59, 20, 0.4);
+  border-color: rgba(238, 90, 30, 0.4);
   color: var(--accent-ink);
 }
 
 .pillSaved { background: var(--ink); border-color: var(--ink); color: var(--bone); }
 
 .pillApplied {
-  background: rgba(17, 17, 16, 0.08);
+  background: rgba(11, 20, 23, 0.08);
   border-color: var(--rule-strong);
   color: var(--ink-2);
 }
@@ -694,6 +778,9 @@
 /* --jw-bar is measured from the real filter bar at runtime — it wraps to two
    or three rows depending on width, so a hardcoded offset would be wrong at
    most viewport sizes. The fallback covers first paint. */
+/* The same --paper as a selected row, not the page's --bone. The row you picked
+   and the posting you are reading are one continuous surface, and long body
+   copy is easier on the lighter of the two. */
 .detail {
   position: sticky;
   top: var(--jw-bar, 104px);
@@ -701,6 +788,7 @@
   overflow-y: auto;
   padding: 32px 44px 64px;
   min-width: 0;
+  background: var(--paper);
 }
 
 .detailHead {
@@ -828,7 +916,7 @@
    revoked token and a genuine hiring freeze produce the same empty list, and
    this is the only place the difference is visible. */
 .sourceCard[data-empty='true'] {
-  border-color: rgba(225, 59, 20, 0.34);
+  border-color: rgba(238, 90, 30, 0.34);
   border-style: dashed;
 }
 
@@ -893,14 +981,14 @@
 
 .iconBtn:hover {
   color: var(--accent-ink);
-  border-color: rgba(225, 59, 20, 0.34);
-  background: rgba(225, 59, 20, 0.07);
+  border-color: rgba(238, 90, 30, 0.34);
+  background: rgba(238, 90, 30, 0.07);
 }
 
 .iconBtn:focus-visible {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(225, 59, 20, 0.18);
+  box-shadow: 0 0 0 3px rgba(238, 90, 30, 0.18);
 }
 
 .addRow {
@@ -927,7 +1015,7 @@
 .input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(225, 59, 20, 0.18);
+  box-shadow: 0 0 0 3px rgba(238, 90, 30, 0.18);
 }
 
 .hint {
@@ -943,7 +1031,7 @@
   font-size: 11px;
   padding: 1px 5px;
   border-radius: 4px;
-  background: rgba(17, 17, 16, 0.06);
+  background: rgba(11, 20, 23, 0.06);
   color: var(--ink-2);
 }
 
@@ -1041,4 +1129,84 @@
   font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
   font-size: 11px;
   color: var(--accent-ink);
+}
+
+/* ---------------------------------------------------------------- dialog */
+
+/* <dialog> ships with UA margin/padding/border that centre it oddly and draw a
+   box around the card, so those are cleared and the centring is done here. */
+.dialog {
+  margin: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  max-width: min(440px, calc(100vw - 32px));
+}
+
+.dialog::backdrop {
+  background: rgba(8, 22, 26, 0.62);
+  backdrop-filter: blur(2px);
+}
+
+.dialogCard {
+  padding: 26px 28px 22px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: 0 18px 40px rgba(11, 20, 23, 0.28);
+}
+
+.dialogTitle {
+  margin: 0 0 10px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.dialogBody {
+  margin: 0 0 22px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--sub);
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* The destructive action carries the signal, and --accent-ink rather than
+   --accent because the label is small text on a fill. */
+.dialogDanger {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border: 1px solid var(--accent-ink);
+  border-radius: 999px;
+  background: var(--accent-ink);
+  color: var(--paper);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.dialogDanger:hover { background: #9C360A; border-color: #9C360A; }
+
+.dialogDanger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(238, 90, 30, 0.35);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dialog[open] { animation: dialogIn 140ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+}
+
+@keyframes dialogIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

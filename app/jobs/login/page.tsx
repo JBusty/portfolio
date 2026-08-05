@@ -10,7 +10,9 @@ export default function LoginPage() {
   const [state, formAction, pending] = useActionState(login, INITIAL);
 
   return (
-    <main className={styles.shell}>
+    // The root layout's skip-link targets this id; without it the link is a
+    // dead jump on this route.
+    <main id="main-content" tabIndex={-1} className={styles.shell}>
       <div className={`${styles.wrap} ${styles.login}`}>
         <span className={styles.groupLabel}>Jobwatch</span>
         <p className={styles.fieldHint}>A private tool. One password, no accounts.</p>
