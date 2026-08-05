@@ -118,7 +118,7 @@
   align-items: center;
   text-align: center;
   gap: 26px;
-  padding: 76px 32px 68px;
+  padding: 86px 32px 48px;
 }
 
 .headerId {
@@ -157,7 +157,7 @@
   justify-content: center;
   flex-wrap: wrap;
   min-width: 0;
-  margin: clamp(12px, 2.2vw, 26px) 0;
+  margin-top: 24px;
 }
 
 .headerStat {
@@ -207,6 +207,7 @@
   gap: 10px;
   width: 100%;
   max-width: 780px;
+  margin-top: 24px;
 
   /* A single row of the field, measured: 10px padding either side, a 1px
      border, and a 29px chip row. Shared with the button so the two are the

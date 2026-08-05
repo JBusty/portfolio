@@ -364,25 +364,6 @@ export default function JobwatchApp() {
             <h1 className={styles.wordmark}>
               Jobwatch<span className="accent">.</span>
             </h1>
-
-            {/* What you are looking for, before what that turned up. The
-                figures below are a count of what this line asks for, so asking
-                first and answering second is the order the header reads in —
-                the other way round opens on a number with nothing yet to say
-                what it counts. */}
-            <JobTypesInput
-              value={prefs.jobTypes}
-              onChange={(jobTypes) => updatePrefs({ jobTypes })}
-              unswept={unsweptTypes}
-              sweeping={sweeping}
-              sweepNote={sweepNote}
-              onSweep={() => void runSweep()}
-            />
-
-            {/* Where it was looked for, between the asking and the answer.
-                Named and marked rather than coded: GH/LV/AB is shorthand that
-                works on a row only once you already know the three, and this is
-                the one place on the page that says what they are. */}
             <p className={styles.headerSources}>
               <span className={styles.headerSourcesLabel}>sourced from</span>
               {SOURCE_ORDER.map((source) => (
@@ -400,11 +381,19 @@ export default function JobwatchApp() {
                 </span>
               ))}
             </p>
-
-            {/* Directly under the marks, because it finishes the same sentence
-                they start: those say where the list was looked for, this says
-                when. Below the figures it read as a footnote on the numbers,
-                which is the smaller of the two things it qualifies. */}
+            {/* What you are looking for, before what that turned up. The
+                figures below are a count of what this line asks for, so asking
+                first and answering second is the order the header reads in —
+                the other way round opens on a number with nothing yet to say
+                what it counts. */}
+            <JobTypesInput
+              value={prefs.jobTypes}
+              onChange={(jobTypes) => updatePrefs({ jobTypes })}
+              unswept={unsweptTypes}
+              sweeping={sweeping}
+              sweepNote={sweepNote}
+              onSweep={() => void runSweep()}
+            />
             <p
               className={styles.headerSynced}
               title={usingIndex
@@ -413,10 +402,6 @@ export default function JobwatchApp() {
             >
               {usingIndex ? 'indexed' : 'local'} · synced {clockTime(lastSynced)}
             </p>
-
-            {/* The answer: a readout, not a marketing stat row — figure over
-                label, because the number is the thing being reported and the
-                word only says which one. */}
             <div className={styles.headerStats}>
               {/* "tracked" named what Jobwatch was doing rather than what you
                   are being handed a count of — and counted the whole index,
@@ -453,7 +438,6 @@ export default function JobwatchApp() {
                 </span>
               )}
             </div>
-
           </div>
 
         </div>
