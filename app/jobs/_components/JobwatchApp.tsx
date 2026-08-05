@@ -10,7 +10,9 @@ import { SOURCE_LABELS, SOURCE_MARKS, SOURCE_ORDER } from '@/lib/jobwatch/source
 import { isNewSince } from '@/lib/jobwatch/store';
 import type { Job } from '@/lib/jobwatch/types';
 import ConfirmDialog from './ConfirmDialog';
+import CountUp from './CountUp';
 import JobDetail from './JobDetail';
+import JobTypesInput from './JobTypesInput';
 import JobwatchNav from './JobwatchNav';
 import JobRow from './JobRow';
 import PrefsPanel from './PrefsPanel';
@@ -38,7 +40,7 @@ const EMPTY_TITLE: Record<Tab, (total: number) => string> = {
 const EMPTY_BODY: Record<Tab, (total: number, syncing: boolean) => string> = {
   open: (total, syncing) =>
     total > 0
-      ? 'Loosen something in Filters — the level switches are the strictest.'
+      ? 'Loosen something in Filters, or widen the job types above.'
       : syncing
         ? 'Pulling boards now — this takes a few seconds on first load.'
         : 'Add a board from the Boards panel above; it is fetched as soon as the sweep reaches it.',
@@ -50,6 +52,7 @@ export default function JobwatchApp() {
   const {
     ready, companies, results, jobs, jobState, prefs, syncing, lastSynced, errorCount,
     descriptions, usingIndex, indexMeta,
+    sweeping, sweepNote, runSweep,
     addCompany, removeCompany, loadDescription,
     markApplied, unapply, toggleHidden,
     updatePrefs, resetPrefs,
@@ -65,7 +68,10 @@ export default function JobwatchApp() {
   const [pendingUnapply, setPendingUnapply] = useState<string | null>(null);
 
   const barRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
   const shellRef = useRef<HTMLElement>(null);
+  /** True once the nav has lifted off the hero and is pinned. */
+  const [navStuck, setNavStuck] = useState(false);
 
   const prefsRef = useRef<HTMLDivElement>(null);
   const prefsBtnRef = useRef<HTMLButtonElement>(null);
@@ -76,20 +82,55 @@ export default function JobwatchApp() {
   useClickOff(showSources, () => setShowSources(false), sourcesRef, sourcesBtnRef);
 
   /**
-   * The filter bar wraps to a different number of rows depending on viewport
-   * width, and the detail pane sticks directly beneath it. Measuring beats
-   * guessing: a fixed offset is wrong at most widths.
+   * Both pinned bars republish their height, because everything below them
+   * pins off it: the toolbar sits under the nav, and the detail pane under
+   * both. The toolbar wraps to a different number of rows depending on width
+   * and the nav changes height with it, so a fixed offset is wrong at most
+   * viewport sizes.
    */
   useEffect(() => {
-    const bar = barRef.current;
     const shell = shellRef.current;
-    if (!bar || !shell || typeof ResizeObserver === 'undefined') return;
+    if (!shell || typeof ResizeObserver === 'undefined') return;
 
-    const observer = new ResizeObserver(([entry]) => {
-      shell.style.setProperty('--jw-bar', `${Math.round(entry.contentRect.height)}px`);
-    });
-    observer.observe(bar);
-    return () => observer.disconnect();
+    const measure = (el: Element | null, prop: string) => {
+      if (!el) return null;
+      const observer = new ResizeObserver(([entry]) => {
+        // Border box, not content box. The nav carries a 1px bottom rule that
+        // `contentRect` does not count, and pinning the toolbar to a number one
+        // pixel short leaves a hairline of the page showing between them.
+        const height = entry.borderBoxSize?.[0]?.blockSize
+          ?? el.getBoundingClientRect().height;
+        shell.style.setProperty(prop, `${Math.round(height)}px`);
+      });
+      observer.observe(el);
+      return observer;
+    };
+
+    const observers = [
+      measure(navRef.current, '--jw-nav'),
+      measure(barRef.current, '--jw-bar'),
+    ];
+    return () => observers.forEach((o) => o?.disconnect());
+  }, []);
+
+  /**
+   * Whether the nav has anything behind it, which is what decides the glass.
+   *
+   * Not an IntersectionObserver, which is the usual way to detect a stuck
+   * element and is wrong here: the nav is the first thing in the document, so
+   * it sits at `top: 0` before any scrolling at all and the observer reports it
+   * pinned from the first paint. It was glass on the hero, which is the state
+   * this is meant to avoid. Scroll position answers the actual question — is
+   * there page underneath me — and nothing else does.
+   *
+   * The listener is passive and only touches state when the answer flips, so a
+   * long scroll is one render rather than one per frame.
+   */
+  useEffect(() => {
+    const onScroll = () => setNavStuck(window.scrollY > 4);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   /* ---------------------------------------------------------------- index */
@@ -112,7 +153,7 @@ export default function JobwatchApp() {
   }, [jobs]);
 
   const isNew = useCallback(
-    (id: string) => isNewSince(jobState, id, NEW_WINDOW_MS),
+    (job: Job) => isNewSince(job, jobState, NEW_WINDOW_MS),
     [jobState],
   );
 
@@ -145,21 +186,30 @@ export default function JobwatchApp() {
   );
 
   /**
-   * The figure on the Open tab, which is not the length of the list when the
-   * Hidden switch is on.
+   * The Open list with the Hidden switch forced off — the one set every figure
+   * on the page is measured against.
    *
-   * Same rule as the tab pinning above: the number on a button you are not
-   * looking at has to describe what pressing it gives you. Flipping Hidden and
-   * watching Open drop from 22 to 6 reads as postings disappearing, when all
-   * that happened is you looked somewhere else. Only pays for the extra pass
-   * while the switch is on.
+   * Everything in the header used to be counted off `jobs`, the raw index, and
+   * that is a different set from the one on screen by a long way: the sweep
+   * only ever applied the title test, so `jobs` still holds the on-site roles,
+   * the non-US ones, the wrong seniorities and everything under the salary
+   * floor. Reporting a count over that while showing a list filtered from it
+   * gives two numbers that can never be reconciled by looking — and "new this
+   * week" was the one where it showed, because you can count the New badges.
+   *
+   * Same rule as the tab pinning above: the Hidden switch is forced off because
+   * a figure has to describe the list you get, and flipping Hidden is looking
+   * somewhere else rather than the postings going away. Only pays for the extra
+   * pass while the switch is on.
    */
-  const openCount = useMemo(
+  const openRoles = useMemo(
     () => (hiddenOnly
-      ? filterJobs(jobs, prefs, jobState, { ...view, tab: 'open', hiddenOnly: false }).length
-      : open.length),
+      ? filterJobs(jobs, prefs, jobState, { ...view, tab: 'open', hiddenOnly: false })
+      : open),
     [hiddenOnly, open, jobs, prefs, jobState, view],
   );
+
+  const openCount = openRoles.length;
 
   /**
    * What the Hidden switch would actually show.
@@ -176,6 +226,29 @@ export default function JobwatchApp() {
     [jobs, prefs, jobState, view],
   );
 
+  /**
+   * Terms the boards have not actually been searched for.
+   *
+   * This used to be `prefs.updatedAt > indexMeta.updatedAt`, which was wrong in
+   * both directions and mostly wrong. Any preference stamps `updatedAt` —
+   * changing the sort order lit the Sweep button — and the stamp persists, so
+   * one edit left it lit until the next sweep, which on a daily cron is all
+   * day. It was on in every screenshot of it ever taken.
+   *
+   * The real question is narrower and answerable: is there a term the index was
+   * not built with? Narrowing the list never needs a sweep, because those
+   * postings are already in hand. Only widening does.
+   *
+   * Empty while the index reports no coverage at all — one built before the
+   * field existed — rather than flagging every term, which would be the old
+   * always-on behaviour wearing a better explanation.
+   */
+  const unsweptTypes = useMemo(() => {
+    if (!indexMeta || indexMeta.types.length === 0) return [];
+    const covered = new Set(indexMeta.types);
+    return prefs.jobTypes.filter((term) => !covered.has(term));
+  }, [indexMeta, prefs.jobTypes]);
+
   /* --------------------------------------------------------------- counts */
 
   const counts = useMemo(() => {
@@ -188,17 +261,19 @@ export default function JobwatchApp() {
       if (entry.applied) applied += 1;
     }
 
-    // Counted off the live set rather than job state, so it means "new and
-    // still open" — the only version of the number worth acting on.
+    // Both of these come off `openRoles` — the postings actually on the list —
+    // so every figure in the header is a count of the same set and any of them
+    // can be checked by scrolling. Hidden and applied need no guard here: the
+    // pipeline has already dropped them.
     let fresh = 0;
-    for (const job of jobs) {
-      const entry = jobState[job.id];
-      if (entry?.hidden || entry?.applied) continue;
-      if (isNewSince(jobState, job.id, NEW_WINDOW_MS)) fresh += 1;
+    const hiring = new Set<string>();
+    for (const job of openRoles) {
+      hiring.add(job.companyKey);
+      if (isNewSince(job, jobState, NEW_WINDOW_MS)) fresh += 1;
     }
 
-    return { applied, fresh };
-  }, [jobState, jobs]);
+    return { applied, fresh, hiring: hiring.size };
+  }, [jobState, openRoles]);
 
   const rows = useMemo(
     () =>
@@ -219,7 +294,7 @@ export default function JobwatchApp() {
     return fromRows ?? jobs.find((j) => j.id === selectedId) ?? null;
   }, [rows, jobs, selectedId]);
 
-  // Greenhouse postings arrive without a description; pull it when one opens.
+  // Some boards publish a bare listing; pull the write-up when one opens.
   useEffect(() => {
     if (selected) loadDescription(selected);
   }, [selected, loadDescription]);
@@ -275,13 +350,14 @@ export default function JobwatchApp() {
 
   return (
     <main id="main-content" tabIndex={-1} ref={shellRef} className={`page-enter ${styles.shell}`}>
-      <JobwatchNav />
+      <JobwatchNav ref={navRef} stuck={navStuck} />
 
       {/* ---- header ----
-          Identity and the standing figures, nothing interactive. Scrolls away;
-          only the filter bar is pinned, which is why search moved down there —
-          a control you reach for mid-scroll cannot live in the part that
-          scrolls off. */}
+          The standing story, in the order it is worth reading: who this is,
+          what is being looked for, what that comes to, and where it came from.
+          Scrolls away; only the filter bar is pinned, which is why the search
+          box lives down there instead — a control you reach for mid-scroll
+          cannot sit in the part that scrolls off. */}
       <header className={styles.header}>
         <div className={`${styles.wrap} ${styles.headerInner}`}>
           <div className={styles.headerId}>
@@ -289,24 +365,85 @@ export default function JobwatchApp() {
               Jobwatch<span className="accent">.</span>
             </h1>
 
-            {/* A readout, not a stat row: figure over label, because the number
-                is the thing being reported and the word only says which one. */}
+            {/* What you are looking for, before what that turned up. The
+                figures below are a count of what this line asks for, so asking
+                first and answering second is the order the header reads in —
+                the other way round opens on a number with nothing yet to say
+                what it counts. */}
+            <JobTypesInput
+              value={prefs.jobTypes}
+              onChange={(jobTypes) => updatePrefs({ jobTypes })}
+              unswept={unsweptTypes}
+              sweeping={sweeping}
+              sweepNote={sweepNote}
+              onSweep={() => void runSweep()}
+            />
+
+            {/* Where it was looked for, between the asking and the answer.
+                Named and marked rather than coded: GH/LV/AB is shorthand that
+                works on a row only once you already know the three, and this is
+                the one place on the page that says what they are. */}
+            <p className={styles.headerSources}>
+              <span className={styles.headerSourcesLabel}>sourced from</span>
+              {SOURCE_ORDER.map((source) => (
+                <span key={source} className={styles.headerSource}>
+                  {/* Decorative: the platform's name is set right beside it,
+                      so announcing the mark too would only say it twice. */}
+                  <Image
+                    className={styles.headerSourceMark}
+                    src={SOURCE_MARKS[source]}
+                    alt=""
+                    width={18}
+                    height={18}
+                  />
+                  {SOURCE_LABELS[source]}
+                </span>
+              ))}
+            </p>
+
+            {/* Directly under the marks, because it finishes the same sentence
+                they start: those say where the list was looked for, this says
+                when. Below the figures it read as a footnote on the numbers,
+                which is the smaller of the two things it qualifies. */}
+            <p
+              className={styles.headerSynced}
+              title={usingIndex
+                ? `Swept server-side — ${indexMeta?.shards ?? 0} of ${3} shards reported`
+                : 'Fetched in this browser from the local watchlist'}
+            >
+              {usingIndex ? 'indexed' : 'local'} · synced {clockTime(lastSynced)}
+            </p>
+
+            {/* The answer: a readout, not a marketing stat row — figure over
+                label, because the number is the thing being reported and the
+                word only says which one. */}
             <div className={styles.headerStats}>
+              {/* "tracked" named what Jobwatch was doing rather than what you
+                  are being handed a count of — and counted the whole index,
+                  filters and all, which is not what the list below shows. */}
               <span className={styles.headerStat}>
-                <strong>{ready ? jobs.length.toLocaleString() : '—'}</strong>
-                <span className={styles.headerStatLabel}>tracked</span>
+                <strong><CountUp value={openCount} ready={ready} /></strong>
+                <span className={styles.headerStatLabel}>
+                  {plural(openCount, 'open role')}
+                </span>
               </span>
 
               {/* The only figure worth acting on, so it is the only one in the
                   accent — everything else is context for it. */}
               <span className={`${styles.headerStat} ${styles.headerStatLive}`}>
-                <strong>{ready ? counts.fresh : '—'}</strong>
+                <strong><CountUp value={counts.fresh} ready={ready} /></strong>
                 <span className={styles.headerStatLabel}>new this week</span>
               </span>
 
+              {/* Not "boards". A board is the thing being polled, which is
+                  Jobwatch's plumbing showing through — what is worth knowing is
+                  how many companies the roles in front of you came from, which
+                  is also why this counts the list rather than the watchlist. */}
               <span className={styles.headerStat}>
-                <strong>{companies.length}</strong>
-                <span className={styles.headerStatLabel}>{plural(companies.length, 'board')}</span>
+                <strong><CountUp value={counts.hiring} ready={ready} /></strong>
+                <span className={styles.headerStatLabel}>
+                  {plural(counts.hiring, 'company hiring', 'companies hiring')}
+                </span>
               </span>
 
               {errorCount > 0 && !usingIndex && (
@@ -317,41 +454,6 @@ export default function JobwatchApp() {
               )}
             </div>
 
-            {/* Where the list came from: which platforms, and how fresh. Kept
-                as one block on a tighter gutter than the rest of the header,
-                because two dim footnotes spaced like headings read as two
-                unrelated afterthoughts. */}
-            <div className={styles.headerProvenance}>
-              {/* Named and marked rather than coded. GH/LV/AB is shorthand that
-                  works on a row only once you already know the three, and this
-                  is the one place on the page that says what they are. */}
-              <p className={styles.headerSources}>
-                <span className={styles.headerSourcesLabel}>sourced from</span>
-                {SOURCE_ORDER.map((source) => (
-                  <span key={source} className={styles.headerSource}>
-                    {/* Decorative: the platform's name is set right beside it,
-                        so announcing the mark too would only say it twice. */}
-                    <Image
-                      className={styles.headerSourceMark}
-                      src={SOURCE_MARKS[source]}
-                      alt=""
-                      width={18}
-                      height={18}
-                    />
-                    {SOURCE_LABELS[source]}
-                  </span>
-                ))}
-              </p>
-
-              <p
-                className={styles.headerSynced}
-                title={usingIndex
-                  ? `Swept server-side — ${indexMeta?.shards ?? 0} of 12 shards reported`
-                  : 'Fetched in this browser from the local watchlist'}
-              >
-                {usingIndex ? 'indexed' : 'local'} · synced {clockTime(lastSynced)}
-              </p>
-            </div>
           </div>
 
         </div>
@@ -470,12 +572,27 @@ export default function JobwatchApp() {
       {/* ---- body ---- */}
       <div className={`${styles.wrap} ${styles.body}`}>
         <div className={styles.list}>
-          <div className={styles.listMeta}>
+          {/* The hidden pile is a different room, not a filtered version of
+              this one — none of the preferences apply in it and everything in
+              it is something you removed. So it says so outright rather than
+              leaving the lit switch in the bar as the only clue. */}
+          <div className={styles.listMeta} data-hidden={hiddenOnly}>
             <span>
               {ready ? `${shown} ${plural(shown, tab === 'applied' ? 'application' : 'posting')}` : 'Loading…'}
-              {ready && shown !== total && ` of ${total}`}
+              {ready && !hiddenOnly && shown !== total && ` of ${total}`}
+              {ready && hiddenOnly && ' you hid · filters do not apply here'}
             </span>
-            <span>j / k to move · esc to close</span>
+            {hiddenOnly ? (
+              <button
+                type="button"
+                className={styles.listMetaExit}
+                onClick={() => setHiddenOnly(false)}
+              >
+                Back to open roles
+              </button>
+            ) : (
+              <span>j / k to move · esc to close</span>
+            )}
           </div>
 
           {!ready && (
@@ -510,7 +627,7 @@ export default function JobwatchApp() {
                 key={id}
                 job={job}
                 selected={id === selectedId}
-                isNew={isNew(id)}
+                isNew={isNew(job)}
                 entry={jobState[id]}
                 reason={reasonFor(job)}
                 appliedAt={tab === 'applied' ? appliedAt : undefined}

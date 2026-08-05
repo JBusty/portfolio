@@ -145,13 +145,19 @@
 .wordmark :global(.accent) { color: var(--accent-lift); }
 
 /* An instrument readout rather than a marketing stat row: figure over label,
-   hairline gutters between them, and nothing else competing. */
+   hairline gutters between them, and nothing else competing.
+
+   The margin is on top of the 30px .headerId gutter, not instead of it. This is
+   the one block in the header set at display size, and on the header's common
+   gutter it sat as one more line in a stack of five — the extra air is what
+   makes it read as the thing the rest of the header is arranged around. */
 .headerStats {
   display: flex;
   align-items: stretch;
   justify-content: center;
   flex-wrap: wrap;
   min-width: 0;
+  margin: clamp(12px, 2.2vw, 26px) 0;
 }
 
 .headerStat {
@@ -192,19 +198,185 @@
 
 .headerAlert strong { color: var(--accent-lift); }
 
-/* Both provenance lines on one gutter of their own, well inside the 30px the
-   header uses between its parts, so they read as one note. */
-.headerProvenance {
+/* ---------------------------------------------------------- job types */
+
+.types {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-  min-width: 0;
+  gap: 10px;
+  width: 100%;
+  max-width: 780px;
+
+  /* A single row of the field, measured: 10px padding either side, a 1px
+     border, and a 29px chip row. Shared with the button so the two are the
+     same height on one line and stop agreeing only when the field wraps —
+     which is the point, since a button that grew with it became a slab. */
+  --types-h: 51px;
 }
 
-/* The three platforms, named. Set in the same mono uppercase as the stat
-   labels so it reads as part of the readout rather than as a logo strip — the
-   marks are here to identify, not to endorse. */
+/* Same mono uppercase as the stat labels — it names the field below it the way
+   those name the figures above them. */
+.typesLabel {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(231, 236, 237, 0.55);
+}
+
+/* Reads as one field rather than a row of controls: the chips sit inside the
+   border with the caret, so adding a term is visibly the same gesture as
+   typing in it. */
+/* Top-aligned, not stretched. The field grows a row taller with every line of
+   chips, and a button that grew with it became a tall slab next to a list —
+   so it holds one row's height and stays level with the first line. */
+.typesRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+
+.typesField {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: var(--types-h);
+  padding: 10px 12px;
+  border: 1px solid rgba(231, 236, 237, 0.22);
+  border-radius: 12px;
+  background: rgba(231, 236, 237, 0.06);
+  cursor: text;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.typesField:hover { border-color: rgba(231, 236, 237, 0.34); }
+
+/* The ring goes on the container because the real input inside is borderless —
+   without this, tabbing to the field shows no focus at all. */
+.typesField:focus-within {
+  border-color: var(--accent-lift);
+  background: rgba(231, 236, 237, 0.09);
+}
+
+.typeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 10px;
+  border-radius: 999px;
+  background: rgba(231, 236, 237, 0.14);
+  color: var(--paper);
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.typeChipX {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(231, 236, 237, 0.6);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.typeChipX:hover {
+  background: var(--accent);
+  color: var(--bone);
+}
+
+/* Small enough to pack onto the end of the last row of chips, then grows into
+   whatever is left of that row. At 150px it could not fit beside the final
+   chip and wrapped to a line of its own every time. */
+.typesInput {
+  flex: 1 1 84px;
+  min-width: 84px;
+  border: 0;
+  background: none;
+  color: var(--paper);
+  font: inherit;
+  font-size: 14px;
+  padding: 4px 2px;
+}
+
+.typesInput:focus { outline: none; }
+.typesInput::placeholder { color: rgba(231, 236, 237, 0.38); }
+
+/* Beside the field — it acts on what is next to it, not on the filter bar. */
+.typesSweep {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  height: var(--types-h);
+  padding: 0 20px;
+  border: 1px solid rgba(231, 236, 237, 0.28);
+  border-radius: 12px;
+  background: rgba(231, 236, 237, 0.08);
+  color: var(--paper);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 160ms ease, border-color 160ms ease, opacity 160ms ease;
+}
+
+.typesSweep:hover:not(:disabled) {
+  background: rgba(231, 236, 237, 0.16);
+  border-color: rgba(231, 236, 237, 0.45);
+}
+
+/* Filled once the terms are ahead of the index: at that point pressing it is
+   the thing to do, and an outline among outlines does not say so. */
+.typesSweep[data-urgent='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bone);
+}
+
+.typesSweep[data-urgent='true']:hover:not(:disabled) {
+  background: var(--accent-lift);
+  border-color: var(--accent-lift);
+}
+
+.typesSweep:disabled { opacity: 0.55; cursor: default; }
+
+.typesHint {
+  margin: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--accent-lift);
+}
+
+/* The last sweep's result is a receipt, not a prompt, so it recedes to the
+   weight of the synced line rather than sitting in the accent. */
+.typesNote {
+  margin: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: rgba(231, 236, 237, 0.45);
+}
+
+/* The platforms, named. Set in the same mono uppercase as the stat labels so it
+   reads as part of the readout rather than as a logo strip — the marks are here
+   to identify, not to endorse. Wraps because there are seven of them now, and a
+   single line of seven would set the header's minimum width. */
 .headerSources {
   display: flex;
   align-items: center;
@@ -231,7 +403,7 @@
 }
 
 /* Each mark ships with its own background fill, so it needs no plate behind
-   it — only the corner radius, to keep three icons drawn to three different
+   it — only the corner radius, to keep icons drawn to seven different
    conventions sitting on one line. */
 .headerSourceMark {
   flex: none;
@@ -251,18 +423,20 @@
 
 /* ------------------------------------------------------------------- bar */
 
-/* There is no masthead: the filter bar is the page's own chrome and the first
-   thing under the site nav. It deliberately outranks the TopBar (z-index 50)
-   and pins to 0 rather than sitting below it — the global bar auto-hides on
-   scroll-down anyway, and on a dense tool the filters are what has to stay
-   reachable. Scroll back to the top to get the nav back. */
+/* The filter bar is the page's own chrome. It outranks the site's TopBar
+   (z-index 50) — the global bar auto-hides on scroll-down anyway, and on a
+   dense tool the filters are what has to stay reachable.
+ *
+ * Pins under the nav rather than to 0, so the two stack in reading order
+ * instead of sliding over each other. --jw-nav is measured at runtime; the
+ * fallback is one row of nav chrome and only covers first paint. */
 /* Its own surface, deliberately the darkest of the three: --paper above it in
    the header, --bone below it in the content, --bone-3 here. Opaque rather than
    the old translucent-plus-blur — it is sticky, so it has to mask what scrolls
    under it, and a solid fill does that without a compositing layer. */
 .bar {
   position: sticky;
-  top: 0;
+  top: var(--jw-nav, 58px);
   z-index: 51;
   border-top: 1px solid var(--rule);
   border-bottom: 1px solid var(--rule);
@@ -516,8 +690,9 @@
   background: var(--paper);
   /* Deliberately NOT --jw-bar: that variable is measured from this element's
      own parent, so feeding it back here would oscillate — panel shrinks, bar
-     shrinks, panel grows. A static allowance for the toolbar row is stable. */
-  max-height: calc(100vh - 160px);
+     shrinks, panel grows. A static allowance is stable, and it has to cover the
+     nav as well now that both it and the toolbar are pinned. */
+  max-height: calc(100vh - 220px);
   overflow-y: auto;
 }
 
@@ -614,6 +789,29 @@
   text-transform: uppercase;
   color: var(--sub);
 }
+
+/* Ink-filled, the way the Open tab is: this is a place you are in, not a
+   filter you have applied, and the strip is what says which. */
+.listMeta[data-hidden='true'] {
+  background: var(--ink);
+  border-bottom-color: var(--ink);
+  color: var(--bone);
+}
+
+.listMetaExit {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--accent-lift);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.listMetaExit:hover { color: var(--bone); }
 
 /* ------------------------------------------------------------------- row */
 
@@ -823,18 +1021,33 @@
   color: var(--ink-2);
 }
 
+/* Ink-filled to match the strip above it, so the row and the header it sits
+   under plainly belong to the same view. */
+.pillHidden {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bone);
+}
+
+/* A left edge on every row in the hidden view. The rows are otherwise
+   identical to open ones, and identical rows in a different list is exactly
+   how you forget which list you are in. */
+.row[data-hidden='true'] { background: rgba(11, 20, 23, 0.028); }
+.row[data-hidden='true'] .rowBar { transform: scaleY(1); background: var(--ink); }
+
 /* ---------------------------------------------------------------- detail */
 
-/* --jw-bar is measured from the real filter bar at runtime — it wraps to two
-   or three rows depending on width, so a hardcoded offset would be wrong at
-   most viewport sizes. The fallback covers first paint. */
+/* Both offsets are measured at runtime: the filter bar wraps to two or three
+   rows depending on width, and the nav changes height with it, so a hardcoded
+   number would be wrong at most viewport sizes. The pane pins below both,
+   because both are pinned above it. Fallbacks cover first paint only. */
 /* The same --paper as a selected row, not the page's --bone. The row you picked
    and the posting you are reading are one continuous surface, and long body
    copy is easier on the lighter of the two. */
 .detail {
   position: sticky;
-  top: var(--jw-bar, 104px);
-  max-height: calc(100vh - var(--jw-bar, 104px));
+  top: calc(var(--jw-nav, 58px) + var(--jw-bar, 104px));
+  max-height: calc(100vh - var(--jw-nav, 58px) - var(--jw-bar, 104px));
   overflow-y: auto;
   padding: 32px 44px 64px;
   min-width: 0;
@@ -938,8 +1151,9 @@
   background: var(--paper);
   /* Deliberately NOT --jw-bar: that variable is measured from this element's
      own parent, so feeding it back here would oscillate — panel shrinks, bar
-     shrinks, panel grows. A static allowance for the toolbar row is stable. */
-  max-height: calc(100vh - 160px);
+     shrinks, panel grows. A static allowance is stable, and it has to cover the
+     nav as well now that both it and the toolbar are pinned. */
+  max-height: calc(100vh - 220px);
   overflow-y: auto;
 }
 
@@ -1112,13 +1326,24 @@
 
 @media (max-width: 640px) {
   .headerInner { padding: 13px 16px 12px; gap: 12px; }
-  .headerStats { gap: 5px 12px; }
+  /* Keeps the extra air around the readout, at a size that suits a header
+     whose wordmark is 19px rather than 92px. */
+  .headerStats { gap: 5px 12px; margin: 8px 0; }
   .wordmark { font-size: 19px; }
 
   /* Tightened rather than dropped — this is the line that says what the tool
      is looking at, and it fits on one row at this size. */
-  .headerProvenance { gap: 8px; }
   .headerSources { gap: 6px 14px; font-size: 10px; letter-spacing: 0.1em; }
+
+  /* The field keeps its full width; only the chrome around it tightens. */
+  .types { gap: 7px; }
+  .typesLabel { font-size: 10px; }
+  .types { --types-h: 40px; }
+  .typesRow { gap: 8px; }
+  .typesField { padding: 8px 9px; gap: 6px; border-radius: 10px; }
+  .typeChip { font-size: 12px; padding: 3px 5px 3px 9px; }
+  .typesInput { font-size: 13px; flex-basis: 84px; min-width: 84px; }
+  .typesSweep { padding: 0 13px; border-radius: 10px; letter-spacing: 0.1em; }
   .headerSource { gap: 6px; }
   .headerSourceMark { width: 15px; height: 15px; border-radius: 3px; }
   .barInner { padding: 8px 16px; gap: 5px; }
@@ -1271,9 +1496,45 @@
 /* ------------------------------------------------------------------- nav */
 
 /* Sits on the hero's own ground so the two read as one dark block, with the
-   masthead below it. Not sticky — the toolbar is what pins. */
+   masthead below it.
+ *
+ * Pinned above the toolbar. Both stick, in the order they are read: identity
+ * and the way out on top, the controls under it. It outranks the bar (51) so
+ * the account menu opens over the toolbar rather than behind it, and it is
+ * opaque for the same reason the bar is — a sticky element has to mask what
+ * scrolls beneath it, and a solid fill does that without a compositing layer.
+ *
+ * The height is republished as --jw-nav (see JobwatchApp): the bar pins below
+ * it and the detail pane below that, so both need a number that survives the
+ * nav changing height at a different viewport. */
 .nav {
+  position: sticky;
+  top: 0;
+  z-index: 52;
   background: var(--hero-top, #10262B);
+  /* Transparent rather than absent, so turning it on when pinned changes a
+     colour instead of adding a pixel and shifting everything below. */
+  border-bottom: 1px solid transparent;
+  transition: background 220ms ease, border-color 220ms ease;
+}
+
+/* Glass, but only where it is actually glass and only once it is over
+ * something.
+ *
+ * Two conditions, both load-bearing. A translucent bar with no blur behind it
+ * is just content showing through as noise — worse than opaque over a dense
+ * list — so the solid fill above stays the fallback. And at rest the nav sits
+ * on the hero's own ground with nothing behind it but more of the same dark,
+ * where a blur costs a compositing layer and buys nothing; `data-stuck` is set
+ * only once it has lifted off. `--hero-top` is declared on the header, a
+ * sibling rather than an ancestor, so the value is written out here. */
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .nav[data-stuck='true'] {
+    background: rgba(16, 38, 43, 0.62);
+    border-bottom-color: rgba(231, 236, 237, 0.1);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    backdrop-filter: blur(16px) saturate(150%);
+  }
 }
 
 .navInner {

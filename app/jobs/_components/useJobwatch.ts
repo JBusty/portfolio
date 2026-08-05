@@ -7,7 +7,12 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { companyKey, fetchCompany, fetchDescription } from '@/lib/jobwatch/sources';
+import {
+  companyKey,
+  fetchCompany,
+  fetchDescription,
+  hasDescriptionEndpoint,
+} from '@/lib/jobwatch/sources';
 import {
   DEFAULT_PREFS,
   hydrate,
@@ -17,7 +22,6 @@ import {
   loadJobState,
   loadPrefs,
   observeJobs,
-  PRE_EXISTING,
   pruneJobState,
   saveCache,
   saveCompanies,
@@ -30,14 +34,15 @@ import type { JobIndex } from '@/lib/jobwatch/sweep';
 import { useRemoteState } from './useRemoteState';
 
 import { titleCase } from '@/lib/jobwatch/format';
-import type {
-  Company,
-  CompanyResult,
-  Job,
-  JobState,
-  Prefs,
-  Salary,
-  SourceKind,
+import {
+  PRE_EXISTING,
+  type Company,
+  type CompanyResult,
+  type Job,
+  type JobState,
+  type Prefs,
+  type Salary,
+  type SourceKind,
 } from '@/lib/jobwatch/types';
 
 type Results = Record<string, CompanyResult>;
@@ -111,33 +116,90 @@ export function useJobwatch() {
    * either way and switches over on its own.
    */
   const [indexJobs, setIndexJobs] = useState<Job[] | null>(null);
-  const [indexMeta, setIndexMeta] = useState<{ updatedAt: number; shards: number } | null>(null);
+  const [indexMeta, setIndexMeta] = useState<
+    { updatedAt: number; shards: number; types: string[] } | null
+  >(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  /** Applies an index payload from wherever it came from. */
+  const applyIndex = useCallback((payload: JobIndex | null | undefined) => {
+    if (payload?.version !== 1 || !Array.isArray(payload.jobs)) return;
+    if (payload.jobs.length === 0) return;
 
-    void (async () => {
-      try {
-        const res = await fetch('/api/jobwatch/index');
-        if (!res.ok) return;
-        const payload = (await res.json()) as JobIndex;
-        if (cancelled || payload?.version !== 1 || !Array.isArray(payload.jobs)) return;
-        if (payload.jobs.length === 0) return;
-
-        setIndexJobs(payload.jobs.map((j) => ({ ...j, descriptionHtml: '' })));
-        setIndexMeta({
-          updatedAt: payload.updatedAt,
-          shards: Object.keys(payload.shards ?? {}).length,
-        });
-      } catch {
-        // Offline, or the route isn't deployed. The local path still works.
-      }
-    })();
-
-    return () => { cancelled = true; };
+    setIndexJobs(payload.jobs.map((j) => ({ ...j, descriptionHtml: '' })));
+    setIndexMeta({
+      updatedAt: payload.updatedAt,
+      shards: Object.keys(payload.shards ?? {}).length,
+      types: payload.types ?? [],
+    });
   }, []);
 
+  /**
+   * Pulls the merged index off the CDN. Used on arrival, where a copy up to a
+   * minute old is fine and coming off the edge is the whole point.
+   *
+   * Not used after a sweep — see `runSweep`. The edge copy cannot be bypassed,
+   * so the fresh one has to arrive by another route.
+   */
+  const loadIndex = useCallback(async () => {
+    try {
+      const res = await fetch('/api/jobwatch/index', { cache: 'no-store' });
+      if (res.ok) applyIndex((await res.json()) as JobIndex);
+    } catch {
+      // Offline, or the route isn't deployed. The local path still works.
+    }
+  }, [applyIndex]);
+
+  useEffect(() => { void loadIndex(); }, [loadIndex]);
+
   const usingIndex = indexJobs !== null;
+
+  /* --------------------------------------------------------------- sweep */
+
+  const [sweeping, setSweeping] = useState(false);
+  const [sweepNote, setSweepNote] = useState<string | null>(null);
+
+  /**
+   * Runs one shard of the sweep on demand.
+   *
+   * One shard, not all three: a shard is ~5,300 boards and the whole point of
+   * the split is that a full pass does not fit in one invocation. `shard=stale`
+   * makes the route pick the third that reported longest ago, so pressing this
+   * three times covers everything and pressing it once refreshes whatever is
+   * most out of date.
+   *
+   * The merged index comes back *in the response* rather than being re-fetched.
+   * A re-fetch goes through the Blob CDN, which serves a 60-second copy and
+   * ignores query strings, so the page would routinely be told what the sweep
+   * found and then shown the index from before it ran.
+   */
+  const runSweep = useCallback(async () => {
+    setSweeping(true);
+    setSweepNote(null);
+    try {
+      const res = await fetch('/api/jobwatch/refresh?shard=stale', { cache: 'no-store' });
+      const payload = await res.json() as {
+        ok?: boolean; error?: string; shard?: number;
+        probed?: number; matched?: number; capped?: boolean;
+        index?: JobIndex;
+      };
+
+      if (!res.ok || !payload.ok) {
+        setSweepNote(payload.error ?? `Sweep failed (${res.status})`);
+        return;
+      }
+
+      applyIndex(payload.index);
+      setSweepNote(
+        payload.capped
+          ? `Shard ${payload.shard} hit the size cap — narrow the job types.`
+          : `Shard ${payload.shard}: ${payload.probed?.toLocaleString()} boards, ${payload.matched} matched.`,
+      );
+    } catch (err) {
+      setSweepNote((err as Error)?.message ?? 'Sweep failed');
+    } finally {
+      setSweeping(false);
+    }
+  }, [applyIndex]);
 
   /* ------------------------------------------------------------- hydrate */
 
@@ -373,16 +435,19 @@ export function useJobwatch() {
   /* --------------------------------------------------- descriptions */
 
   /**
-   * Greenhouse descriptions, fetched when a posting is opened and kept for the
-   * session only. They are far too big for localStorage — that was already true
-   * of the cache, and it is why the list endpoint no longer asks for them.
+   * Descriptions fetched when a posting is opened, kept for the session only.
+   * They are far too big for localStorage — that was already true of the cache,
+   * and it is why neither the index nor the list endpoint carries them.
    */
   const [descriptions, setDescriptions] = useState<Record<string, DescriptionEntry>>({});
   const descriptionsRef = useRef<Record<string, DescriptionEntry>>({});
 
   const loadDescription = useCallback((job: Job) => {
-    // Lever and Ashby already carry the description; only Greenhouse is empty.
-    if (job.source !== 'greenhouse' || job.descriptionHtml) return;
+    // Nothing to do when the prose already came with the listing. Otherwise it
+    // is only worth a request for the boards that publish a detail route —
+    // `hasDescriptionEndpoint` is the same list `fetchDescription` dispatches on,
+    // and asking for the rest would just round-trip back an empty string.
+    if (job.descriptionHtml || !hasDescriptionEndpoint(job.source)) return;
     if (descriptionsRef.current[job.id]?.status !== undefined) return;
 
     const put = (entry: DescriptionEntry) => {
@@ -462,6 +527,7 @@ export function useJobwatch() {
   return {
     ready, companies: boards, results, jobs, jobState, prefs, syncing, lastSynced, errorCount,
     descriptions, usingIndex, indexMeta,
+    sweeping, sweepNote, runSweep,
     sync, addCompany, removeCompany, loadDescription,
     markApplied, unapply, toggleHidden,
     updatePrefs, resetPrefs,

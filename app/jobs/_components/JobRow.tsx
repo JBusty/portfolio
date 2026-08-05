@@ -31,7 +31,7 @@ function JobRow({ job, selected, isNew, entry, reason, appliedAt, onSelect, onUn
   const locationUnconfirmed = usEligibility(job.location) === 'unconfirmed';
 
   return (
-    <div className={styles.row} data-selected={selected}>
+    <div className={styles.row} data-selected={selected} data-hidden={entry?.hidden === true}>
       <span className={styles.rowBar} aria-hidden="true" />
 
       <button
@@ -64,6 +64,10 @@ function JobRow({ job, selected, isNew, entry, reason, appliedAt, onSelect, onUn
         <span className={styles.reason}>{reason}</span>
 
         <span className={styles.rowFacts}>
+          {/* Only reachable from the Hidden view, where every row carries it —
+              which is the point: the badge is what makes an individual row
+              legible as hidden once it is out of the list it was removed from. */}
+          {entry?.hidden && <span className={`${styles.pill} ${styles.pillHidden}`}>Hidden</span>}
           {isNew && <span className={`${styles.pill} ${styles.pillNew}`}>New</span>}
           {isApplied && <span className={`${styles.pill} ${styles.pillApplied}`}>Applied</span>}
 

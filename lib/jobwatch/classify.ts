@@ -154,43 +154,122 @@ const NOT_REALLY_DESIGN = /software\s+engineer|\bsensor\b|\bfirmware\b/i;
  */
 /* ------------------------------------------------------------- job types */
 
-const ESCAPE = /[.*+?^${}()|[\]\\]/g;
-
 /**
- * Compiled once per term — this runs across the whole index on every keystroke
- * in the search box, so rebuilding a regex per posting per term is the one
- * thing here that would actually be felt.
- */
-const patternCache = new Map<string, RegExp>();
-
-/**
- * Anchored at the start of a word, open at the end.
+ * Matching a job type against a title.
  *
- * Both halves are deliberate. Without the leading boundary, `ui` matches Build,
- * Guide and Recruiter — which is why the hardcoded list it replaces had to
- * write `\bui\b`. With a *trailing* boundary, "product design" would stop
- * matching "Product Designer", which is the single most common title on the
- * board. Prefix-of-word is what people mean when they type a job type: enter
- * "design" and you want designer, enter "engineer" and you want engineering.
+ * Deliberately loose. Nobody writes their target role in the same words the
+ * posting does — "Senior Product Designer" is the same job as "Senior Designer"
+ * and as "Senior Product Design Engineer", and an exact phrase test finds
+ * neither. Missing a role you wanted is the expensive failure here; seeing one
+ * you didn't costs a glance.
+ *
+ * The rule is: the *head* of the term has to be there, and half its qualifiers.
+ * Job titles put the role last and pile qualifiers in front of it, so the head
+ * is the part that says what the job actually is — dropping it would let
+ * "senior product designer" match "Senior Software Engineer" on `senior` alone,
+ * which is the direction loose matching goes wrong.
  */
-function termPattern(term: string): RegExp {
-  let pattern = patternCache.get(term);
-  if (!pattern) {
-    pattern = new RegExp(`(?<!\\w)${term.replace(ESCAPE, '\\$&')}`, 'i');
-    patternCache.set(term, pattern);
+
+/** No signal, and counting them wrecks the qualifier proportion. */
+const STOPWORDS = new Set(['of', 'the', 'and', 'a', 'an', 'for', 'to', 'in', 'at', 'on', 'with']);
+
+/**
+ * Abbreviations common enough in real titles to cost matches on their own.
+ * "Sr. UX Designer" and "Sr. Learning Experience Designer" are both live
+ * postings; without this, a term written out as "senior" misses every one.
+ */
+const SYNONYMS: Record<string, string> = {
+  sr: 'senior', snr: 'senior', jr: 'junior', jnr: 'junior',
+  mgr: 'manager', dir: 'director', prod: 'product',
+  exp: 'experience', sys: 'system', ops: 'operations',
+};
+
+function words(text: string): string[] {
+  return text
+    .toLowerCase()
+    .split(/[^a-z0-9+#]+/)
+    .filter(Boolean)
+    .map((word) => SYNONYMS[word] ?? word)
+    .filter((word) => !STOPWORDS.has(word));
+}
+
+/**
+ * Shortest a word can be and still count as a prefix of another.
+ *
+ * "design" has to reach "designer" and "designs", so prefixes must count. But
+ * `ui` must not reach `uid` and `ux` must not reach `uxo`, so a prefix only
+ * counts once the shorter side is long enough to be a word rather than an
+ * accident of spelling.
+ */
+const PREFIX_MIN = 4;
+
+function wordMatches(a: string, b: string): boolean {
+  if (a === b) return true;
+  const [short, long] = a.length <= b.length ? [a, b] : [b, a];
+  return short.length >= PREFIX_MIN && long.startsWith(short);
+}
+
+/** How much of the front of a term a title has to carry. Half, rounded down. */
+const QUALIFIER_RATIO = 0.5;
+
+/**
+ * Seniority is not decided here.
+ *
+ * It used to be: a term naming "senior" quietly set a floor inside the matcher,
+ * on the reasoning that being shown mid when you asked for senior is the wrong
+ * job rather than a near miss. Right about the problem, wrong about the place.
+ * It only ever set a floor — so "Director, Product Design" sailed through every
+ * senior search — and burying it here meant nothing on screen admitted the rule
+ * existed. It is a visible filter now; see `prefs.levels`.
+ */
+
+type ParsedTerm = { head: string; qualifiers: string[] };
+
+/** Parsed once per term rather than once per posting per term. */
+const termCache = new Map<string, ParsedTerm | null>();
+
+function parseTerm(term: string): ParsedTerm | null {
+  const cached = termCache.get(term);
+  if (cached !== undefined) return cached;
+
+  const parts = words(term);
+  const parsed = parts.length === 0
+    ? null
+    : { head: parts[parts.length - 1], qualifiers: parts.slice(0, -1) };
+
+  termCache.set(term, parsed);
+  return parsed;
+}
+
+function termMatches(haystack: string[], term: string): boolean {
+  const parsed = parseTerm(term);
+  if (!parsed) return false;
+
+  if (!haystack.some((word) => wordMatches(word, parsed.head))) return false;
+  if (parsed.qualifiers.length === 0) return true;
+
+  let hits = 0;
+  for (const qualifier of parsed.qualifiers) {
+    if (haystack.some((word) => wordMatches(word, qualifier))) hits += 1;
   }
-  return pattern;
+  return hits / parsed.qualifiers.length >= QUALIFIER_RATIO;
 }
 
 /**
  * Whether a title is one of the kinds of job being looked for.
  *
- * An empty list means no narrowing at all, the same way all levels off reads as
- * no level filter — the alternative, an empty board, is never what was meant.
+ * Purely about wording — seniority is `levelWithin`'s job. Keeping them apart
+ * is what lets the sweep index a posting once and the band be changed later
+ * without going back to the boards.
+ *
+ * An empty list means no narrowing at all — the alternative, an empty board, is
+ * never what was meant.
  */
 export function matchesJobType(title: string, types: string[]): boolean {
   if (types.length === 0) return true;
-  return types.some((term) => termPattern(term).test(title));
+  const haystack = words(title);
+  if (haystack.length === 0) return false;
+  return types.some((term) => termMatches(haystack, term));
 }
 
 export function isDesignRole(title: string): boolean {

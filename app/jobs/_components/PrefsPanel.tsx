@@ -10,7 +10,7 @@
 
 import { useState, type KeyboardEvent, type Ref } from 'react';
 import { LEVEL_LABELS, LEVEL_ORDER } from '@/lib/jobwatch/classify';
-import type { Level, Prefs, SortBy } from '@/lib/jobwatch/types';
+import type { Prefs, SortBy } from '@/lib/jobwatch/types';
 import { CloseIcon } from './icons';
 import styles from '../jobwatch.module.css';
 
@@ -116,8 +116,8 @@ function TermList({
 }
 
 export default function PrefsPanel({ prefs, shown, total, onChange, onReset, ref }: Props) {
-  const setLevel = (level: Level) =>
-    onChange({ levels: { ...prefs.levels, [level]: !prefs.levels[level] } });
+  /** Stored as the empty list — see `Prefs.levels`. */
+  const everyLevel = prefs.levels.length === 0;
 
   return (
     <div className={styles.panel} ref={ref}>
@@ -133,25 +133,58 @@ export default function PrefsPanel({ prefs, shown, total, onChange, onReset, ref
         </div>
 
         <div className={styles.panelGrid}>
-          {/* ---- levels ---- */}
+          {/* ---- seniority ----
+              One row of chips, same language as every other toggle in here.
+              This was two selects and a "to" — a min and a max that had to be
+              kept from crossing — which is a lot of apparatus for six values
+              where any band is just a selection you could have clicked. */}
           <div className={styles.field}>
-            <span className={styles.groupLabel}>Levels</span>
+            <span className={styles.groupLabel}>Seniority</span>
             <p className={styles.fieldHint}>
-              Independent switches, not a floor. All off means no level filter.
+              {everyLevel
+                ? 'Job types match on wording alone, which is loose enough to reach a Director posting from a senior search — this is what keeps it out.'
+                : `Showing ${prefs.levels.length} of ${LEVEL_ORDER.length}.`}
             </p>
             <div className={styles.group}>
-              {LEVEL_ORDER.map((level) => (
-                <button
-                  key={level}
-                  type="button"
-                  className={styles.toggle}
-                  data-active={prefs.levels[level]}
-                  onClick={() => setLevel(level)}
-                  aria-pressed={prefs.levels[level]}
-                >
-                  {LEVEL_LABELS[level]}
-                </button>
-              ))}
+              {/* An explicit All rather than six chips that light up together.
+                  "Nothing selected" and "everything selected" are the same list,
+                  but only one of them is a thing you can point at — and having
+                  the six read as on while none were actually chosen meant the
+                  row looked identical whether you had picked all six or none. */}
+              <button
+                type="button"
+                className={styles.toggle}
+                data-active={everyLevel}
+                onClick={() => onChange({ levels: [] })}
+                aria-pressed={everyLevel}
+              >
+                All
+              </button>
+
+              {LEVEL_ORDER.map((level) => {
+                const on = prefs.levels.includes(level);
+                return (
+                  <button
+                    key={level}
+                    type="button"
+                    className={styles.toggle}
+                    data-active={on}
+                    // Turning the last one off lands on the empty list, which is
+                    // All — so the row can never end up selecting nothing and
+                    // showing nothing.
+                    onClick={() => onChange({
+                      levels: on
+                        ? prefs.levels.filter((l) => l !== level)
+                        // Stored in LEVEL_ORDER, never click order, so the value
+                        // is stable and comparing two of them is a plain equal.
+                        : LEVEL_ORDER.filter((l) => l === level || prefs.levels.includes(l)),
+                    })}
+                    aria-pressed={on}
+                  >
+                    {LEVEL_LABELS[level]}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

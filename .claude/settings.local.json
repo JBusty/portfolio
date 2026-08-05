@@ -94,7 +94,14 @@
       "Bash(sed -i '/const \\\\[wasEmpty, setWasEmpty\\\\] = useState\\(false\\);/d' app/jobs/_components/useJobwatch.ts)",
       "Bash(perl -0pi *)",
       "Bash(perl -0pi -e \"s|import \\\\{ DEFAULT_PREFS, SEED_COMPANIES \\\\} from '\\\\@/lib/jobwatch/store';|import { mergeJobState } from '\\\\@/lib/jobwatch/merge';\\\\nimport { DEFAULT_PREFS, SEED_COMPANIES } from '\\\\@/lib/jobwatch/store';|\" app/jobs/_components/useRemoteState.ts)",
-      "Bash(cd *)"
+      "Bash(cd *)",
+      "Bash(echo \"=== build exit: $? ===\")",
+      "Bash(npx --prefix C:/dev/portfolio tsc --noEmit -p C:/dev/portfolio)",
+      "Bash(python -c ' *)",
+      "Bash(npx tsx *)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(grep *)",
+      "Bash(npx eslint *)"
     ]
   }
 }

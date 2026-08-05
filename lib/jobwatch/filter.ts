@@ -6,9 +6,9 @@
  * — and tested — on its own.
  */
 
-import { LEVEL_LABELS, LEVEL_ORDER, isDesignRole, salaryFloor, usEligibility } from './classify';
-import { DEFAULT_PREFS, PRE_EXISTING } from './store';
-import type { Job, JobState, Prefs } from './types';
+import { LEVEL_LABELS, matchesJobType, salaryFloor, usEligibility } from './classify';
+import { DEFAULT_PREFS, firstSeenOf } from './store';
+import { PRE_EXISTING, type Job, type JobState, type Prefs } from './types';
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -56,9 +56,11 @@ export function filterJobs(
   view: View,
   now = Date.now(),
 ): Job[] {
-  // All levels off reads as "no level filter", the same way an empty include
-  // list does. The alternative — an empty board — is never what was meant.
-  const levelFilterOn = LEVEL_ORDER.some((level) => prefs.levels[level]);
+  const matchesSearch = (job: Job) => {
+    if (view.terms.length === 0) return true;
+    const hay = view.index.get(job.id) ?? '';
+    return view.terms.every((t) => hay.includes(t));
+  };
 
   const kept = jobs.filter((job) => {
     const entry = state[job.id];
@@ -68,22 +70,41 @@ export function filterJobs(
     // exactly a partition: every posting is on one side of it or the other.
     if ((entry?.hidden ?? false) !== view.hiddenOnly) return false;
 
+    // The hidden pile is a record of what you removed, not a search result, and
+    // it exists to be undone. Running it through the same preferences that are
+    // narrowing everything else is how a posting you hid becomes impossible to
+    // find again — tighten a filter and the thing you wanted to unhide is gone
+    // from the only view that could have shown it. So this is everything you
+    // hid, and only the search box narrows it.
+    if (view.hiddenOnly) return matchesSearch(job);
+
     // 2 — applied. The Applied tab is assembled from job state rather than from
     // the fetch (see `appliedRecords`), so in practice this only ever clears
     // them out of Open — but the guard belongs to the pipeline's contract.
     if (entry?.applied && view.tab !== 'applied') return false;
 
-    // 3 — the design-title test. Not a preference: it is what the tool is for,
-    // and a switch labelled "design only" on a product-design board only ever
-    // read as a question about something else.
-    if (!isDesignRole(job.title)) return false;
+    // 3 — the job types being looked for. This was a hardcoded design-title
+    // test on the grounds that it was what the tool was for; it is a list you
+    // edit now, which is the same argument turned around — what the tool is for
+    // is whatever you told it to watch.
+    if (!matchesJobType(job.title, prefs.jobTypes)) return false;
 
-    // 4 — exclude terms, the tunable layer on top of that test. Narrowing to a
-    // phrase is the search box's job, which is why there is no include list.
+    // 4 — seniority. None selected reads as "every level", the same way an
+    // empty `jobTypes` reads as no narrowing; the alternative — an empty board
+    // — is never what was meant.
+    //
+    // Deliberately separate from the job types above, even though a term like
+    // "staff product designer" names a level too. Matching on wording is loose
+    // on purpose — it has to reach "Senior Designer" from "senior product
+    // designer" — and that looseness was letting "Director, Product Design"
+    // through every senior search. Wording and seniority are two questions and
+    // they get two answers.
+    if (prefs.levels.length > 0 && !prefs.levels.includes(job.level)) return false;
+
+    // 5 — exclude terms, the tunable layer on top of the title test. Narrowing
+    // to a phrase is the search box's job, which is why there is no include
+    // list.
     if (matchesAny(title, prefs.exclude)) return false;
-
-    // 5 — levels.
-    if (levelFilterOn && !prefs.levels[job.level]) return false;
 
     // 6 — remote. Not a preference either: an on-site role is not a result this
     // board has any business returning.
@@ -108,14 +129,14 @@ export function filterJobs(
     // 9 — age. Prefers our own first-seen stamp, because Greenhouse exposes
     // only `updated_at` and that bumps on any description edit.
     //
-    // But everything present at the first sync is stamped PRE_EXISTING, so on a
-    // fresh install *every* posting has a baseline stamp — and treating that as
+    // But everything present at the first sweep is stamped PRE_EXISTING, so on
+    // a fresh index *every* posting has a baseline stamp — and treating that as
     // "age unknown, therefore excluded" emptied the board for any age setting.
     // Falling back to the board's own date is less precise and still right far
     // more often than showing nothing.
     if (prefs.maxAgeDays != null) {
       const cutoff = now - prefs.maxAgeDays * DAY;
-      const first = entry?.firstSeen ?? PRE_EXISTING;
+      const first = firstSeenOf(job, state);
       const stamp =
         first !== PRE_EXISTING
           ? first
@@ -128,12 +149,7 @@ export function filterJobs(
 
     // View-scoped narrowing, after the preferences so the order above is the
     // one documented.
-    if (view.terms.length > 0) {
-      const hay = view.index.get(job.id) ?? '';
-      if (!view.terms.every((t) => hay.includes(t))) return false;
-    }
-
-    return true;
+    return matchesSearch(job);
   });
 
   // 10 — sort.
@@ -142,11 +158,9 @@ export function filterJobs(
 
 /* ------------------------------------------------------------------ sort */
 
-const firstSeenOf = (state: JobState, id: string) => state[id]?.firstSeen ?? PRE_EXISTING;
-
 export function sortJobs(jobs: Job[], prefs: Prefs, state: JobState): Job[] {
   const dir = prefs.sortDir === 'asc' ? 1 : -1;
-  const seen = (job: Job) => firstSeenOf(state, job.id);
+  const seen = (job: Job) => firstSeenOf(job, state);
   const newestFirst = (a: Job, b: Job) => seen(b) - seen(a);
 
   return [...jobs].sort((a, b) => {
@@ -269,9 +283,10 @@ export function appliedRecords(state: JobState, jobs: Job[], view: View): Applie
  */
 export function countTuned(prefs: Prefs): number {
   let n = 0;
-  for (const level of LEVEL_ORDER) {
-    if (prefs.levels[level] !== DEFAULT_PREFS.levels[level]) n += 1;
-  }
+  // Job types are not counted: they are on screen in the hero, not folded away
+  // behind this badge, so they can never be the forgotten reason for an empty
+  // board. Seniority is, so it is.
+  if (prefs.levels.length > 0) n += 1;
   if (prefs.exclude.join('|') !== DEFAULT_PREFS.exclude.join('|')) n += 1;
   if (prefs.salaryFloor !== DEFAULT_PREFS.salaryFloor) n += 1;
   if (prefs.includeUnlistedSalary !== DEFAULT_PREFS.includeUnlistedSalary) n += 1;

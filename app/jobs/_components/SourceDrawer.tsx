@@ -2,7 +2,7 @@
 
 import { useState, type KeyboardEvent, type Ref } from 'react';
 import { clockTime, plural } from '@/lib/jobwatch/format';
-import { SOURCE_CODES, SOURCE_LABELS } from '@/lib/jobwatch/sources';
+import { SOURCE_CODES, SOURCE_LABELS, SOURCE_ORDER } from '@/lib/jobwatch/sources';
 import type { Company, CompanyResult, SourceKind } from '@/lib/jobwatch/types';
 import { TrashIcon } from './icons';
 import styles from '../jobwatch.module.css';
@@ -104,9 +104,13 @@ export default function SourceDrawer({ companies, results, onAdd, onRemove, ref 
             onChange={(e) => setSource(e.target.value as SourceKind)}
             aria-label="Job board platform"
           >
-            <option value="greenhouse">Greenhouse</option>
-            <option value="lever">Lever</option>
-            <option value="ashby">Ashby</option>
+            {/* Driven off the registry rather than listed by hand, so adding an
+                adapter cannot leave a platform swept but unaddable here. */}
+            {SOURCE_ORDER.map((s) => (
+              <option key={s} value={s}>
+                {SOURCE_LABELS[s]}
+              </option>
+            ))}
           </select>
 
           <input

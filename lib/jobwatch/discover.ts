@@ -19,12 +19,20 @@
  * added by hand.
  */
 
+import { readHarvest } from './index-store';
 import type { SourceKind } from './types';
 
 const HARVEST_BASE =
   'https://raw.githubusercontent.com/Feashliaa/job-board-aggregator/main/data';
 
-const HARVEST_FILES: Record<SourceKind, string> = {
+/**
+ * Partial: the upstream dataset only covers the three original platforms.
+ *
+ * SmartRecruiters, Workday, Breezy and Rippling have no published list of
+ * boards anywhere, which is exactly the gap `builtin.ts` fills — their tokens
+ * come from the crawl instead, via `readHarvest`.
+ */
+const HARVEST_FILES: Partial<Record<SourceKind, string>> = {
   greenhouse: 'greenhouse_companies.json',
   lever: 'lever_companies.json',
   ashby: 'ashby_companies.json',
@@ -40,18 +48,27 @@ const EXTRA_TOKENS: Partial<Record<SourceKind, string[]>> = {
 
 export type BoardRef = { source: SourceKind; token: string };
 
-/** Junk that shows up in a crawl-derived list: bare ids, single characters. */
+/**
+ * Junk that shows up in a crawl-derived list: bare ids, single characters.
+ *
+ * The ceiling is generous because a Workday token is three parts spliced
+ * together (`tenant|site|wd1`) and routinely runs past what a single board slug
+ * ever would.
+ */
 function isPlausibleToken(token: string): boolean {
   return (
     token.length > 1 &&
-    token.length < 60 &&
-    /[a-z]/.test(token) &&
+    token.length < 100 &&
+    /[a-z]/i.test(token) &&
     !/^\d+$/.test(token)
   );
 }
 
 async function fetchTokens(source: SourceKind, signal?: AbortSignal): Promise<string[]> {
-  const res = await fetch(`${HARVEST_BASE}/${HARVEST_FILES[source]}`, {
+  const file = HARVEST_FILES[source];
+  if (!file) return [];
+
+  const res = await fetch(`${HARVEST_BASE}/${file}`, {
     signal,
     // The upstream list changes at most daily; there is no reason to pull it
     // on every shard of every sweep.
@@ -75,15 +92,37 @@ async function fetchTokens(source: SourceKind, signal?: AbortSignal): Promise<st
  *
  * Stable matters: the sweep is sharded across cron runs, and a list that
  * reordered between runs would let boards fall permanently between shards.
+ *
+ * Three streams feed this: the upstream Common Crawl lists, the hand-verified
+ * `EXTRA_TOKENS`, and whatever the Built In crawl has found since. A failure to
+ * read the crawled set is survivable and deliberately not fatal — it costs the
+ * four newer platforms this run, not the whole sweep.
  */
 export async function discoverBoards(signal?: AbortSignal): Promise<BoardRef[]> {
-  const sources: SourceKind[] = ['greenhouse', 'lever', 'ashby'];
+  const sources: SourceKind[] = [
+    'greenhouse',
+    'lever',
+    'ashby',
+    'smartrecruiters',
+    'workday',
+    'breezy',
+    'rippling',
+  ];
+
+  const crawled = await readHarvest().catch(() => null);
 
   const lists = await Promise.all(
     sources.map(async (source) => {
       const harvested = await fetchTokens(source, signal);
       const extra = EXTRA_TOKENS[source] ?? [];
-      const tokens = [...new Set([...harvested, ...extra])].sort();
+      const found = crawled?.tokens[source] ?? [];
+
+      // Not lowercased here, unlike `fetchTokens`. A Workday token carries a
+      // career-site segment that is case-sensitive in the API path, so folding
+      // case would turn every one of them into a 404.
+      const tokens = [...new Set([...harvested, ...extra, ...found])]
+        .filter(isPlausibleToken)
+        .sort();
       return tokens.map((token) => ({ source, token }));
     }),
   );

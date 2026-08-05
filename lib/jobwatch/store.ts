@@ -16,17 +16,18 @@
 import { LEVEL_ORDER } from './classify';
 import { plural, titleCase } from './format';
 import { companyKey } from './sources';
-import type {
-  Company,
-  Job,
-  JobMark,
-  JobSnapshot,
-  JobState,
-  JobStateEntry,
-  LevelPrefs,
-  Prefs,
-  SortBy,
-  SourceKind,
+import {
+  PRE_EXISTING,
+  type Level,
+  type Company,
+  type Job,
+  type JobMark,
+  type JobSnapshot,
+  type JobState,
+  type JobStateEntry,
+  type Prefs,
+  type SortBy,
+  type SourceKind,
 } from './types';
 
 const KEY = {
@@ -217,16 +218,46 @@ export const saveCompanies = (companies: Company[]) => write(KEY.companies, comp
 
 export const PREFS_VERSION = 1;
 
+/**
+ * The job types the tool ships looking for.
+ *
+ * This is the old hardcoded design-title test, written out as terms you can
+ * edit. It is close to but not identical to what that test did: the regexes it
+ * replaces also carried a reject list (silicon "Design Verification Engineer",
+ * "Brand Designer", and so on), and that still runs — see `prefs.exclude` for
+ * the tunable half of it.
+ *
+ * Ordered roughly by how often each one earns its place, because this list is
+ * on screen now and the first few are what gets read.
+ */
+export const DEFAULT_JOB_TYPES = [
+  'product design',
+  'ux',
+  'ui',
+  'user experience',
+  'user research',
+  'design system',
+  'interaction design',
+  'experience design',
+  'content design',
+  'service design',
+  'design technologist',
+  'head of design',
+  'design director',
+  'design manager',
+  'design lead',
+  'principal designer',
+  'founding designer',
+];
+
 export const DEFAULT_PREFS: Prefs = {
   version: PREFS_VERSION,
-  // Senior is on. It was off, and that quietly dropped the single most common
-  // shape of the role being searched for — a plain "Senior Product Designer" —
-  // which is how a live RunPod posting went missing while every filter looked
-  // correct. `mid` stays off: it is the bucket for any title with no seniority
-  // word at all, which is 31 of 57 design roles and mostly not this search.
-  levels: { exec: false, principal: true, staff: true, lead: true, senior: true, mid: false },
-  // `engineer` used to be here and earned nothing: the design-title test already
-  // rejects every title containing it, measured at 0 drops across 1,722 postings.
+  jobTypes: [...DEFAULT_JOB_TYPES],
+  // Empty means every level, so nothing is hidden until you say so. Trimming
+  // the top is the common move — Director+ postings are a different search that
+  // shares most of its vocabulary — but defaulting to it would silently drop
+  // the "head of design" and "design director" types that ship above.
+  levels: [],
   exclude: ['manager', 'research'],
   salaryFloor: null,
   includeUnlistedSalary: true,
@@ -237,15 +268,14 @@ export const DEFAULT_PREFS: Prefs = {
 
 const SORT_KEYS = new Set<string>(['firstSeen', 'published', 'salary', 'company']);
 
-function coerceLevels(raw: unknown): LevelPrefs {
-  const out = { ...DEFAULT_PREFS.levels };
-  if (raw && typeof raw === 'object') {
-    for (const level of LEVEL_ORDER) {
-      const value = (raw as Record<string, unknown>)[level];
-      if (typeof value === 'boolean') out[level] = value;
-    }
-  }
-  return out;
+/**
+ * Kept in `LEVEL_ORDER` rather than the order they were clicked, so the stored
+ * value is stable and the chips always read seniority-descending. Anything
+ * unrecognised is dropped rather than carried.
+ */
+function coerceLevels(raw: unknown): Level[] {
+  if (!Array.isArray(raw)) return [...DEFAULT_PREFS.levels];
+  return LEVEL_ORDER.filter((level) => raw.includes(level));
 }
 
 /** An array that is present but empty is a real answer; only a non-array falls back. */
@@ -267,21 +297,27 @@ const coercePositive = (raw: unknown): number | null =>
   typeof raw === 'number' && Number.isFinite(raw) && raw > 0 ? raw : null;
 
 /**
- * Reads prefs, filling any gap from the defaults.
+ * Fills any gap in a prefs object from the defaults.
  *
  * The stored object is spread *over* the defaults rather than replacing them,
  * so a config written before a field existed picks up that field's default
- * instead of losing everything else it had. Anything the user could have
+ * instead of losing everything else it had. Anything that could have been
  * hand-edited into an impossible value is coerced back into range.
+ *
+ * Exported because localStorage is not the only source of a prefs object: the
+ * database holds one too, and a row written before a field existed is missing
+ * it just the same. Adopting that copy raw is what blanked `jobTypes` on every
+ * browser that had ever synced — the field arrived as `undefined` and the
+ * filter it drives read `.length` off it.
  */
-export function loadPrefs(): Prefs {
-  const stored = read<Partial<Prefs> | null>(KEY.prefs, null);
+export function normalizePrefs(stored: Partial<Prefs> | null | undefined): Prefs {
   if (!stored || typeof stored !== 'object') return DEFAULT_PREFS;
 
-  const merged: Prefs = {
+  return {
     ...DEFAULT_PREFS,
     ...stored,
     version: PREFS_VERSION,
+    jobTypes: coerceTerms(stored.jobTypes, DEFAULT_PREFS.jobTypes),
     levels: coerceLevels(stored.levels),
     exclude: coerceTerms(stored.exclude, DEFAULT_PREFS.exclude),
     includeUnlistedSalary: coerceBool(
@@ -295,6 +331,13 @@ export function loadPrefs(): Prefs {
       : DEFAULT_PREFS.sortBy,
     sortDir: stored.sortDir === 'asc' ? 'asc' : 'desc',
   };
+}
+
+export function loadPrefs(): Prefs {
+  const stored = read<Partial<Prefs> | null>(KEY.prefs, null);
+  if (!stored || typeof stored !== 'object') return DEFAULT_PREFS;
+
+  const merged = normalizePrefs(stored);
 
   const version = typeof stored.version === 'number' ? stored.version : 0;
   if (version < PREFS_VERSION) {
@@ -310,13 +353,6 @@ export function loadPrefs(): Prefs {
 export const savePrefs = (prefs: Prefs) => write(KEY.prefs, prefs);
 
 /* ------------------------------------------------------------- job state */
-
-/**
- * A `firstSeen` of `PRE_EXISTING` means "already on the board when Jobwatch
- * first looked" — a baseline rather than a sighting. Those are never new, and
- * an age filter can't judge them either. See `observeJobs`.
- */
-export const PRE_EXISTING = 0;
 
 export const toSnapshot = ({ descriptionHtml: _drop, ...rest }: Job): JobSnapshot => rest;
 
@@ -424,15 +460,49 @@ export function observeJobs(state: JobState, jobs: Job[], now = Date.now()): Job
   return next;
 }
 
-/** True only for postings that appeared after Jobwatch's first look. */
+/**
+ * When Jobwatch first saw a posting: the swept index's stamp where there is
+ * one, this browser's otherwise.
+ *
+ * The index wins, and has to. On the index path `observeJobs` never runs — the
+ * client stops fetching boards entirely — so a browser's job state has no
+ * opinion about an indexed posting at all, and everything downstream of a
+ * missing stamp went quiet: nothing was ever badged new, the "new this week"
+ * figure sat at zero, sorting by first-seen was a no-op, and the age filter
+ * fell through to `publishedAt` on every row. One shared stamp on the posting
+ * itself answers all four, and answers them the same way in every browser.
+ */
+export const firstSeenOf = (job: Job, state: JobState): number =>
+  job.firstSeen ?? state[job.id]?.firstSeen ?? PRE_EXISTING;
+
+/**
+ * Whether a posting turned up inside the window.
+ *
+ * Prefers Jobwatch's own sighting, and falls back to the board's date where
+ * there isn't one — exactly what the age filter does a few lines away in
+ * `filterJobs`, for exactly the same reason. `PRE_EXISTING` means "here before
+ * we started looking", which is not the same as "not new", and reading it as
+ * not-new is what makes the figure report zero for a whole lap of the sweep:
+ * every posting is baselined on the run that first stamps its shard, so with no
+ * fallback there is nothing to count until that shard runs a second time.
+ *
+ * The board's date is the weaker answer — Greenhouse publishes `updated_at`,
+ * which any description edit bumps — but it is an answer, and it only ever
+ * applies where Jobwatch has none of its own. Each sweep replaces more of it
+ * with a real sighting.
+ */
 export function isNewSince(
+  job: Job,
   state: JobState,
-  id: string,
   windowMs: number,
   now = Date.now(),
 ): boolean {
-  const stamp = state[id]?.firstSeen;
-  return stamp !== undefined && stamp !== PRE_EXISTING && now - stamp < windowMs;
+  const stamp = firstSeenOf(job, state);
+  if (stamp !== PRE_EXISTING) return now - stamp < windowMs;
+
+  const published = job.publishedAt ? Date.parse(job.publishedAt) : Number.NaN;
+  // A posting with neither is unjudgeable, and unjudgeable is not new.
+  return Number.isFinite(published) && now - published < windowMs;
 }
 
 /**

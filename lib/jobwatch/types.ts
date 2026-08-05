@@ -1,12 +1,27 @@
 /**
  * Jobwatch — shared types.
  *
- * Three ATS platforms with three unrelated payload shapes get flattened into
+ * Seven ATS platforms with seven unrelated payload shapes get flattened into
  * one `Job`. Everything downstream (filtering, sorting, rendering) only ever
  * sees the normalized form.
  */
 
-export type SourceKind = 'greenhouse' | 'lever' | 'ashby';
+/**
+ * The platforms with an adapter.
+ *
+ * The first three answer with a single GET of public JSON. The four added after
+ * them are not uniform: Workday needs a POST and pages 20 at a time, Rippling
+ * repeats a posting once per location, and both carry a compound or opaque
+ * token. `sources.ts` absorbs those differences so nothing downstream sees them.
+ */
+export type SourceKind =
+  | 'greenhouse'
+  | 'lever'
+  | 'ashby'
+  | 'smartrecruiters'
+  | 'workday'
+  | 'breezy'
+  | 'rippling';
 
 /** Seniority read out of the title — no ATS exposes this as a field. */
 export type Level = 'exec' | 'principal' | 'staff' | 'lead' | 'senior' | 'mid';
@@ -39,6 +54,18 @@ export type Job = {
   companyKey: string;
   remote: boolean;
   team: string | null;
+  /**
+   * When the sweep first found this posting, epoch ms — or `PRE_EXISTING` for
+   * the ones already on the board the first time its shard ran.
+   *
+   * Written server-side and shared, which is the point: it is the index's
+   * sighting rather than this browser's, so "new this week" means the same
+   * thing on a machine that opened the page today as on one that has had it
+   * open for a month. Absent on the local-watchlist path, where there is no
+   * shared index to have seen anything — those fall back to the per-browser
+   * stamp on `JobStateEntry`. See `firstSeenOf`.
+   */
+  firstSeen?: number;
 };
 
 /**
@@ -88,6 +115,17 @@ export type JobMark = 'saved' | 'applied' | 'hidden';
 /* ------------------------------------------------------------- job state */
 
 /**
+ * A `firstSeen` of `PRE_EXISTING` means "already on the board when Jobwatch
+ * first looked" — a baseline rather than a sighting. Those are never new, and
+ * an age filter can't judge them either. See `observeJobs` and `stampFirstSeen`,
+ * which write it on the client and on the server for the same reason.
+ *
+ * The one value in this file, because it is what gives both `firstSeen` fields
+ * their meaning and both sides of the wire have to agree on it.
+ */
+export const PRE_EXISTING = 0;
+
+/**
  * Per-job triage, keyed by job id and stored under `jobwatch:jobstate:v1`.
  *
  * `firstSeen` is Jobwatch's own timestamp, written once when an id is first
@@ -120,12 +158,6 @@ export type JobState = Record<string, JobStateEntry>;
 export type SortBy = 'firstSeen' | 'published' | 'salary' | 'company';
 export type SortDir = 'asc' | 'desc';
 
-/**
- * Independent per-level switches rather than a minimum threshold. Principal
- * outranks Staff at some companies and sits under it at others, so a threshold
- * would silently drop roles on the wrong side of whichever order was assumed.
- */
-export type LevelPrefs = Record<Level, boolean>;
 
 /**
  * Everything that shapes the result list, stored under `jobwatch:prefs:v1`.
@@ -144,7 +176,33 @@ export type Prefs = {
    * there is nothing finer to compare than the whole thing.
    */
   updatedAt?: number;
-  levels: LevelPrefs;
+  /**
+   * The kinds of job being looked for, OR'd, matched against the title from the
+   * start of a word — see `matchesJobType`.
+   *
+   * This replaced a hardcoded design-title test. It drives both halves of the
+   * tool: the client narrows the index with it, and the sweep uses it to decide
+   * what enters the index at all. A term added here therefore shows results
+   * from what is already indexed immediately, but only reaches the boards
+   * themselves on the next sweep.
+   */
+  jobTypes: string[];
+  /**
+   * Seniorities to show. Empty means all of them, the same way an empty
+   * `jobTypes` means no narrowing.
+   *
+   * A plain set rather than a min/max band. The band was one idea wearing two
+   * controls — pick a floor, pick a ceiling, and keep them from crossing — and
+   * it bought nothing, because with six values every band is just a selection
+   * you could have clicked. It also had to assume an order, and Principal
+   * outranks Staff at some companies and sits under it at others.
+   *
+   * Applied on the client only. The sweep indexes a posting on its title alone,
+   * so changing this re-cuts what is already in hand and never needs a sweep —
+   * which is the whole reason it is a filter here rather than a rule back
+   * there.
+   */
+  levels: Level[];
   /** Lowercase substring matches against the title, OR'd. A title hitting any
       of these is dropped before anything else looks at it. */
   exclude: string[];

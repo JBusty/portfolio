@@ -19,7 +19,19 @@ import styles from '../jobwatch.module.css';
 
 const USER = { name: 'Joshua Bussey', initials: 'JB' };
 
-export default function JobwatchNav() {
+type Props = {
+  /** So the page can measure this bar and pin the toolbar below it. */
+  ref?: React.Ref<HTMLElement>;
+  /**
+   * Pinned rather than sitting at the top of the page. Only then does it go
+   * glass — at rest it is on the hero's own ground and the two read as one dark
+   * block, which a blur would break for no gain since there is nothing behind
+   * it to see through to.
+   */
+  stuck?: boolean;
+};
+
+export default function JobwatchNav({ ref, stuck = false }: Props) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -27,7 +39,7 @@ export default function JobwatchNav() {
   useClickOff(open, () => setOpen(false), menuRef, buttonRef);
 
   return (
-    <nav className={styles.nav} aria-label="Jobwatch">
+    <nav className={styles.nav} aria-label="Jobwatch" ref={ref} data-stuck={stuck}>
       <div className={`${styles.wrap} ${styles.navInner}`}>
         <span className={styles.navLogo}>
           Jobwatch<span className={styles.navLogoStop}>.</span>

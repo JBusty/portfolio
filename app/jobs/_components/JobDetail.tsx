@@ -5,7 +5,7 @@ import Mark from '@/components/Mark';
 import { LEVEL_LABELS } from '@/lib/jobwatch/classify';
 import { timeAgo, timeAgoFrom } from '@/lib/jobwatch/format';
 import { sanitizeHtml } from '@/lib/jobwatch/html';
-import { SOURCE_CODES, SOURCE_LABELS } from '@/lib/jobwatch/sources';
+import { hasDescriptionEndpoint, SOURCE_CODES, SOURCE_LABELS } from '@/lib/jobwatch/sources';
 import type { Job, JobStateEntry } from '@/lib/jobwatch/types';
 import type { DescriptionEntry } from './useJobwatch';
 import { CheckIcon, CloseIcon, HideIcon } from './icons';
@@ -44,6 +44,18 @@ export default function JobDetail({
   }
 
   const applied = entry?.applied ?? false;
+
+  /**
+   * Three different reasons the panel can come up empty, and they deserve
+   * different words. Either the write-up never reaches us — no detail route on
+   * the board, or the index dropped it and there is nothing to re-fetch — or we
+   * asked for it and the request failed, or we asked and the posting genuinely
+   * has no body. Only the middle one is a problem on our end.
+   */
+  const askable = hasDescriptionEndpoint(job.source);
+  // `undefined` means the fetch effect hasn't fired yet — one render, but long
+  // enough to flash the wrong message if it were treated as an answer.
+  const pending = askable && (description === undefined || description.status === 'loading');
   // Greenhouse publishes no compensation field, so any band is in the prose —
   // which only arrives with the description.
   const salary = job.salary ?? description?.salary ?? null;
@@ -132,18 +144,32 @@ export default function JobDetail({
       {html ? (
         // Third-party markup, run through an allowlist sanitizer first.
         <div className={styles.prose} dangerouslySetInnerHTML={{ __html: html }} />
-      ) : description?.status === 'loading' ? (
+      ) : pending ? (
         <div className={styles.empty}>
           <span className={styles.emptyTitle}>Loading the posting…</span>
         </div>
+      ) : description?.status === 'error' ? (
+        <div className={styles.empty}>
+          <span className={styles.emptyTitle}>Couldn’t load the description</span>
+          <p className={styles.emptyBody}>
+            {description.error ?? 'The request didn’t come back'}. Open the posting and
+            you’ll get it straight from the source.
+          </p>
+        </div>
+      ) : askable ? (
+        <div className={styles.empty}>
+          <span className={styles.emptyTitle}>No write-up on this one</span>
+          <p className={styles.emptyBody}>
+            {job.company} listed the role without a description. Worth opening the posting
+            anyway — sometimes one turns up there later.
+          </p>
+        </div>
       ) : (
         <div className={styles.empty}>
-          <span className={styles.emptyTitle}>
-            {description?.status === 'error' ? 'Could not load the posting' : 'No description'}
-          </span>
+          <span className={styles.emptyTitle}>Description lives on the posting</span>
           <p className={styles.emptyBody}>
-            {description?.error
-              ?? 'Descriptions aren’t kept between visits — they’re far too big for local storage. Open the posting directly to read it.'}
+            {SOURCE_LABELS[job.source]} postings only reach us as listing details — the
+            write-up stays on the posting page. Open it and it’s all there.
           </p>
         </div>
       )}

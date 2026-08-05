@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { mergeJobState } from '@/lib/jobwatch/merge';
-import { DEFAULT_PREFS, SEED_COMPANIES } from '@/lib/jobwatch/store';
+import { DEFAULT_PREFS, normalizePrefs, SEED_COMPANIES } from '@/lib/jobwatch/store';
 import type { Company, JobState, Prefs } from '@/lib/jobwatch/types';
 
 /**
@@ -54,14 +54,19 @@ function prefsUntouched(prefs: Prefs): boolean {
 function pickPrefs(local: Prefs, remote: Prefs | null): Prefs | null {
   if (!remote) return null;
 
+  // Normalized on the way in, never adopted raw: the row may predate any field
+  // this build knows about, and a missing one has to become its default here
+  // rather than `undefined` three layers down.
+  const incoming = normalizePrefs(remote);
+
   const a = local.updatedAt ?? 0;
-  const b = remote.updatedAt ?? 0;
-  if (b > a) return remote;
+  const b = incoming.updatedAt ?? 0;
+  if (b > a) return incoming;
 
   // Neither side is stamped: everything written before today. Fall back to the
   // old test so a browser still on the defaults adopts a saved set rather than
   // pushing the defaults over it.
-  if (a === 0 && b === 0 && prefsUntouched(local)) return remote;
+  if (a === 0 && b === 0 && prefsUntouched(local)) return incoming;
 
   return null;
 }
