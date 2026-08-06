@@ -10,6 +10,9 @@
 
 import { useState, type KeyboardEvent, type Ref } from 'react';
 import { LEVEL_LABELS, LEVEL_ORDER } from '@/lib/jobwatch/classify';
+import { REASON_SHORT, type DismissalSummary, type Suggestion } from '@/lib/jobwatch/feedback';
+import { plural } from '@/lib/jobwatch/format';
+import { AGE_STEPS, SALARY_STEPS } from '@/lib/jobwatch/store';
 import type { Prefs, SortBy } from '@/lib/jobwatch/types';
 import { CloseIcon } from './icons';
 import styles from '../jobwatch.module.css';
@@ -18,28 +21,15 @@ type Props = {
   prefs: Prefs;
   shown: number;
   total: number;
+  /** What has been marked not relevant, and why. */
+  feedback: DismissalSummary;
+  /** The changes those reasons point at. Empty until a few agree. */
+  suggestions: Suggestion[];
   onChange: (patch: Partial<Prefs>) => void;
   onReset: () => void;
   /** So the page can tell a press inside the panel from one that dismisses it. */
   ref?: Ref<HTMLDivElement>;
 };
-
-const SALARY_STEPS: Array<[number | null, string]> = [
-  [null, 'Any'],
-  [150_000, '$150k+'],
-  [180_000, '$180k+'],
-  [200_000, '$200k+'],
-  [250_000, '$250k+'],
-];
-
-const AGE_STEPS: Array<[number | null, string]> = [
-  [null, 'Any age'],
-  [1, 'Last 24h'],
-  [3, 'Last 3 days'],
-  [7, 'Last week'],
-  [14, 'Last 2 weeks'],
-  [30, 'Last month'],
-];
 
 const SORTS: Array<[SortBy, string]> = [
   ['firstSeen', 'First seen'],
@@ -115,7 +105,71 @@ function TermList({
   );
 }
 
-export default function PrefsPanel({ prefs, shown, total, onChange, onReset, ref }: Props) {
+/**
+ * What you've been dismissing, and the one press that acts on it.
+ *
+ * This is the return leg of the "not relevant" button. Asking why and then
+ * filing the answer where nobody sees it is a survey; the point of collecting
+ * it is that a dozen dismissals for the same reason are a filter that is wrong,
+ * and this is the panel where filters get changed — so the evidence and the fix
+ * are in front of each other.
+ *
+ * Nothing here applies itself. Every suggestion is read off a pattern in
+ * postings you rejected, and a pattern is not the same as an intention: the
+ * button says exactly which setting moves, and it moves when it is pressed.
+ */
+function Feedback({
+  feedback,
+  suggestions,
+  onChange,
+}: {
+  feedback: DismissalSummary;
+  suggestions: Suggestion[];
+  onChange: (patch: Partial<Prefs>) => void;
+}) {
+  const { total, answered, tallies } = feedback;
+
+  return (
+    <div className={styles.field}>
+      <span className={styles.groupLabel}>Not relevant</span>
+      <p className={styles.fieldHint}>
+        {total === 0
+          ? 'Mark a posting not relevant and the reason you give turns up here, as the setting it points at.'
+          : answered === 0
+            ? `${total} ${plural(total, 'posting')} dismissed, none with a reason. The reasons are what tell this list what to stop showing you.`
+            : `${answered} of ${total} dismissed ${plural(total, 'posting')} came with a reason.`}
+      </p>
+
+      {tallies.length > 0 && (
+        <div className={styles.group}>
+          {tallies.map(({ reason, count }) => (
+            <span key={reason} className={`${styles.pill} ${styles.tallyChip}`}>
+              {REASON_SHORT[reason]}
+              <span className={styles.tallyCount}>{count}</span>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {suggestions.map((suggestion) => (
+        <div key={suggestion.key} className={styles.suggestion}>
+          <p className={styles.suggestionWhy}>{suggestion.because}</p>
+          <button
+            type="button"
+            className={styles.toggle}
+            onClick={() => onChange(suggestion.patch)}
+          >
+            {suggestion.label}
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function PrefsPanel({
+  prefs, shown, total, feedback, suggestions, onChange, onReset, ref,
+}: Props) {
   /** Stored as the empty list — see `Prefs.levels`. */
   const everyLevel = prefs.levels.length === 0;
 
@@ -275,6 +329,12 @@ export default function PrefsPanel({ prefs, shown, total, onChange, onReset, ref
               </button>
             </div>
           </div>
+
+          {/* ---- feedback ----
+              Last in the grid on purpose: it is the only field here that is not
+              a control, and it reads as a summing-up of the five above it
+              rather than a sixth thing to set. */}
+          <Feedback feedback={feedback} suggestions={suggestions} onChange={onChange} />
         </div>
       </div>
     </div>

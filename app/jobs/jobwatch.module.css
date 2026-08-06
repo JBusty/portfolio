@@ -256,7 +256,9 @@
   transition: border-color 160ms ease, background 160ms ease;
 }
 
-.typesField:hover { border-color: rgba(231, 236, 237, 0.34); }
+@media (hover: hover) {
+  .typesField:hover { border-color: rgba(231, 236, 237, 0.34); }
+}
 
 /* The ring goes on the container because the real input inside is borderless —
    without this, tabbing to the field shows no focus at all. */
@@ -293,9 +295,11 @@
   transition: background 140ms ease, color 140ms ease;
 }
 
-.typeChipX:hover {
-  background: var(--accent);
-  color: var(--bone);
+@media (hover: hover) {
+  .typeChipX:hover {
+    background: var(--accent);
+    color: var(--bone);
+  }
 }
 
 /* Small enough to pack onto the end of the last row of chips, then grows into
@@ -336,9 +340,11 @@
   transition: background 160ms ease, border-color 160ms ease, opacity 160ms ease;
 }
 
-.typesSweep:hover:not(:disabled) {
-  background: rgba(231, 236, 237, 0.16);
-  border-color: rgba(231, 236, 237, 0.45);
+@media (hover: hover) {
+  .typesSweep:hover:not(:disabled) {
+    background: rgba(231, 236, 237, 0.16);
+    border-color: rgba(231, 236, 237, 0.45);
+  }
 }
 
 /* Filled once the terms are ahead of the index: at that point pressing it is
@@ -349,9 +355,11 @@
   color: var(--bone);
 }
 
-.typesSweep[data-urgent='true']:hover:not(:disabled) {
-  background: var(--accent-lift);
-  border-color: var(--accent-lift);
+@media (hover: hover) {
+  .typesSweep[data-urgent='true']:hover:not(:disabled) {
+    background: var(--accent-lift);
+    border-color: var(--accent-lift);
+  }
 }
 
 .typesSweep:disabled { opacity: 0.55; cursor: default; }
@@ -452,6 +460,21 @@
   padding: 14px 32px;
 }
 
+/* A wrapper that only becomes a box below the split, where the switcher and the
+   three panel triggers turn into one strip that scrolls sideways and the search
+   field drops to the line beneath them. Everywhere wider it is
+   `display: contents`, so the bar is the single flat row it has always been.
+ *
+ * The three `order` declarations are what make that dissolving safe. The search
+ * field has to sit between the switcher and the triggers — it is what pushes
+ * them to the far end of the row, which is why there is no spacer — and in the
+ * markup it comes after the wrapper, because on a phone it is the second row.
+ * Ordering the items explicitly means one DOM can be read either way. */
+.barViews { display: contents; }
+.tabs   { order: 1; }
+.search { order: 2; }
+.barViews > .barBtn { order: 3; }
+
 /* Capped rather than greedy. On flex:1 it grew to fill the row and became the
    loudest thing on the page, which is not what a search box is for. */
 /* Takes every pixel the row has left over instead of sitting at a fixed 360.
@@ -531,10 +554,15 @@
   transition: background 160ms ease, color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
 
-.toggle:hover {
-  background: rgba(238, 90, 30, 0.08);
-  border-color: rgba(238, 90, 30, 0.34);
-  color: var(--ink);
+/* Guarded for the reason the row's is: a chip that stays tinted after the tap
+   that pressed it reads as a chip that is on, and half the chips in the prefs
+   panel are toggles where that is a real claim about the filter. */
+@media (hover: hover) {
+  .toggle:hover {
+    background: rgba(238, 90, 30, 0.08);
+    border-color: rgba(238, 90, 30, 0.34);
+    color: var(--ink);
+  }
 }
 
 .toggle:focus-visible {
@@ -549,10 +577,16 @@
   color: var(--bone);
 }
 
-.toggle[data-active='true']:hover,
 .toggle[data-active='true']:focus-visible {
   background: var(--accent-ink);
   border-color: var(--accent-ink);
+}
+
+@media (hover: hover) {
+  .toggle[data-active='true']:hover {
+    background: var(--accent-ink);
+    border-color: var(--accent-ink);
+  }
 }
 
 .count {
@@ -565,10 +599,12 @@
   cursor: not-allowed;
 }
 
-.toggle:disabled:hover {
-  background: rgba(11, 20, 23, 0.03);
-  border-color: rgba(11, 20, 23, 0.12);
-  color: var(--ink-2);
+@media (hover: hover) {
+  .toggle:disabled:hover {
+    background: rgba(11, 20, 23, 0.03);
+    border-color: rgba(11, 20, 23, 0.12);
+    color: var(--ink-2);
+  }
 }
 
 /* Pushes the trailing controls to the far end of a bar row, and collapses to
@@ -632,7 +668,9 @@
   transition: background 160ms ease, color 160ms ease;
 }
 
-.tab:hover { color: var(--ink); }
+@media (hover: hover) {
+  .tab:hover { color: var(--ink); }
+}
 
 .tab:focus-visible {
   outline: none;
@@ -692,9 +730,16 @@
   /* Deliberately NOT --jw-bar: that variable is measured from this element's
      own parent, so feeding it back here would oscillate — panel shrinks, bar
      shrinks, panel grows. A static allowance is stable, and it has to cover the
-     nav as well now that both it and the toolbar are pinned. */
-  max-height: calc(100vh - 220px);
+     nav as well now that both it and the toolbar are pinned.
+     dvh, not vh: on a phone `100vh` is the viewport with the browser's own
+     chrome retracted, which is taller than what is on screen most of the time,
+     so a panel capped against it runs off the bottom of the window. */
+  max-height: calc(100dvh - 220px);
   overflow-y: auto;
+  /* It is a scroller pinned over a much longer one. Without this, reaching the
+     end of the panel hands the gesture to the page and the list scrolls away
+     beneath the thing you are still using. */
+  overscroll-behavior: contain;
 }
 
 .panelInner { padding: 24px 32px 28px; }
@@ -752,6 +797,39 @@
 }
 
 .termRemove:hover { color: var(--accent-ink); background: rgba(238, 90, 30, 0.1); }
+
+/* ---- dismissal feedback, in the prefs panel ---- */
+
+/* A count, not a control. Deliberately not a `.toggle`, which everywhere else
+   in this panel is a thing you can switch — these are a readout of what you
+   have already said, and the only pressable thing in the field is the
+   suggestion below them. */
+.tallyChip {
+  gap: 6px;
+  background: rgba(11, 20, 23, 0.04);
+}
+
+.tallyCount {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* The evidence sits above its button rather than inside it: the label has to
+   stay short enough to read as an action, and the sentence explaining where it
+   came from is the part that earns the press. */
+.suggestion {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+}
+
+.suggestionWhy {
+  margin: 0 0 8px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--sub);
+  max-width: 46ch;
+}
 
 .termRemove:focus-visible {
   outline: none;
@@ -829,7 +907,15 @@
   transition: background 160ms ease;
 }
 
-.row:hover { background: var(--bone-2); }
+/* Every hover state on the row is behind a capability query, and this one is
+   worth the guard more than most: a tap on a touchscreen leaves `:hover` stuck
+   on whatever was tapped until something else is, so the row you just opened
+   keeps the fill, the accent edge and the 6px indent — the exact three marks
+   that say "selected" — while the row you move to next has them too. Two
+   selected rows, and only one of them is. */
+@media (hover: hover) {
+  .row:hover { background: var(--bone-2); }
+}
 
 .row[data-selected='true'] { background: var(--paper); }
 
@@ -846,7 +932,9 @@
   transition: padding-left 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.row:hover .rowOpen { padding-left: 38px; }
+@media (hover: hover) {
+  .row:hover .rowOpen { padding-left: 38px; }
+}
 
 .rowOpen:focus-visible {
   outline: none;
@@ -857,6 +945,34 @@
   flex-shrink: 0;
   align-self: center;
   margin-right: 18px;
+}
+
+/* The dismiss control, on every open row.
+ *
+ * Quiet by default and only drawn in on approach: triage is a scan, and a
+ * column of buttons down the right-hand edge competes with the titles for the
+ * exact eye movement the list is for. Hidden behind the same capability query
+ * as every other hover state here — where there is no pointer to approach with,
+ * it is simply always there, which on a touchscreen is the only usable answer.
+ *
+ * Never `visibility` or `display`: the button has to stay in the tab order and
+ * stay reachable, so it fades and reappears the moment it takes focus. */
+.rowDismiss {
+  flex-shrink: 0;
+  align-self: center;
+  margin-right: 14px;
+}
+
+@media (hover: hover) {
+  .rowDismiss {
+    opacity: 0;
+    transition: opacity 160ms ease, color 160ms ease,
+                background 160ms ease, border-color 160ms ease;
+  }
+
+  .row:hover .rowDismiss,
+  .row[data-selected='true'] .rowDismiss,
+  .rowDismiss:focus-visible { opacity: 1; }
 }
 
 .rowBar {
@@ -871,8 +987,11 @@
   transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.row:hover .rowBar,
 .row[data-selected='true'] .rowBar { transform: scaleY(1); }
+
+@media (hover: hover) {
+  .row:hover .rowBar { transform: scaleY(1); }
+}
 
 /* Dimming a hidden row made sense when hidden postings sat mixed in with live
    ones and the opacity was the only thing telling them apart. The switch is a
@@ -1048,11 +1167,21 @@
 .detail {
   position: sticky;
   top: calc(var(--jw-nav, 58px) + var(--jw-bar, 104px));
-  max-height: calc(100vh - var(--jw-nav, 58px) - var(--jw-bar, 104px));
+  max-height: calc(100dvh - var(--jw-nav, 58px) - var(--jw-bar, 104px));
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 32px 44px 64px;
   min-width: 0;
   background: var(--paper);
+}
+
+/* The board line and the way out. Its own element rather than the head's first
+   row because below the split it pins — see the responsive block. */
+.detailTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .detailHead {
@@ -1115,12 +1244,31 @@
 .prose :global(ol) { margin: 0 0 16px; padding-left: 22px; }
 .prose :global(li) { margin-bottom: 7px; }
 .prose :global(strong) { color: var(--ink); font-weight: 600; }
-.prose :global(a) { color: var(--accent-ink); text-decoration: underline; }
+/* `overflow-wrap: anywhere` because a bare URL in a paragraph is one unbreakable
+   word, and at phone width it is wider than the column — it would set the width
+   of the pane and drag everything else sideways. It only bites on things that
+   cannot wrap any other way, so ordinary link text is untouched. */
+.prose :global(a) { color: var(--accent-ink); text-decoration: underline; overflow-wrap: anywhere; }
 .prose :global(hr) { border: none; border-top: 1px solid var(--rule); margin: 24px 0; }
-.prose :global(table) { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+
+/* `display: block` so the table can be its own scroller. It is markup we did
+   not write and cannot wrap — a benefits grid five columns wide is common — and
+   on a phone the alternative is the table setting the width of the page, which
+   drags every other element sideways with it. `max-content` keeps the columns
+   at their natural width inside that scroller rather than crushing them. */
+.prose :global(table) {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
 .prose :global(td),
 .prose :global(th) { border: 1px solid var(--rule); padding: 7px 10px; text-align: left; }
 .prose :global(img) { max-width: 100%; height: auto; }
+.prose :global(pre) { overflow-x: auto; }
 
 /* ----------------------------------------------------------------- empty */
 
@@ -1144,6 +1292,16 @@
 
 .emptyBody { font-size: 14px; line-height: 1.55; max-width: 44ch; }
 
+/* Wraps rather than scrolls: this sits mid-column with room either side, and a
+   scroll affordance on three short buttons reads as more than it is. */
+.emptyActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
 /* --------------------------------------------------------------- sources */
 
 /* Same arrangement as .panel — see the note there. */
@@ -1154,8 +1312,9 @@
      own parent, so feeding it back here would oscillate — panel shrinks, bar
      shrinks, panel grows. A static allowance is stable, and it has to cover the
      nav as well now that both it and the toolbar are pinned. */
-  max-height: calc(100vh - 220px);
+  max-height: calc(100dvh - 220px);
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .drawerInner { padding: 26px 32px 30px; }
@@ -1244,10 +1403,12 @@
   transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
 }
 
-.iconBtn:hover {
-  color: var(--accent-ink);
-  border-color: rgba(238, 90, 30, 0.34);
-  background: rgba(238, 90, 30, 0.07);
+@media (hover: hover) {
+  .iconBtn:hover {
+    color: var(--accent-ink);
+    border-color: rgba(238, 90, 30, 0.34);
+    background: rgba(238, 90, 30, 0.07);
+  }
 }
 
 .iconBtn:focus-visible {
@@ -1315,63 +1476,203 @@
     max-height: none;
     height: 100dvh;
     background: var(--bone);
-    padding: 22px 20px 56px;
+    /* No top padding: the board line pins to the top edge and brings its own.
+       The bottom clears the home indicator on a phone that has one and falls
+       back to the plain figure on everything else. */
+    padding: 0 20px calc(56px + env(safe-area-inset-bottom));
     border-left: none;
   }
 
+  /* The sheet's only exit, so it stays on screen however far down the write-up
+     you are. Full-bleed by negative margin — the rule under it should reach
+     both edges of the sheet, not stop at the text column — and opaque, because
+     the prose scrolls underneath it. */
+  .detailTop {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    align-items: center;
+    margin: 0 -20px;
+    padding: 12px 20px;
+    background: var(--bone);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .detailHead { padding-top: 16px; }
+
+  /* 26px is a mouse target. This one is the way out of a full-screen sheet, so
+     it gets a thumb's worth of room without the glyph inside it changing size.
+     Written against both classes so it outranks the general `.iconBtn` bump in
+     the phone block below on specificity rather than on source order. */
+  .iconBtn.detailClose { width: 44px; height: 44px; }
+
   .detailClosed { display: none; }
+
+  /* The sheet covers the page, and the page is a very long list — without this
+     the document keeps scrolling behind it and you close the sheet somewhere
+     you never were. Set on both elements because iOS Safari propagates the
+     body's overflow to the viewport and will otherwise scroll the root. */
+  :global(html.jw-sheet-open),
+  :global(body.jw-sheet-open) { overflow: hidden; }
 
   /* No second column to fence in once the panes stack. */
   .body { border-left: none; border-right: none; }
+
+  /* The masthead is sized for a page that is mostly masthead. Once the panes
+     stack, the list is the page and 134px of vertical padding above it is a
+     scroll before anything starts. */
+  .headerInner { padding: 48px 24px 34px; gap: 20px; }
+  .headerId { gap: 22px; }
+  .wordmark { font-size: clamp(40px, 7vw, 64px); }
+}
+
+/* Keyboard advice, shown only where there is plausibly a keyboard. `j / k to
+   move` on a phone is instructions for a control that isn't there. */
+@media (hover: none) {
+  .listMetaHint { display: none; }
 }
 
 @media (max-width: 640px) {
+  /* Every control the thumb has to hit is measured off this rather than the
+     46px the desktop bar uses. 44 is the smallest target that is reliably
+     hittable, and it is the floor here, not a target to trim towards. */
+  .shell { --jw-control: 44px; }
+
   .headerInner { padding: 13px 16px 12px; gap: 12px; }
-  /* Keeps the extra air around the readout, at a size that suits a header
-     whose wordmark is 19px rather than 92px. */
-  .headerStats { gap: 5px 12px; margin: 8px 0; }
+  .headerId { gap: 14px; }
   .wordmark { font-size: 19px; }
+
+  /* A grid rather than a wrapping flex row. The figures are 90–130px wide
+     depending on their label and there is a fourth of them when a board is
+     failing, so on a flex row the set wraps at a different place on every
+     phone — and the hairline gutters, which are drawn between adjacent
+     figures, end up on the left of whichever one starts the second line. Equal
+     columns wrap predictably; the gutters go, and the gap does that job. */
+  .headerStats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
+    gap: 12px 4px;
+    width: 100%;
+    margin: 10px 0 2px;
+  }
+  .headerStat { padding: 0 4px; gap: 4px; white-space: normal; }
+  .headerStat + .headerStat { border-left: none; }
+  .headerStat strong { font-size: 26px; }
+  .headerStatLabel { font-size: 9px; letter-spacing: 0.08em; line-height: 1.3; text-align: center; }
 
   /* Tightened rather than dropped — this is the line that says what the tool
      is looking at, and it fits on one row at this size. */
   .headerSources { gap: 6px 14px; font-size: 10px; letter-spacing: 0.1em; }
 
-  /* The field keeps its full width; only the chrome around it tightens. */
-  .types { gap: 7px; }
+  /* The field keeps its full width; only the chrome around it tightens. The
+     row height is the shared touch floor rather than the 40px it was, because
+     Sweep is measured off it and Sweep is a button. */
+  .types { gap: 7px; --types-h: var(--jw-control); }
   .typesLabel { font-size: 10px; }
-  .types { --types-h: 40px; }
   .typesRow { gap: 8px; }
   .typesField { padding: 8px 9px; gap: 6px; border-radius: 10px; }
   .typeChip { font-size: 12px; padding: 3px 5px 3px 9px; }
-  .typesInput { font-size: 13px; flex-basis: 84px; min-width: 84px; }
+  /* Size is set with the other fields below — see the note on iOS zoom. */
+  .typesInput { flex-basis: 84px; min-width: 84px; }
   .typesSweep { padding: 0 13px; border-radius: 10px; letter-spacing: 0.1em; }
   .headerSource { gap: 6px; }
   .headerSourceMark { width: 15px; height: 15px; border-radius: 3px; }
-  .barInner { padding: 8px 16px; gap: 5px; }
+
+  /* ---- the bar, in two rows ----
+     The switcher and the three panel triggers come to about 470px of controls
+     and a phone is 360. They could wrap, but that costs a third row of sticky
+     chrome on the one screen that can least afford it — so they stay on one
+     line and that line scrolls, with the search field taking the row beneath.
+     `.barViews` stops being `display: contents` here and becomes the strip
+     that does the scrolling. */
+  .barInner { padding: 8px 16px; gap: 8px 5px; }
+
+  .barViews {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .search { flex: 1 1 100%; min-width: 0; }
+
+  .scrollRow {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    /* The scrollbar is hidden and the strip runs off the edge mid-button, which
+       on its own reads as a clipped layout rather than as something you can
+       push. Fading the last few pixels is what says the row continues — and it
+       is honest here, because at this width the strip always does overflow. */
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent);
+  }
+  .scrollRow::-webkit-scrollbar { display: none; }
+  .scrollRow > * { flex-shrink: 0; }
+
+  /* ---- fields ----
+     iOS zooms the page in on focus for any field under 16px and does not zoom
+     back out afterwards, which leaves the tool at 1.3× with the bar half off
+     the screen. It is the font size alone that triggers it, so these three go
+     up regardless of how they look at rest. */
+  .search,
+  .input,
+  .select,
+  .typesInput { font-size: 16px; }
+
+  /* A native picker opens from these, so what matters at rest is only that
+     there is enough of one to press. */
+  .select { min-height: 40px; padding: 8px 14px; }
+
   .rowOpen { padding: 12px 10px 12px 18px; }
-  .row:hover .rowOpen { padding-left: 22px; }
   .rowAction { margin-right: 12px; }
   .listMeta { padding: 10px 14px 9px 18px; }
   .drawerInner { padding: 16px; }
   .panelInner { padding: 14px 16px 18px; }
   .panelGrid { gap: 16px; }
 
-  /* Full width under the wordmark rather than squeezed beside it. */
-  .search { flex: 1 1 100%; }
+  /* Capped well short of the screen: these open out of the sticky bar, and a
+     panel that fills the viewport leaves nothing of the list it is filtering
+     visible to tell you whether the filter did anything. */
+  .panel,
+  .drawer { max-height: 58dvh; }
 
-  /* The bar rows scroll sideways below this width, so a growing spacer would
-     just push the trailing controls out of reach. */
-  .barGap { display: none; }
+  /* ---- touch targets ----
+     Every one of these is pressed with a thumb here and every one of them was
+     sized for a cursor. The glyphs inside do not change; only the room around
+     them — a 16px close button is the same mark whether or not it is possible
+     to hit. */
+  .iconBtn { width: 40px; height: 40px; }
+  .termRemove { width: 26px; height: 26px; }
+  .typeChipX { width: 24px; height: 24px; font-size: 17px; }
+  .typeChip { padding-right: 4px; }
+  /* The prefs panel is a page of these, and at 27px tall they are a row of
+     mistakes waiting to happen. */
+  .toggle { min-height: 38px; padding: 5px 13px; }
 
-  /* Filters stay reachable as one scrollable row rather than wrapping away. */
-  .scrollRow {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-  .scrollRow::-webkit-scrollbar { display: none; }
-  .scrollRow > * { flex-shrink: 0; }
+  /* After `.toggle` above, which the bar's copies also match — the strip is
+     where the horizontal space actually runs out, and trimming the chrome is
+     what keeps the labels on the buttons rather than going icon-only. */
+  .barBtn { padding: 0 13px; }
+  .tab { padding: 0 15px; font-size: 12px; }
+
+  /* The confirm card is 28px of side padding inside a viewport that is already
+     only 16px off each edge, which leaves the sentence about what is being
+     discarded set in a very narrow column. */
+  .dialogCard { padding: 22px 20px 18px; }
+  .dialogActions { gap: 10px; }
+
+  /* ---- login ---- */
+  .login { padding: 56px 20px 0; }
+  .loginForm { flex-wrap: wrap; }
+  .loginForm .input { flex: 1 1 100%; }
+}
+
+/* The indent on hover is tuned to the row's padding, which is smaller here. */
+@media (max-width: 640px) and (hover: hover) {
+  .row:hover .rowOpen { padding-left: 22px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1384,8 +1685,14 @@
   .metaToggle,
   .iconBtn,
   .termRemove { transition: none !important; }
-  .row:hover .rowOpen { padding-left: 24px; }
   .statusLoading { animation: none; }
+}
+
+/* Without a transition to carry it, the indent is a jump rather than a slide,
+   so it is halved. Guarded like every other hover rule — on a touchscreen the
+   state it keys off is left behind by the last tap, not by the pointer. */
+@media (prefers-reduced-motion: reduce) and (hover: hover) {
+  .row:hover .rowOpen { padding-left: 24px; }
 }
 
 /* ----------------------------------------------------------------- login */
@@ -1484,6 +1791,71 @@
   outline: none;
   box-shadow: 0 0 0 3px rgba(238, 90, 30, 0.35);
 }
+
+/* ------------------------------------------------------------- why panel */
+
+/* The reason picker needs two columns of readable labels; 440 gives one column
+   of eight, which is a scroll on a laptop and reads as a form. */
+.dialogWide { max-width: min(540px, calc(100vw - 32px)); }
+
+.whyGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 520px) {
+  .whyGrid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* One press answers and closes, so these are targets rather than selections —
+   no pressed state, because nothing here is ever left switched on. */
+.whyBtn {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 13px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 10px;
+  background: var(--bone);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+@media (hover: hover) {
+  .whyBtn:hover {
+    border-color: var(--accent);
+    background: rgba(238, 90, 30, 0.07);
+  }
+}
+
+.whyBtn:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(238, 90, 30, 0.18);
+}
+
+.whyLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.whyHint {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--sub);
+}
+
+.whyNote {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.whyNote .input { flex: 1 1 auto; }
 
 @media (prefers-reduced-motion: no-preference) {
   .dialog[open] { animation: dialogIn 140ms cubic-bezier(0.2, 0.8, 0.2, 1); }

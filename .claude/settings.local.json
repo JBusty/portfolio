@@ -101,7 +101,13 @@
       "Bash(npx tsx *)",
       "Bash(echo \"exit=$?\")",
       "Bash(grep *)",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "PowerShell(npx tsc --noEmit -p tsconfig.json)",
+      "PowerShell($c = Get-Content .next/static/chunks/17m7gbo1vmoi8.css -Raw; foreach \\($n in @\\('detailClose','listMetaHint','barViews','jw-sheet-open','detailTop'\\)\\) { if \\($c -match $n\\) { \"$n : FOUND\" } else { \"$n : MISSING\" } })",
+      "Bash(DATABASE_URL='postgres://nobody:nobody@127.0.0.1:1/none' npx next start -p 3111)",
+      "Bash(taskkill //F //FI \"WINDOWTITLE eq *3111*\")",
+      "PowerShell($c = Get-NetTCPConnection -LocalPort 3111 -State Listen -ErrorAction SilentlyContinue; if \\($c\\) { $c | Select-Object -First 1 -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force; \"killed $_\" } } else { \"nothing listening\" })",
+      "PowerShell($c = Get-NetTCPConnection -LocalPort 3111 -State Listen -ErrorAction SilentlyContinue; if \\($c\\) { $c | Select-Object -First 1 -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force; \"stopped test server $_\" } } else { \"already stopped\" })"
     ]
   }
 }

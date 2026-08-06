@@ -2,9 +2,11 @@
 
 import { memo } from 'react';
 import { LEVEL_LABELS, usEligibility } from '@/lib/jobwatch/classify';
+import { REASON_SHORT } from '@/lib/jobwatch/feedback';
 import { timeAgo, timeAgoFrom } from '@/lib/jobwatch/format';
 import { SOURCE_CODES, SOURCE_LABELS } from '@/lib/jobwatch/sources';
 import type { Job, JobStateEntry } from '@/lib/jobwatch/types';
+import { HideIcon } from './icons';
 import styles from '../jobwatch.module.css';
 
 type Props = {
@@ -18,6 +20,10 @@ type Props = {
   appliedAt?: number;
   onSelect: (id: string) => void;
   onUnapply?: (id: string) => void;
+  /** Open tab only: takes it off the list and asks why. */
+  onDismiss?: (id: string) => void;
+  /** Hidden view only: the way back, without opening the posting first. */
+  onRestore?: (id: string) => void;
 };
 
 /**
@@ -25,7 +31,10 @@ type Props = {
  * thousand rows across a full watchlist, and typing in the search box would
  * otherwise re-render every one of them on each keystroke.
  */
-function JobRow({ job, selected, isNew, entry, reason, appliedAt, onSelect, onUnapply }: Props) {
+function JobRow({
+  job, selected, isNew, entry, reason, appliedAt,
+  onSelect, onUnapply, onDismiss, onRestore,
+}: Props) {
   const isApplied = entry?.applied ?? false;
   // Only two values reach a row: anything non-US was dropped in `filterJobs`.
   const locationUnconfirmed = usEligibility(job.location) === 'unconfirmed';
@@ -66,8 +75,17 @@ function JobRow({ job, selected, isNew, entry, reason, appliedAt, onSelect, onUn
         <span className={styles.rowFacts}>
           {/* Only reachable from the Hidden view, where every row carries it —
               which is the point: the badge is what makes an individual row
-              legible as hidden once it is out of the list it was removed from. */}
-          {entry?.hidden && <span className={`${styles.pill} ${styles.pillHidden}`}>Hidden</span>}
+              legible as hidden once it is out of the list it was removed from.
+              With an answer on it the badge says which, because "hidden" is the
+              one thing every row in that view already has in common. */}
+          {entry?.hidden && (
+            <span
+              className={`${styles.pill} ${styles.pillHidden}`}
+              title={entry.dismissNote || undefined}
+            >
+              {entry.dismissReason ? REASON_SHORT[entry.dismissReason] : 'no reason given'}
+            </span>
+          )}
           {isNew && <span className={`${styles.pill} ${styles.pillNew}`}>New</span>}
           {isApplied && <span className={`${styles.pill} ${styles.pillApplied}`}>Applied</span>}
 
@@ -106,6 +124,33 @@ function JobRow({ job, selected, isNew, entry, reason, appliedAt, onSelect, onUn
           onClick={() => onUnapply(job.id)}
         >
           Unapply
+        </button>
+      )}
+
+      {onRestore && (
+        <button
+          type="button"
+          className={`${styles.toggle} ${styles.rowAction}`}
+          onClick={() => onRestore(job.id)}
+        >
+          Restore
+        </button>
+      )}
+
+      {/* Triage is a scan down the list, so the fastest way out of it has to be
+          on the row. Icon-only and quiet until the row is under the pointer:
+          spelling "Not relevant" out on every line makes the list read as a
+          column of buttons with postings attached. It stays reachable by
+          keyboard — see `.rowDismiss`, which reveals on focus. */}
+      {onDismiss && (
+        <button
+          type="button"
+          className={`${styles.iconBtn} ${styles.rowDismiss}`}
+          onClick={() => onDismiss(job.id)}
+          title="Not relevant"
+          aria-label={`Mark ${job.title} at ${job.company} not relevant`}
+        >
+          <HideIcon size={15} />
         </button>
       )}
     </div>

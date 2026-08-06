@@ -73,7 +73,10 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(request.url);
-  const override = url.searchParams.get('shard');
+  // Empty and whitespace-only fold to absent rather than to a number: `?shard=`
+  // reads as `Number('') === 0`, which is a valid shard and not remotely what
+  // the caller asked for. No override means the clock decides, as below.
+  const override = url.searchParams.get('shard')?.trim() || null;
 
   /**
    * `stale` — what the Sweep button asks for.
@@ -84,12 +87,11 @@ export async function GET(request: Request) {
    * matter how many times you press. Picking the shard that reported longest
    * ago means repeated presses walk the whole list, and one press refreshes
    * whatever is most out of date — which is what someone pressing it wants.
+   *
+   * Takes the write times rather than reading them, because the same map
+   * answers a second question further down — see `firstRun`.
    */
-  const stalest = async () => {
-    // Off the Blob API, not the file contents — see `shardWrittenAt`. Reading
-    // `at` out of the shard body made two presses in a row sweep the same third
-    // twice, because the just-written file still read as its previous version.
-    const written = await shardWrittenAt();
+  const stalest = (written: Map<number, number>) => {
     let oldest = 0;
     for (let i = 1; i < SHARD_COUNT; i++) {
       // A shard that has never been written has no timestamp and wins outright.
@@ -98,17 +100,25 @@ export async function GET(request: Request) {
     return oldest;
   };
 
-  // Default to the clock so consecutive cron firings walk the whole list.
-  //
-  // The bucket has to match the cron interval or the walk stops walking. This
-  // was a 5-minute bucket while the cron fired every 5 minutes; against the
-  // daily schedule it pinned every run to the same shard, because a day is
-  // exactly 288 buckets and 288 % 12 === 0. One bucket per day advances by one.
-  const shard = override === 'stale'
-    ? await stalest()
-    : override != null
-      ? Number(override) % SHARD_COUNT
-      : Math.floor(started / (24 * 60 * 60 * 1000)) % SHARD_COUNT;
+  /**
+   * An explicit `shard=N`, validated rather than trusted.
+   *
+   * `Number('abc') % SHARD_COUNT` is `NaN`, and NaN sails straight through the
+   * modulo: it slices nothing, then writes a blob named literally
+   * `shard-NaN.json` whose body serializes `"shard": null`. That file is a
+   * valid-looking shard forever after — it comes back from `readShards`, passes
+   * `null < SHARD_COUNT`, and counts toward the "have all shards reported?"
+   * test in `mergeShards`, so two real shards plus one ghost publishes a
+   * coverage claim the boards never earned. A negative is the same story with a
+   * `shard--1.json`. Refusing the request is the cheap end of that.
+   */
+  const requested = override != null && override !== 'stale' ? Number(override) : null;
+  if (requested !== null && !Number.isInteger(requested)) {
+    return Response.json(
+      { error: `Invalid shard "${override}" — expected an integer or "stale"` },
+      { status: 400 },
+    );
+  }
 
   // Held outside the try so a failed *write* still reports what the sweep
   // found. Those are separate failures and conflating them makes a missing
@@ -116,6 +126,31 @@ export async function GET(request: Request) {
   let stats: Record<string, unknown> = {};
 
   try {
+    /**
+     * When each shard last reported, per the Blob API rather than the file
+     * bodies — see `shardWrittenAt`. Read once and used twice: to pick the
+     * stalest slice, and to tell a shard's first run from its later ones.
+     *
+     * Inside the try because it needs the Blob store, and a missing store
+     * should come back as this route's own JSON error rather than an unhandled
+     * throw on the way to it.
+     */
+    const written = await shardWrittenAt();
+
+    // Default to the clock so consecutive cron firings walk the whole list.
+    //
+    // The bucket has to match the cron interval or the walk stops walking. This
+    // was a 5-minute bucket while the cron fired every 5 minutes; against the
+    // daily schedule it pinned every run to the same shard, because a day is
+    // exactly 288 buckets and 288 % 12 === 0. One bucket per day advances by one.
+    const shard = override === 'stale'
+      ? stalest(written)
+      // Double modulo so a negative lands in range rather than staying negative,
+      // which JS `%` would otherwise carry through.
+      : requested !== null
+        ? ((requested % SHARD_COUNT) + SHARD_COUNT) % SHARD_COUNT
+        : Math.floor(started / (24 * 60 * 60 * 1000)) % SHARD_COUNT;
+
     const boards = await discoverBoards();
     const slice = shardOf(boards, shard, SHARD_COUNT);
 
@@ -172,16 +207,30 @@ export async function GET(request: Request) {
     }
 
     const stamped = stampFirstSeen(result.jobs, known, {
-      // "Nothing has ever been stamped", not "this shard has never reported".
-      //
-      // The two come apart exactly once, on the run that first ships this: the
-      // index in Blob already has shard metadata for every shard and a first-seen
-      // date on none of them, so asking whether the shard had reported answers
-      // yes and stamps four thousand postings `now` — the flood the baseline
-      // exists to prevent, on the one run where it matters most. Asking whether
-      // any stamp exists gets that run right, and every later run reads the same
-      // either way.
-      firstRun: known.size === 0,
+      /**
+       * Either test alone gets a different run wrong, so this asks both.
+       *
+       * "Nothing has ever been stamped" is what the migration run needs: the
+       * index in Blob already had shard metadata for every shard and a
+       * first-seen date on none of them, so asking whether the shard had
+       * reported answered yes and would have stamped four thousand postings
+       * `now` — the flood the baseline exists to prevent, on the one run where
+       * it mattered most.
+       *
+       * On its own, though, it is wrong for every fresh deployment. `known`
+       * comes from the *merged* index, so once any shard has run it is
+       * non-empty — while `shardOf` hands the next shard a disjoint slice of
+       * boards whose ids appear nowhere in it. Runs two and three of the first
+       * lap therefore found nothing known, read that as "all new", and stamped
+       * two thirds of the index with `now`. Every one of those postings then
+       * carried a NEW badge for a week. Two presses of the Sweep button on a
+       * new deployment were enough to do it.
+       *
+       * A shard that has never written a file has never baselined its boards,
+       * whatever the rest of the index says — so that is the question, and the
+       * emptiness test stays alongside it for the migration case.
+       */
+      firstRun: known.size === 0 || !written.has(shard),
     });
 
     // Write our own shard, then rebuild the merged index from every shard that

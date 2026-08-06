@@ -33,6 +33,23 @@ export default function CountUp({ value, placeholder = '—', ready = true }: Pr
   const [shown, setShown] = useState(value);
   const fromRef = useRef(value);
   const frameRef = useRef<number | null>(null);
+  /**
+   * What is on screen this instant.
+   *
+   * A ref rather than the `shown` state because the cleanup below needs it, and
+   * the effect deliberately does not depend on `shown` — so the `shown` its
+   * closure holds is whatever the value was when the effect last *ran*, which
+   * during an animation is the number it started from. Reading that in the
+   * cleanup is what made every filter edit restart the count from the previous
+   * count's origin: adjust a filter while the hero read 1,000 and the figure
+   * dropped to 0 and climbed to the new total, instead of moving 1,000 → 850.
+   */
+  const shownRef = useRef(value);
+
+  const paint = (n: number) => {
+    shownRef.current = n;
+    setShown(n);
+  };
 
   useEffect(() => {
     if (!ready) return;
@@ -48,7 +65,7 @@ export default function CountUp({ value, placeholder = '—', ready = true }: Pr
 
     if (still) {
       fromRef.current = to;
-      setShown(to);
+      paint(to);
       return;
     }
 
@@ -59,7 +76,7 @@ export default function CountUp({ value, placeholder = '—', ready = true }: Pr
       // -0, and `(-0).toLocaleString()` renders "-0" — which flickered on the
       // first frame of a count starting from nothing.
       const at = Math.round(from + (to - from) * ease(t)) || 0;
-      setShown(at);
+      paint(at);
 
       if (t < 1) {
         frameRef.current = requestAnimationFrame(step);
@@ -71,14 +88,18 @@ export default function CountUp({ value, placeholder = '—', ready = true }: Pr
 
     frameRef.current = requestAnimationFrame(step);
     return () => {
-      if (frameRef.current != null) cancelAnimationFrame(frameRef.current);
-      // Whatever was on screen is where the next run starts, so interrupting a
-      // count mid-flight continues from there rather than jumping back.
-      fromRef.current = shown;
+      // Only a count still in flight resumes from where it was. One that
+      // already finished has left `fromRef` at its destination, and the
+      // unconditional overwrite that used to live here undid that — so even a
+      // settled figure re-counted from its old starting point on the next edit.
+      if (frameRef.current == null) return;
+      cancelAnimationFrame(frameRef.current);
       frameRef.current = null;
+      fromRef.current = shownRef.current;
     };
     // `shown` is deliberately not a dependency: it changes every frame, and
-    // depending on it would restart the animation it is being written by.
+    // depending on it would restart the animation it is being written by. The
+    // cleanup reads `shownRef` instead, which is why that ref exists.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, ready]);
 

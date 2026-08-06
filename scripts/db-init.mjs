@@ -26,15 +26,28 @@ const STATEMENTS = [
    )`,
 
   `create table if not exists job_state (
-     job_id      text primary key,
-     first_seen  timestamptz not null,
-     applied     boolean not null default false,
-     applied_at  timestamptz,
-     hidden      boolean not null default false,
-     saved       boolean not null default false,
-     snapshot    jsonb,
-     updated_at  timestamptz not null default now()
+     job_id         text primary key,
+     first_seen     timestamptz not null,
+     applied        boolean not null default false,
+     applied_at     timestamptz,
+     hidden         boolean not null default false,
+     saved          boolean not null default false,
+     dismiss_reason text,
+     dismiss_note   text,
+     snapshot       jsonb,
+     updated_at     timestamptz not null default now()
    )`,
+
+  // For databases created before the reason was asked for: `create table if
+  // not exists` is a no-op on those, so the two columns have to be added on
+  // their own. This is what re-running the script is for.
+  //
+  // Plain text, not an enum or a check constraint. The set of reasons belongs
+  // to the client and will grow; constraining it here would turn adding one
+  // into a migration, while an unrecognised value costs nothing — both readers
+  // drop what they don't know.
+  `alter table job_state add column if not exists dismiss_reason text`,
+  `alter table job_state add column if not exists dismiss_note text`,
 
   `create table if not exists companies (
      key       text primary key,

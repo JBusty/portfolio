@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { neon } from '@neondatabase/serverless';
-import type { JobSnapshot, JobState, Prefs } from './types';
+import type { DismissReason, JobSnapshot, JobState, Prefs } from './types';
 
 /**
  * Jobwatch's own storage.
@@ -57,7 +57,8 @@ export async function writePrefs(prefs: Prefs): Promise<void> {
  */
 export async function readJobState(): Promise<JobState> {
   const rows = await sql()`
-    select job_id, first_seen, applied, applied_at, hidden, snapshot, changed_at
+    select job_id, first_seen, applied, applied_at, hidden,
+           dismiss_reason, dismiss_note, snapshot, changed_at
     from job_state
   `;
 
@@ -71,6 +72,10 @@ export async function readJobState(): Promise<JobState> {
     if (row.applied) entry.applied = true;
     if (row.applied_at != null) entry.appliedAt = toMs(row.applied_at as Date) ?? undefined;
     if (row.hidden) entry.hidden = true;
+    // Validated on the way in rather than here: `store.ts` drops a reason this
+    // build doesn't know, which is the same guard the localStorage copy needs.
+    if (row.dismiss_reason) entry.dismissReason = row.dismiss_reason as DismissReason;
+    if (row.dismiss_note) entry.dismissNote = row.dismiss_note as string;
     if (row.snapshot) entry.snapshot = row.snapshot as JobSnapshot;
     if (row.changed_at != null) entry.updatedAt = toMs(row.changed_at as Date) ?? undefined;
     state[row.job_id as string] = entry;
@@ -103,6 +108,11 @@ export async function writeJobState(state: JobState): Promise<void> {
   const appliedAt = ids.map((id) =>
     state[id].appliedAt != null ? new Date(state[id].appliedAt as number).toISOString() : null);
   const hidden = ids.map((id) => state[id].hidden === true);
+  // Null rather than absent, so restoring a posting clears the reason here too
+  // — an upsert that left the old value behind would keep a retracted
+  // dismissal in the tuning counts forever.
+  const dismissReason = ids.map((id) => state[id].dismissReason ?? null);
+  const dismissNote = ids.map((id) => state[id].dismissNote ?? null);
   const snapshot = ids.map((id) =>
     state[id].snapshot ? JSON.stringify(state[id].snapshot) : null);
   // The client's own stamp, not now(): `updated_at` records when the row was
@@ -112,25 +122,36 @@ export async function writeJobState(state: JobState): Promise<void> {
     state[id].updatedAt != null ? new Date(state[id].updatedAt as number).toISOString() : null);
 
   await sql()`
-    insert into job_state (job_id, first_seen, applied, applied_at, hidden, snapshot, changed_at, updated_at)
-    select t.job_id, t.first_seen, t.applied, t.applied_at, t.hidden, t.snapshot, t.changed_at, now()
+    insert into job_state (
+      job_id, first_seen, applied, applied_at, hidden,
+      dismiss_reason, dismiss_note, snapshot, changed_at, updated_at
+    )
+    select t.job_id, t.first_seen, t.applied, t.applied_at, t.hidden,
+           t.dismiss_reason, t.dismiss_note, t.snapshot, t.changed_at, now()
     from unnest(
       ${ids}::text[],
       ${firstSeen}::timestamptz[],
       ${applied}::boolean[],
       ${appliedAt}::timestamptz[],
       ${hidden}::boolean[],
+      ${dismissReason}::text[],
+      ${dismissNote}::text[],
       ${snapshot}::jsonb[],
       ${changedAt}::timestamptz[]
-    ) as t(job_id, first_seen, applied, applied_at, hidden, snapshot, changed_at)
+    ) as t(
+      job_id, first_seen, applied, applied_at, hidden,
+      dismiss_reason, dismiss_note, snapshot, changed_at
+    )
     on conflict (job_id) do update set
-      first_seen = excluded.first_seen,
-      applied    = excluded.applied,
-      applied_at = excluded.applied_at,
-      hidden     = excluded.hidden,
-      snapshot   = excluded.snapshot,
-      changed_at = excluded.changed_at,
-      updated_at = now()
+      first_seen     = excluded.first_seen,
+      applied        = excluded.applied,
+      applied_at     = excluded.applied_at,
+      hidden         = excluded.hidden,
+      dismiss_reason = excluded.dismiss_reason,
+      dismiss_note   = excluded.dismiss_note,
+      snapshot       = excluded.snapshot,
+      changed_at     = excluded.changed_at,
+      updated_at     = now()
   `;
 }
 

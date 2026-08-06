@@ -138,13 +138,25 @@ export async function shardWrittenAt(): Promise<Map<number, number>> {
   return out;
 }
 
+/**
+ * Every shard file in the store.
+ *
+ * `shard` has to be an integer to count, not merely present. A run given a
+ * junk `?shard=` used to write a file whose number serialized as `null`, and a
+ * null shard reads as 0 in every comparison downstream — it sorted, it passed
+ * range filters, and it counted toward the "have all shards reported?" test in
+ * `mergeShards` while contributing no postings. The route rejects that request
+ * now, but the files it already wrote are still sitting in Blob, so the guard
+ * belongs on the read as well as the write.
+ */
 export async function readShards(): Promise<ShardFile[]> {
   requireStore();
   const { blobs } = await list({ prefix: SHARD_PREFIX });
 
   const files = await Promise.all(blobs.map((b) => readJson<ShardFile>(b.url)));
   return files
-    .filter((f): f is ShardFile => f != null && Array.isArray(f.jobs))
+    .filter((f): f is ShardFile =>
+      f != null && Array.isArray(f.jobs) && Number.isInteger(f.shard) && f.shard >= 0)
     .sort((a, b) => a.shard - b.shard);
 }
 

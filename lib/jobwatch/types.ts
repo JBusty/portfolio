@@ -125,6 +125,28 @@ export type JobMark = 'saved' | 'applied' | 'hidden';
  */
 export const PRE_EXISTING = 0;
 
+/* -------------------------------------------------------------- feedback */
+
+/**
+ * Why a posting was marked not relevant.
+ *
+ * A list rather than free text, because the point of asking is to tune what
+ * turns up next and only a fixed set can be counted across a hundred
+ * dismissals. Every one of these except the last three names a control that
+ * exists — see `dismissalSuggestions`, which turns a pile of them into the
+ * specific change to make. The last three name things Jobwatch cannot act on
+ * and are here anyway, because forcing "wrong company" into "wrong role" would
+ * poison the one signal that does drive a setting.
+ *
+ * Declared as a const array so `store.ts` can validate against it without
+ * importing the catalog in `feedback.ts` — which imports from here.
+ */
+export const DISMISS_REASONS = [
+  'role', 'level', 'pay', 'stale', 'location', 'company', 'seen', 'other',
+] as const;
+
+export type DismissReason = (typeof DISMISS_REASONS)[number];
+
 /**
  * Per-job triage, keyed by job id and stored under `jobwatch:jobstate:v1`.
  *
@@ -137,6 +159,18 @@ export type JobStateEntry = {
   /** Absent on entries migrated from the old marks map, which carried no time. */
   appliedAt?: number;
   hidden?: boolean;
+  /**
+   * Why it was dismissed, when you answered. Only ever set alongside `hidden`,
+   * and cleared when a posting is restored — a retracted dismissal is not
+   * evidence of anything, and leaving it behind would keep tuning the list
+   * toward something you changed your mind about.
+   *
+   * There is no `dismissedAt`. Every deliberate change already stamps
+   * `updatedAt`, and for a dismissal that *is* when it happened.
+   */
+  dismissReason?: DismissReason;
+  /** What you typed instead of picking one. Only ever set with `other`. */
+  dismissNote?: string;
   /** Written when a job is marked applied, refreshed while it stays fetchable. */
   snapshot?: JobSnapshot;
   /**

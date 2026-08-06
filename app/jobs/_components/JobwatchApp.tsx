@@ -5,12 +5,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   appliedRecords, countTuned, explainMatch, filterJobs, type Tab, type View,
 } from '@/lib/jobwatch/filter';
+import { LEVEL_ORDER } from '@/lib/jobwatch/classify';
+import { dismissalSuggestions, summarizeDismissals } from '@/lib/jobwatch/feedback';
 import { clockTime, plural } from '@/lib/jobwatch/format';
 import { SOURCE_LABELS, SOURCE_MARKS, SOURCE_ORDER } from '@/lib/jobwatch/sources';
 import { isNewSince } from '@/lib/jobwatch/store';
-import type { Job } from '@/lib/jobwatch/types';
+import type { DismissReason, Job, Prefs } from '@/lib/jobwatch/types';
 import ConfirmDialog from './ConfirmDialog';
 import CountUp from './CountUp';
+import DismissDialog from './DismissDialog';
 import JobDetail from './JobDetail';
 import JobTypesInput from './JobTypesInput';
 import JobwatchNav from './JobwatchNav';
@@ -31,22 +34,70 @@ const TABS: Array<[Tab, string]> = [
   ['applied', 'Applied'],
 ];
 
-/** Per-tab empty states. Each tab is empty for its own reason. */
+/**
+ * Per-tab empty states, for the cases where nothing is being filtered out.
+ *
+ * The case that *is* a filter — postings indexed, none getting through — is
+ * handled in the render instead, because it can say something specific and
+ * offer a way out. See `narrowedBy`.
+ */
 const EMPTY_TITLE: Record<Tab, (total: number) => string> = {
-  open: (total) => (total === 0 ? 'Nothing tracked yet' : 'No postings match'),
-  applied: () => 'No applications logged',
+  open: () => 'Nothing tracked yet',
+  applied: (total) => (total > 0 ? 'Nothing in the log matches' : 'No applications logged'),
 };
 
 const EMPTY_BODY: Record<Tab, (total: number, syncing: boolean) => string> = {
-  open: (total, syncing) =>
+  open: (_total, syncing) =>
+    syncing
+      ? 'Pulling boards now — this takes a few seconds on first load.'
+      : 'Add a board from the Boards panel above; it is fetched as soon as the sweep reaches it.',
+  applied: (total) =>
     total > 0
-      ? 'Loosen something in Filters, or widen the job types above.'
-      : syncing
-        ? 'Pulling boards now — this takes a few seconds on first load.'
-        : 'Add a board from the Boards panel above; it is fetched as soon as the sweep reaches it.',
-  applied: () =>
-    'Mark a posting applied and it moves here, with a copy of the listing kept for after the req closes.',
+      // Preferences never reach this tab, so the search box is the only thing
+      // that can have emptied it — which makes the advice exact.
+      ? 'Your applications are all still here; the search is what is hiding them.'
+      : 'Mark a posting applied and it moves here, with a copy of the listing kept for after the req closes.',
 };
+
+/**
+ * What is actually narrowing the list, in the words the controls use.
+ *
+ * An empty board is nearly always one setting doing the work, and "loosen
+ * something in Filters" does not say which — by then the panel is collapsed and
+ * the salary floor that emptied the board is two clicks away and out of sight.
+ * Naming the live constraints turns a shrug into somewhere to go.
+ *
+ * Job types are deliberately absent: they sit in the hero, never folded away,
+ * so they cannot be the forgotten reason. Sort is absent for the reason
+ * `countTuned` gives — it reorders, it never hides.
+ */
+function narrowedBy(prefs: Prefs, query: string): string[] {
+  const out: string[] = [];
+  const q = query.trim();
+
+  if (q) out.push(`the search “${q}”`);
+  if (prefs.levels.length > 0) {
+    out.push(`${prefs.levels.length} of ${LEVEL_ORDER.length} seniorities`);
+  }
+  if (prefs.salaryFloor != null) {
+    out.push(`pay from $${Math.round(prefs.salaryFloor / 1000)}k`);
+  }
+  if (!prefs.includeUnlistedSalary) out.push('a published salary');
+  if (prefs.maxAgeDays != null) {
+    // "the last 1 day" is the kind of thing that reads as generated.
+    out.push(prefs.maxAgeDays === 1 ? 'the last day' : `the last ${prefs.maxAgeDays} days`);
+  }
+  if (prefs.exclude.length > 0) {
+    out.push(`${prefs.exclude.length} excluded ${plural(prefs.exclude.length, 'word')}`);
+  }
+  return out;
+}
+
+/** "a", "a and b", "a, b and c" — an Oxford-less list, because it is prose. */
+function sentenceList(parts: string[]): string {
+  if (parts.length <= 1) return parts[0] ?? '';
+  return `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`;
+}
 
 export default function JobwatchApp() {
   const {
@@ -54,7 +105,7 @@ export default function JobwatchApp() {
     descriptions, usingIndex, indexMeta,
     sweeping, sweepNote, runSweep,
     addCompany, removeCompany, loadDescription,
-    markApplied, unapply, toggleHidden,
+    markApplied, unapply, dismissJob, restoreJob,
     updatePrefs, resetPrefs,
   } = useJobwatch();
 
@@ -66,6 +117,14 @@ export default function JobwatchApp() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   /** Job id awaiting confirmation before it leaves the application log. */
   const [pendingUnapply, setPendingUnapply] = useState<string | null>(null);
+  /**
+   * The posting the "why" dialog is asking about.
+   *
+   * Held by id rather than by object so it cannot go stale against a refetch,
+   * and resolved against the index below — the posting is already dismissed by
+   * the time this is set, so it is no longer in `rows` to be found there.
+   */
+  const [pendingDismiss, setPendingDismiss] = useState<string | null>(null);
 
   const barRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
@@ -283,9 +342,22 @@ export default function JobwatchApp() {
     [tab, applied, open],
   );
 
+  /**
+   * Both badges promise the same thing: how many rows clicking gets you.
+   *
+   * Applied used to count the log directly, which made it the one figure on the
+   * page that ignored the search box — type a company name and the Open badge
+   * narrowed, the Applied list narrowed, and the Applied badge sat there
+   * reporting the whole log. `appliedRecords` is the list itself, so counting it
+   * cannot drift from what renders.
+   *
+   * This does not put preferences back in the way of an application record:
+   * `appliedRecords` deliberately ignores prefs and honours only the search
+   * terms, so a salary floor still cannot hide something you applied to.
+   */
   const tabCounts: Record<Tab, number> = {
     open: openCount,
-    applied: counts.applied,
+    applied: applied.length,
   };
 
   const selected = useMemo(() => {
@@ -298,6 +370,31 @@ export default function JobwatchApp() {
   useEffect(() => {
     if (selected) loadDescription(selected);
   }, [selected, loadDescription]);
+
+  /**
+   * Below the split, the posting opens as a sheet over the list rather than
+   * beside it — and a sheet over a scrollable document scrolls the document
+   * behind it the moment its own content runs out, so you close it to find the
+   * list somewhere it never was. Locking the page is the only thing that stops
+   * that.
+   *
+   * A class on the root rather than an inline style, because the width this
+   * applies at is the width the sheet exists at, and that number belongs in the
+   * media query that makes the sheet — not duplicated in a `matchMedia` here
+   * that would then have to be kept in step with it. `overflow` is set on both
+   * elements: iOS Safari propagates the body's to the viewport and will happily
+   * scroll the html element otherwise.
+   */
+  useEffect(() => {
+    if (!selectedId) return;
+    const { documentElement: root, body } = document;
+    root.classList.add('jw-sheet-open');
+    body.classList.add('jw-sheet-open');
+    return () => {
+      root.classList.remove('jw-sheet-open');
+      body.classList.remove('jw-sheet-open');
+    };
+  }, [selectedId]);
 
   /* ------------------------------------------------------------ shortcuts */
 
@@ -345,8 +442,50 @@ export default function JobwatchApp() {
     [pendingUnapply, applied],
   );
 
+  /**
+   * Dismissing is done the instant it is pressed; the dialog that follows only
+   * collects the reason.
+   *
+   * The other way round — ask first, remove on answer — is what turns a triage
+   * pass into a form. It also makes skipping mean two different things, since
+   * an unanswered question would have to either drop the posting anyway or
+   * quietly put it back, and neither is what the button said it would do.
+   */
+  const askWhy = useCallback((id: string) => {
+    dismissJob(id);
+    setPendingDismiss(id);
+  }, [dismissJob]);
+
+  const answerWhy = useCallback((reason: DismissReason, note?: string) => {
+    if (pendingDismiss) dismissJob(pendingDismiss, reason, note);
+    setPendingDismiss(null);
+  }, [pendingDismiss, dismissJob]);
+
+  /** Already off the list; this only closes the question. */
+  const skipWhy = useCallback(() => setPendingDismiss(null), []);
+
+  const dismissed = useMemo(
+    () => (pendingDismiss ? jobs.find((j) => j.id === pendingDismiss) ?? null : null),
+    [pendingDismiss, jobs],
+  );
+
   const reasonFor = useCallback((job: Job) => explainMatch(job, prefs), [prefs]);
   const tunedCount = useMemo(() => countTuned(prefs), [prefs]);
+
+  /**
+   * What the dismissals add up to, and what to do about them.
+   *
+   * The join behind the suggestions is a pass over the whole index, so it is
+   * skipped outright until at least one posting has been given a reason —
+   * which on a fresh install is forever.
+   */
+  const feedback = useMemo(() => summarizeDismissals(jobState), [jobState]);
+  const suggestions = useMemo(
+    () => (feedback.answered > 0 ? dismissalSuggestions(jobState, jobs, prefs) : []),
+    [feedback.answered, jobState, jobs, prefs],
+  );
+  /** Only read by the empty state, so it costs nothing while there are rows. */
+  const narrowing = useMemo(() => narrowedBy(prefs, query), [prefs, query]);
 
   return (
     <main id="main-content" tabIndex={-1} ref={shellRef} className={`page-enter ${styles.shell}`}>
@@ -448,21 +587,78 @@ export default function JobwatchApp() {
           thing, the panel triggers are outlined, and the view narrowing is bare
           text. Two rows of bordered chips was what made this read as a cockpit. */}
       <div className={styles.bar} ref={barRef}>
-        <div className={`${styles.wrap} ${styles.barInner} ${styles.scrollRow}`}>
-          <div className={styles.tabs} role="group" aria-label="View">
-            {TABS.map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                className={styles.tab}
-                data-active={tab === id}
-                onClick={() => setTab(id)}
-                aria-pressed={tab === id}
-              >
-                {label}
-                <span className={styles.tabCount}>{ready ? tabCounts[id] : '—'}</span>
-              </button>
-            ))}
+        <div className={`${styles.wrap} ${styles.barInner}`}>
+          {/* One flat row at every width the two panes fit side by side, and two
+              rows below it: the switcher and the panel triggers become a strip
+              that scrolls sideways, and the search field takes the line under
+              them. The wrapper is `display: contents` above the split, so on a
+              desktop it is not a box at all and the five controls lay out as
+              one row — see `.barViews`. */}
+          <div className={`${styles.barViews} ${styles.scrollRow}`}>
+            <div className={styles.tabs} role="group" aria-label="View">
+              {TABS.map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  className={styles.tab}
+                  data-active={tab === id}
+                  onClick={() => setTab(id)}
+                  aria-pressed={tab === id}
+                >
+                  {label}
+                  <span className={styles.tabCount}>{ready ? tabCounts[id] : '—'}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* A switch, not a narrowing: it swaps the list for the dismissed
+                pile rather than adding to it, which is the only way back to a
+                posting you marked not relevant. Sits with the panel triggers
+                rather than in the switcher because it is orthogonal to
+                Open/Applied. Disabled on Applied, where the log is the record
+                and nothing is dismissed from it.
+
+                Named for the act rather than for the flag behind it — the store
+                still calls it `hidden`, and the button that fills this pile says
+                "not relevant", so a control labelled after the column would be
+                the only place either word appeared. */}
+            <button
+              type="button"
+              className={`${styles.toggle} ${styles.barBtn}`}
+              data-active={hiddenOnly}
+              onClick={() => setHiddenOnly((v) => !v)}
+              aria-pressed={hiddenOnly}
+              disabled={tab === 'applied'}
+              title="Show only the postings you marked not relevant, so you can put one back"
+            >
+              Dismissed
+              {hiddenAvailable > 0 && <span className={styles.count}>{hiddenAvailable}</span>}
+            </button>
+
+            <button
+              type="button"
+              ref={prefsBtnRef}
+              className={`${styles.toggle} ${styles.barBtn}`}
+              data-active={showPrefs}
+              onClick={() => setShowPrefs((s) => !s)}
+              aria-expanded={showPrefs}
+            >
+              <SlidersIcon />
+              Filters
+              {tunedCount > 0 && <span className={styles.count}>{tunedCount}</span>}
+            </button>
+
+            <button
+              type="button"
+              ref={sourcesBtnRef}
+              className={`${styles.toggle} ${styles.barBtn}`}
+              data-active={showSources}
+              onClick={() => setShowSources((s) => !s)}
+              aria-expanded={showSources}
+            >
+              Boards
+              <span className={styles.count}>{errorCount > 0 ? `${errorCount}!` : companies.length}</span>
+            </button>
           </div>
 
           {/* Beside the switcher, not up in the header: both narrow the same
@@ -475,50 +671,6 @@ export default function JobwatchApp() {
             aria-label="Search postings"
             type="search"
           />
-
-          {/* A switch, not a narrowing: it swaps the list for the hidden pile
-              rather than adding to it, which is the only way back to a posting
-              you hid. Sits with the panel triggers rather than in the switcher
-              because it is orthogonal to Open/Applied. Disabled on Applied,
-              where the log is the record and nothing is hidden from it. */}
-          <button
-            type="button"
-            className={`${styles.toggle} ${styles.barBtn}`}
-            data-active={hiddenOnly}
-            onClick={() => setHiddenOnly((v) => !v)}
-            aria-pressed={hiddenOnly}
-            disabled={tab === 'applied'}
-            title="Show only the postings you have hidden, so you can unhide them"
-          >
-            Hidden
-            {hiddenAvailable > 0 && <span className={styles.count}>{hiddenAvailable}</span>}
-          </button>
-
-          <button
-            type="button"
-            ref={prefsBtnRef}
-            className={`${styles.toggle} ${styles.barBtn}`}
-            data-active={showPrefs}
-            onClick={() => setShowPrefs((s) => !s)}
-            aria-expanded={showPrefs}
-          >
-            <SlidersIcon />
-            Filters
-            {tunedCount > 0 && <span className={styles.count}>{tunedCount}</span>}
-          </button>
-
-          <button
-            type="button"
-            ref={sourcesBtnRef}
-            className={`${styles.toggle} ${styles.barBtn}`}
-            data-active={showSources}
-            onClick={() => setShowSources((s) => !s)}
-            aria-expanded={showSources}
-          >
-            Boards
-            <span className={styles.count}>{errorCount > 0 ? `${errorCount}!` : companies.length}</span>
-          </button>
-
         </div>
 
         {/*
@@ -537,6 +689,11 @@ export default function JobwatchApp() {
             // application log, so counting it here would make toggles look inert.
             shown={open.length}
             total={jobs.length}
+            // What you have been marking not relevant, in the one place where
+            // anything can be done about it. A reason given three postings ago
+            // and never surfaced again is just a click you wasted.
+            feedback={feedback}
+            suggestions={suggestions}
             onChange={updatePrefs}
             onReset={resetPrefs}
           />
@@ -556,7 +713,7 @@ export default function JobwatchApp() {
       {/* ---- body ---- */}
       <div className={`${styles.wrap} ${styles.body}`}>
         <div className={styles.list}>
-          {/* The hidden pile is a different room, not a filtered version of
+          {/* The dismissed pile is a different room, not a filtered version of
               this one — none of the preferences apply in it and everything in
               it is something you removed. So it says so outright rather than
               leaving the lit switch in the bar as the only clue. */}
@@ -564,7 +721,7 @@ export default function JobwatchApp() {
             <span>
               {ready ? `${shown} ${plural(shown, tab === 'applied' ? 'application' : 'posting')}` : 'Loading…'}
               {ready && !hiddenOnly && shown !== total && ` of ${total}`}
-              {ready && hiddenOnly && ' you hid · filters do not apply here'}
+              {ready && hiddenOnly && ' you dismissed · filters do not apply here'}
             </span>
             {hiddenOnly ? (
               <button
@@ -575,7 +732,9 @@ export default function JobwatchApp() {
                 Back to open roles
               </button>
             ) : (
-              <span>j / k to move · esc to close</span>
+              // Keyboard-only advice, so it is not shown to a pointer that has
+              // no keyboard behind it — see `.listMetaHint`.
+              <span className={styles.listMetaHint}>j / k to move · esc to close</span>
             )}
           </div>
 
@@ -587,14 +746,60 @@ export default function JobwatchApp() {
 
           {ready && shown === 0 && (
             <div className={styles.empty}>
-              {/* An empty hidden pile is not a filter that needs loosening —
-                  it is the ordinary state of having hidden nothing yet. */}
+              {/* An empty dismissed pile is not a filter that needs loosening —
+                  it is the ordinary state of having dismissed nothing yet. */}
               {hiddenOnly ? (
                 <>
-                  <span className={styles.emptyTitle}>Nothing hidden</span>
+                  <span className={styles.emptyTitle}>Nothing dismissed</span>
                   <p className={styles.emptyBody}>
-                    Hide a posting and it moves here, out of Open until you flip this back.
+                    Mark a posting not relevant and it moves here, out of Open until you
+                    flip this back. The reason you give tunes what turns up next.
                   </p>
+                </>
+              ) : tab === 'open' && total > 0 ? (
+                /* Postings are indexed and none are getting through, which is
+                   the only empty state that is somebody's settings rather than
+                   the ordinary state of a new install. So it names them and
+                   offers the way back, instead of saying "loosen something". */
+                <>
+                  <span className={styles.emptyTitle}>No roles match</span>
+                  <p className={styles.emptyBody}>
+                    {narrowing.length > 0
+                      // "Loosen one" needs something to point at, so the two
+                      // cases are written out rather than sharing a tail.
+                      ? `${total.toLocaleString()} ${plural(total, 'posting')} indexed, and `
+                        + `none get past ${sentenceList(narrowing)}. `
+                        + 'Loosen one and they come back.'
+                      : `${total.toLocaleString()} ${plural(total, 'posting')} indexed, and `
+                        + 'none of them match the job types above. Widen one and they come back.'}
+                  </p>
+                  <div className={styles.emptyActions}>
+                    {query.trim() !== '' && (
+                      <button
+                        type="button"
+                        className={styles.toggle}
+                        onClick={() => setQuery('')}
+                      >
+                        Clear search
+                      </button>
+                    )}
+                    {tunedCount > 0 && (
+                      <button
+                        type="button"
+                        className={styles.toggle}
+                        onClick={resetPrefs}
+                      >
+                        Reset {tunedCount} {plural(tunedCount, 'filter')}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className={styles.toggle}
+                      onClick={() => setShowPrefs(true)}
+                    >
+                      Open filters
+                    </button>
+                  </div>
                 </>
               ) : (
                 <>
@@ -617,6 +822,11 @@ export default function JobwatchApp() {
                 appliedAt={tab === 'applied' ? appliedAt : undefined}
                 onSelect={setSelectedId}
                 onUnapply={tab === 'applied' ? confirmUnapply : undefined}
+                // Three lists, one action each: the log gets Unapply, the
+                // dismissed pile gets the way back out of it, and the open list
+                // gets the way in. Nothing carries two.
+                onDismiss={tab === 'open' && !hiddenOnly ? askWhy : undefined}
+                onRestore={hiddenOnly ? restoreJob : undefined}
               />
             ))}
         </div>
@@ -628,7 +838,8 @@ export default function JobwatchApp() {
           description={selected ? descriptions[selected.id] : undefined}
           onApply={markApplied}
           onUnapply={confirmUnapply}
-          onToggleHidden={toggleHidden}
+          onDismiss={askWhy}
+          onRestore={restoreJob}
           onClose={() => setSelectedId(null)}
         />
       </div>
@@ -651,6 +862,8 @@ export default function JobwatchApp() {
         }}
         onCancel={() => setPendingUnapply(null)}
       />
+
+      <DismissDialog job={dismissed} onAnswer={answerWhy} onSkip={skipWhy} />
     </main>
   );
 }

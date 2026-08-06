@@ -21,6 +21,9 @@ export const maxDuration = 300;
 /** Stop crawling with time left to write, rather than being killed mid-run. */
 const WRITE_BUDGET_MS = 15_000;
 
+/** Ceiling on `?pages=`. See where it is read. */
+const MAX_PAGES = 20;
+
 /** Same two trusted callers as the sweep — see the note in `refresh/route.ts`. */
 async function authorized(request: Request): Promise<boolean> {
   const secret = process.env.CRON_SECRET;
@@ -37,9 +40,39 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(request.url);
-  const pages = Number(url.searchParams.get('pages')) || 4;
-  const categories = url.searchParams.get('categories')?.split(',').filter(Boolean)
-    ?? BUILTIN_CATEGORIES;
+
+  /**
+   * Both parameters are bounded, because this crawls somebody else's site.
+   *
+   * `pages` was `Number(...) || 4` with no ceiling, so `?pages=99999` walked
+   * Built In until the deadline killed it — a request anyone holding the
+   * password could make, repeatedly. The cap is far past the useful yield: a
+   * category page is 25 postings and they run out long before twenty pages, at
+   * which point `harvestBuiltIn` stops on the empty page anyway.
+   */
+  const requestedPages = Number(url.searchParams.get('pages'));
+  const pages = Number.isInteger(requestedPages) && requestedPages > 0
+    ? Math.min(requestedPages, MAX_PAGES)
+    : 4;
+
+  /**
+   * A category is interpolated into a URL path, so it is held to a slug. The
+   * host is hardcoded and a path segment cannot escape it, but `../` still
+   * walks to pages this has no business fetching, and a category that isn't one
+   * is a wasted round trip either way.
+   */
+  // An empty list folds to the default rather than being honoured literally:
+  // `?categories=` would otherwise crawl nothing and report a successful
+  // harvest of zero boards, which reads as "Built In has stopped working".
+  const requestedCategories = url.searchParams.get('categories')
+    ?.split(',').map((c) => c.trim()).filter(Boolean);
+  if (requestedCategories?.some((c) => !/^[a-z0-9-]+$/.test(c))) {
+    return Response.json(
+      { error: 'Categories must be lowercase slugs' },
+      { status: 400 },
+    );
+  }
+  const categories = requestedCategories?.length ? requestedCategories : BUILTIN_CATEGORIES;
 
   try {
     const before = await readHarvest();

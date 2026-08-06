@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import Mark from '@/components/Mark';
 import { LEVEL_LABELS } from '@/lib/jobwatch/classify';
+import { REASON_SHORT } from '@/lib/jobwatch/feedback';
 import { timeAgo, timeAgoFrom } from '@/lib/jobwatch/format';
 import { sanitizeHtml } from '@/lib/jobwatch/html';
 import { hasDescriptionEndpoint, SOURCE_CODES, SOURCE_LABELS } from '@/lib/jobwatch/sources';
@@ -19,12 +20,13 @@ type Props = {
   description: DescriptionEntry | undefined;
   onApply: (job: Job) => void;
   onUnapply: (id: string) => void;
-  onToggleHidden: (id: string) => void;
+  onDismiss: (id: string) => void;
+  onRestore: (id: string) => void;
   onClose: () => void;
 };
 
 export default function JobDetail({
-  job, entry, reason, description, onApply, onUnapply, onToggleHidden, onClose,
+  job, entry, reason, description, onApply, onUnapply, onDismiss, onRestore, onClose,
 }: Props) {
   const raw = description?.html || job?.descriptionHtml || '';
 
@@ -68,19 +70,30 @@ export default function JobDetail({
 
   return (
     <div className={styles.detail}>
-      <div className={styles.detailHead}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
-          <span className={styles.rowCompany}>
-            <span className={styles.src} title={SOURCE_LABELS[job.source]}>
-              {SOURCE_CODES[job.source]}
-            </span>
-            {job.company} · {SOURCE_LABELS[job.source]}
+      {/* A sibling of the head rather than its first line, which is what lets it
+          pin. Below the split this pane is a sheet over the list and the only
+          way out of it is this button, so it has to still be there four screens
+          into a long write-up — and `position: sticky` is scoped to the
+          containing block, which as part of the head would have scrolled away
+          with it. */}
+      <div className={styles.detailTop}>
+        <span className={styles.rowCompany}>
+          <span className={styles.src} title={SOURCE_LABELS[job.source]}>
+            {SOURCE_CODES[job.source]}
           </span>
-          <button type="button" className={styles.iconBtn} onClick={onClose} aria-label="Close posting">
-            <CloseIcon size={15} />
-          </button>
-        </div>
+          {job.company} · {SOURCE_LABELS[job.source]}
+        </span>
+        <button
+          type="button"
+          className={`${styles.iconBtn} ${styles.detailClose}`}
+          onClick={onClose}
+          aria-label="Close posting"
+        >
+          <CloseIcon size={15} />
+        </button>
+      </div>
 
+      <div className={styles.detailHead}>
         <h2 className={styles.detailTitle}>{job.title}</h2>
         <p className={styles.reason}>{reason}</p>
 
@@ -103,6 +116,19 @@ export default function JobDetail({
               {entry?.appliedAt
                 ? `Applied ${timeAgoFrom(entry.appliedAt)} ago`
                 : 'Applied · date unknown'}
+            </span>
+          )}
+          {/* Your own answer, played back. The reason is the one thing on this
+              pane that came from you rather than from the board, and it is the
+              reason the posting is not on the list — so reading it back is what
+              makes "Put it back" a considered press rather than a guess. */}
+          {entry?.hidden && (
+            <span className={`${styles.pill} ${styles.pillHidden}`}>
+              {entry.dismissNote
+                ? `Not relevant · ${entry.dismissNote}`
+                : entry.dismissReason
+                  ? `Not relevant · ${REASON_SHORT[entry.dismissReason]}`
+                  : 'Not relevant'}
             </span>
           )}
         </div>
@@ -128,16 +154,32 @@ export default function JobDetail({
             {applied ? 'Unapply' : 'Mark applied'}
           </button>
 
-          <button
-            type="button"
-            className={styles.toggle}
-            data-active={entry?.hidden === true}
-            onClick={() => onToggleHidden(job.id)}
-            aria-pressed={entry?.hidden === true}
-          >
-            <HideIcon />
-            {entry?.hidden ? 'Hidden' : 'Hide'}
-          </button>
+          {/* Not a toggle any more. Going out and coming back are two different
+              acts now — one asks a question and records an answer, the other
+              retracts it — and a single pressed-state button cannot say that,
+              because "press again to undo" is exactly what it implies. */}
+          {entry?.hidden ? (
+            <>
+              <button type="button" className={styles.toggle} onClick={() => onRestore(job.id)}>
+                <CheckIcon />
+                Put it back
+              </button>
+              {/* The way back to a question that was skipped. Dismissing from
+                  the list is a press and a glance away, so skipping is the
+                  common case rather than a lapse — and without this the answer
+                  could only ever be given in the second it was first asked. */}
+              {!entry.dismissReason && (
+                <button type="button" className={styles.toggle} onClick={() => onDismiss(job.id)}>
+                  Say why
+                </button>
+              )}
+            </>
+          ) : (
+            <button type="button" className={styles.toggle} onClick={() => onDismiss(job.id)}>
+              <HideIcon />
+              Not relevant
+            </button>
+          )}
         </div>
       </div>
 

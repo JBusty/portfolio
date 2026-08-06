@@ -14,6 +14,7 @@ import {
   hasDescriptionEndpoint,
 } from '@/lib/jobwatch/sources';
 import {
+  coerceNote,
   DEFAULT_PREFS,
   hydrate,
 
@@ -38,6 +39,7 @@ import {
   PRE_EXISTING,
   type Company,
   type CompanyResult,
+  type DismissReason,
   type Job,
   type JobState,
   type Prefs,
@@ -428,8 +430,45 @@ export function useJobwatch() {
     patchEntry(id, ({ appliedAt: _drop, ...entry }) => ({ ...entry, applied: false }));
   }, [patchEntry]);
 
-  const toggleHidden = useCallback((id: string) => {
-    patchEntry(id, (entry) => ({ ...entry, hidden: !entry.hidden }));
+  /**
+   * Takes a posting off the list, and records why if you have said yet.
+   *
+   * One function for both halves on purpose: the posting leaves the moment you
+   * press the button, and the reason arrives a second later from the dialog
+   * that follows. Calling this again with a reason is the second half of the
+   * same act, not a new one — which is also what makes skipping the question
+   * free, since the first call has already done the part that matters.
+   */
+  const dismissJob = useCallback(
+    (id: string, reason?: DismissReason, note?: string) => {
+      patchEntry(id, (entry) => {
+        const next = { ...entry, hidden: true };
+        if (!reason) return next;
+        next.dismissReason = reason;
+        // Only ever carried with `other` — see the dialog. Trimmed and capped
+        // here as well as there, because this is the door everything comes
+        // through and the cap is a property of what gets stored.
+        const trimmed = coerceNote(note);
+        if (reason === 'other' && trimmed) next.dismissNote = trimmed;
+        else delete next.dismissNote;
+        return next;
+      });
+    },
+    [patchEntry],
+  );
+
+  /**
+   * Puts one back, and forgets the reason with it.
+   *
+   * Dropping the answer is the point rather than tidiness: you have just said
+   * the dismissal was wrong, and a reason left behind would go on steering
+   * suggestions toward a change you decided against.
+   */
+  const restoreJob = useCallback((id: string) => {
+    patchEntry(id, ({ dismissReason: _r, dismissNote: _n, ...entry }) => ({
+      ...entry,
+      hidden: false,
+    }));
   }, [patchEntry]);
 
   /* --------------------------------------------------- descriptions */
@@ -529,7 +568,7 @@ export function useJobwatch() {
     descriptions, usingIndex, indexMeta,
     sweeping, sweepNote, runSweep,
     sync, addCompany, removeCompany, loadDescription,
-    markApplied, unapply, toggleHidden,
+    markApplied, unapply, dismissJob, restoreJob,
     updatePrefs, resetPrefs,
   };
 }

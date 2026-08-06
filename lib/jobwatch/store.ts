@@ -17,7 +17,9 @@ import { LEVEL_ORDER } from './classify';
 import { plural, titleCase } from './format';
 import { companyKey } from './sources';
 import {
+  DISMISS_REASONS,
   PRE_EXISTING,
+  type DismissReason,
   type Level,
   type Company,
   type Job,
@@ -266,6 +268,33 @@ export const DEFAULT_PREFS: Prefs = {
   sortDir: 'desc',
 };
 
+/**
+ * The values the two numeric preferences are edited on.
+ *
+ * Here rather than in the panel that draws them, because the panel is not the
+ * only thing that sets them any more: `dismissalSuggestions` proposes a floor
+ * off the back of what you dismissed, and a floor that isn't one of these
+ * lands the panel's `<select>` on a value it has no option for — which renders
+ * as blank, and reads as the filter having been cleared. One ladder, so a
+ * suggestion can only ever propose a rung the control can show.
+ */
+export const SALARY_STEPS: Array<[number | null, string]> = [
+  [null, 'Any'],
+  [150_000, '$150k+'],
+  [180_000, '$180k+'],
+  [200_000, '$200k+'],
+  [250_000, '$250k+'],
+];
+
+export const AGE_STEPS: Array<[number | null, string]> = [
+  [null, 'Any age'],
+  [1, 'Last 24h'],
+  [3, 'Last 3 days'],
+  [7, 'Last week'],
+  [14, 'Last 2 weeks'],
+  [30, 'Last month'],
+];
+
 const SORT_KEYS = new Set<string>(['firstSeen', 'published', 'salary', 'company']);
 
 /**
@@ -356,6 +385,17 @@ export const savePrefs = (prefs: Prefs) => write(KEY.prefs, prefs);
 
 export const toSnapshot = ({ descriptionHtml: _drop, ...rest }: Job): JobSnapshot => rest;
 
+const REASON_IDS = new Set<string>(DISMISS_REASONS);
+
+/** Longer than this is a paragraph, and nothing reads it as one. */
+export const NOTE_LIMIT = 140;
+
+export const coerceNote = (raw: unknown): string | undefined => {
+  if (typeof raw !== 'string') return undefined;
+  const note = raw.trim().slice(0, NOTE_LIMIT);
+  return note || undefined;
+};
+
 function coerceEntry(raw: unknown): JobStateEntry | null {
   if (!raw || typeof raw !== 'object') return null;
   const e = raw as Partial<JobStateEntry>;
@@ -368,6 +408,14 @@ function coerceEntry(raw: unknown): JobStateEntry | null {
   if (e.applied) entry.applied = true;
   if (typeof e.appliedAt === 'number' && Number.isFinite(e.appliedAt)) entry.appliedAt = e.appliedAt;
   if (e.hidden) entry.hidden = true;
+  // Dropped rather than carried when it names a reason this build doesn't have:
+  // an unknown id counts toward no tally and matches no suggestion, so keeping
+  // it would only put a value in the store that every reader has to guard.
+  if (typeof e.dismissReason === 'string' && REASON_IDS.has(e.dismissReason)) {
+    entry.dismissReason = e.dismissReason as DismissReason;
+  }
+  const note = coerceNote(e.dismissNote);
+  if (note) entry.dismissNote = note;
   if (e.snapshot && typeof e.snapshot === 'object') entry.snapshot = e.snapshot;
   return entry;
 }
@@ -486,10 +534,27 @@ export const firstSeenOf = (job: Job, state: JobState): number =>
  * every posting is baselined on the run that first stamps its shard, so with no
  * fallback there is nothing to count until that shard runs a second time.
  *
- * The board's date is the weaker answer — Greenhouse publishes `updated_at`,
- * which any description edit bumps — but it is an answer, and it only ever
- * applies where Jobwatch has none of its own. Each sweep replaces more of it
- * with a real sighting.
+ * The fallback is permanent, not transitional. A baselined posting keeps
+ * `firstSeen === PRE_EXISTING` for as long as it stays on its board:
+ * `stampFirstSeen` carries a known stamp forward with `known.get(id) ?? …`, and
+ * `0` is not `undefined`, so the baseline is never overwritten by a later run.
+ * Only postings that are new to the index ever get a real sighting. So which
+ * date a source publishes decides whether its postings can be counted new at
+ * all, indefinitely:
+ *
+ *   - Greenhouse, Lever, Ashby, SmartRecruiters and Breezy all publish a real
+ *     creation date. Greenhouse sends `first_published` alongside `updated_at`
+ *     and `sources.ts` prefers it, so an edited description no longer reads as
+ *     a fresh posting.
+ *   - Workday publishes prose, and "Posted 30+ Days Ago" deliberately becomes
+ *     null rather than an invented boundary date — see `workdayPostedAt`.
+ *   - Rippling publishes no date anywhere in its payload.
+ *
+ * The last two therefore never count as new once baselined. That is the honest
+ * answer rather than a bug to route around: neither source tells us when the
+ * posting appeared, and the alternative is to guess. Postings discovered on a
+ * later sweep are unaffected — they carry a real stamp and take the branch
+ * above.
  */
 export function isNewSince(
   job: Job,
