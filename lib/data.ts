@@ -19,6 +19,14 @@
   thumbPosition?: string;
   accent?: string;
   /**
+   * The thing itself, running, if it is something a reader can go and use.
+   *
+   * Only the personal projects have one — client work is behind a login or a
+   * NDA, and a case study about it is the whole artefact. Optional rather than
+   * empty-string, so the row is absent instead of dangling.
+   */
+  liveUrl?: string;
+  /**
    * Built for myself rather than for an employer or client. These get their own
    * group on /work — the story of a solo build is a different one from shipping
    * inside a team, and interleaving them by date invited the wrong comparison.
@@ -86,6 +94,7 @@ export const PROJECTS: Project[] = [
     // two-pane screenshot that turns to grey mush at 168px, and this one carries
     // the wordmark and the three figures legibly at thumbnail size.
     thumb: '/images/jobwatch/problem-overview.png',
+    liveUrl: 'https://jobwatch-topaz.vercel.app',
     personal: true,
   },
   {
@@ -150,6 +159,7 @@ export const PROJECTS: Project[] = [
     tags: ['Founder', '0→1'],
     metric: '1 house, 0 spreadsheets',
     thumb: '/images/groundbase/solution-3.png',
+    liveUrl: 'https://getgroundbase.com',
     personal: true,
   },
   {

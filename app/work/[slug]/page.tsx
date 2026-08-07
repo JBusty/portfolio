@@ -198,6 +198,31 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
                 </dd>
                 <dt>Result</dt>
                 <dd style={{ color: 'var(--accent-ink)', fontWeight: 500 }}>{p.metric}</dd>
+                {/* Only the personal projects are reachable — see Project.liveUrl.
+                    `out` is the offsite lean, and the host is the label because
+                    "Visit site" tells a reader nothing they cannot already guess. */}
+                {p.liveUrl && (
+                  <>
+                    <dt>Live</dt>
+                    <dd>
+                      <a
+                        href={p.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          color: 'var(--accent-ink)',
+                          fontWeight: 500,
+                        }}
+                      >
+                        {new URL(p.liveUrl).host.replace(/^www\./, '')}
+                        <Mark dir="out" />
+                      </a>
+                    </dd>
+                  </>
+                )}
               </dl>
             </div>
           </div>

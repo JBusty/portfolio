@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Instrument_Serif } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
-import { SiteNav, SiteFooter } from '@/components/SiteChrome';
+import TopBar from '@/components/TopBar';
+import Footer from '@/components/Footer';
 import SectionRevealObserver from '@/components/SectionRevealObserver';
 import { SITE_URL } from '@/lib/site';
 import './globals.css';
@@ -72,10 +73,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <a href="#main-content" className="skip-link">Skip to content</a>
         <SectionRevealObserver />
-        {/* Both bow out on /jobs — see SiteChrome. */}
-        <SiteNav />
+        {/* Rendered unconditionally. These used to route through SiteChrome,
+            which existed only to hide them on /jobs — Jobwatch is its own
+            deployment now, so there is no bare route left to special-case. */}
+        <TopBar />
         {children}
-        <SiteFooter />
+        <Footer />
         <Analytics />
       </body>
     </html>

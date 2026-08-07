@@ -125,7 +125,28 @@
       "Bash(sed -n '/^\\\\.navMenuItem {/,/^}/p;/^\\\\.navMenu {/,/^}/p' app/jobs/jobwatch.module.css)",
       "Bash(sed -n '/^\\\\.navInner {/,/^}/p' app/jobs/jobwatch.module.css)",
       "Bash(vercel domains *)",
-      "Bash(sed 's/[: ]//g')"
+      "Bash(sed 's/[: ]//g')",
+      "Read(//c/dev//**)",
+      "Read(//c/dev/**)",
+      "Bash(set -e)",
+      "Bash(mkdir -p /c/dev/jobwatch/app/_components)",
+      "Bash(mkdir -p /c/dev/jobwatch/app/api/jobwatch)",
+      "Bash(mkdir -p \"/c/dev/jobwatch/app/sign-in\")",
+      "Bash(mkdir -p \"/c/dev/jobwatch/app/sign-up\")",
+      "PowerShell($c = Get-NetTCPConnection -LocalPort 3100 -State Listen -ErrorAction SilentlyContinue; if \\($c\\) { $c | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Write-Output \"stopping PID $_\"; Stop-Process -Id $_ -Force } } else { Write-Output \"nothing listening on 3100\" })",
+      "PowerShell(Set-Location C:\\\\dev\\\\jobwatch; Write-Output \"--- committed file count ---\"; \\(git show --stat --name-only --format=\"\" HEAD | Where-Object { $_ -ne \"\" }\\).Count; Write-Output \"--- .env.local tracked? \\(should be empty\\) ---\"; git ls-files | Select-String -Pattern \"env\" ; Write-Output \"--- status ---\"; git status --short)",
+      "Read(//c/Users/jbuss/**)",
+      "Read(//c/Users/jbuss/.vercel/**)",
+      "Bash(npm bin *)",
+      "Bash(npm root *)",
+      "Bash(timeout 30 vercel blob --help)",
+      "Bash(timeout 40 vercel blob list-stores)",
+      "Bash(vercel git *)",
+      "Bash(vercel deploy *)",
+      "Bash(vercel curl *)",
+      "Bash(vercel teams *)",
+      "Bash(nslookup jobwatch.joshuabussey.com)",
+      "Bash(echo \"=== exit: $? ===\")"
     ]
   }
 }

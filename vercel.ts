@@ -1,17 +1,30 @@
 import { type VercelConfig } from '@vercel/config/v1';
 
 /**
- * Jobwatch's board sweep.
+ * Jobwatch used to live here and no longer does. It has its own repo, its own
+ * project, and its own deployment; what stays behind is the redirect, because
+ * `/jobs` is in browser histories and in at least one bookmark.
  *
- * Each firing takes one of three shards, so the full ~15,900-board list needs
- * three firings for full coverage. Sharding is what keeps the job inside a
- * single invocation's budget — see `app/api/jobwatch/refresh/route.ts`.
+ * The cron went with it. This project has no scheduled work left — the board
+ * sweep runs from the Jobwatch project now, and pointing a cron at a route that
+ * no longer exists would just be a daily 404.
  *
- * Schedule is once daily because a five-minute schedule exceeds the Hobby
- * plan's cron limits and fails the deployment outright. At one firing per day
- * that means a three-day lap; minute-level scheduling needs Pro.
+ * Two rules rather than one: `/jobs/:path*` alone would rely on the wildcard
+ * matching zero segments, which it does, but the exact rule makes the bare
+ * `/jobs` case explicit rather than incidental. Permanent, because it is.
  */
 export const config: VercelConfig = {
   framework: 'nextjs',
-  crons: [{ path: '/api/jobwatch/refresh', schedule: '0 4 * * *' }],
+  redirects: [
+    {
+      source: '/jobs',
+      destination: 'https://jobwatch-topaz.vercel.app',
+      permanent: true,
+    },
+    {
+      source: '/jobs/:path*',
+      destination: 'https://jobwatch-topaz.vercel.app/:path*',
+      permanent: true,
+    },
+  ],
 };
