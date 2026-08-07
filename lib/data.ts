@@ -18,6 +18,15 @@
    */
   thumbPosition?: string;
   accent?: string;
+  /**
+   * Built for myself rather than for an employer or client. These get their own
+   * group on /work — the story of a solo build is a different one from shipping
+   * inside a team, and interleaving them by date invited the wrong comparison.
+   *
+   * An explicit flag rather than a test on `company`, which is a display label
+   * and free to change.
+   */
+  personal?: boolean;
 }
 
 export interface JourneyStep {
@@ -61,8 +70,27 @@ export interface CrewMember {
 
 export const PROJECTS: Project[] = [
   {
-    slug: 'identity-profiles',
+    slug: 'jobwatch',
     num: '01',
+    company: 'Personal Project',
+    title: 'Jobwatch',
+    blurb:
+      'Job boards search their own index, not the internet. So I swept 15,900 company career pages myself and built the triage tool on top.',
+    year: '2026',
+    quarter: 'Q3 2026',
+    role: 'Designer / Engineer',
+    team: 'Me and a cron job',
+    tags: ['Founder', '0→1'],
+    metric: '15,900 boards, one list',
+    // The landing state rather than the list view: the working view is a pale
+    // two-pane screenshot that turns to grey mush at 168px, and this one carries
+    // the wordmark and the three figures legibly at thumbnail size.
+    thumb: '/images/jobwatch/problem-overview.png',
+    personal: true,
+  },
+  {
+    slug: 'identity-profiles',
+    num: '02',
     company: 'Red Canary',
     title: 'Reimagining identity profiles with AI-driven insights',
     blurb:
@@ -80,7 +108,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: 'status-checks',
-    num: '02',
+    num: '03',
     company: 'Red Canary',
     title: 'Integrations with failing status checks',
     blurb:
@@ -95,7 +123,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: 'unified-onboarding',
-    num: '03',
+    num: '04',
     company: 'Red Canary',
     title: 'Unified integration onboarding',
     blurb:
@@ -110,22 +138,23 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: 'groundbase',
-    num: '04',
+    num: '05',
     company: 'Personal Project',
     title: 'Groundbase',
     blurb:
       'There are no good tools for managing a home build. So I built one. Yes, my house is also a stress test.',
-    year: '2024',
-    quarter: '2024',
+    year: '2026',
+    quarter: '2026',
     role: 'Founder / Everything',
     team: 'Me, late at night',
     tags: ['Founder', '0→1'],
     metric: '1 house, 0 spreadsheets',
     thumb: '/images/groundbase/solution-3.png',
+    personal: true,
   },
   {
     slug: 'security-data-lake',
-    num: '05',
+    num: '06',
     company: 'Red Canary',
     title: 'Security Data Lake',
     blurb:
@@ -140,7 +169,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: 'commuter-benefits',
-    num: '06',
+    num: '07',
     company: 'Edenred',
     title: 'Commuter Benefits',
     blurb:
@@ -155,7 +184,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: 'fleet-card',
-    num: '07',
+    num: '08',
     company: 'Edenred',
     title: 'Fleet Card',
     blurb:
@@ -169,6 +198,16 @@ export const PROJECTS: Project[] = [
     thumb: '/images/fleet-card/solution-4.png',
   },
 ];
+
+/**
+ * The two groups /work renders, both still newest-first.
+ *
+ * Derived rather than hand-maintained, so adding a project to `PROJECTS` is the
+ * only edit a new case study needs — and so the two can never disagree about
+ * which projects exist.
+ */
+export const CLIENT_PROJECTS: Project[] = PROJECTS.filter((p) => !p.personal);
+export const PERSONAL_PROJECTS: Project[] = PROJECTS.filter((p) => p.personal);
 
 /**
  * The three studies that lead the homepage. Chosen to cover security, fintech,
@@ -260,8 +299,8 @@ export const COMPANIES: Company[] = [
 export const STATS: Stat[] = [
   { n: '12+', label: 'Years building things people use', unit: 'yrs' },
   { n: '1M+', label: 'Humans impacted by work I shipped', unit: 'ppl' },
-  // Counted from the 0→1 tag: Security Data Lake, Fleet Card, Groundbase.
-  { n: '3', label: 'Products taken 0→1, concept to ship', unit: 'builds' },
+  // Counted from the 0→1 tag: Security Data Lake, Fleet Card, Groundbase, Jobwatch.
+  { n: '4', label: 'Products taken 0→1, concept to ship', unit: 'builds' },
   // Derived from COMPANIES below: security (Zscaler, Circadence, Red Canary),
   // banking (CIT Bank), healthcare (U. of Rochester), benefits + payments (Edenred),
   // food service (Catertrax). Drops to 4 if payments is grouped under finance.

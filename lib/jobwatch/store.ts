@@ -1,16 +1,17 @@
 /**
- * Local persistence. Everything lives in localStorage — Jobwatch has no
- * backend and no account, and a job hunt is nobody else's business.
+ * Jobwatch's pure state logic: the defaults, the coercions that make a stored
+ * object safe to use, and the first-seen bookkeeping.
  *
- * Three independent keys, deliberately never merged. Clearing filters must not
- * be able to reach the application log:
+ * There is no persistence in here any more. Every one of these used to be a
+ * localStorage read or write, with the database as a second copy reconciled on
+ * load — an arrangement that was reasonable for one user and became a bug the
+ * moment there were accounts, because the browser copy has no idea who is
+ * signed in. Signing out and back in as somebody else inherited the previous
+ * person's filters and application log straight out of local storage.
  *
- *   jobwatch:prefs:v1      what gets shown and in what order
- *   jobwatch:jobstate:v1   per-job triage — first seen, applied, hidden
- *   jobwatch:companies:v1  the watchlist
- *
- * `jobwatch:cache:v1` is a fourth key but not user data: it is a warm-start
- * copy of the last fetch and can be thrown away at any time.
+ * So the database is the only store, and this file is what shapes what comes
+ * out of it. Everything below is a pure function of its arguments, which is
+ * also what makes it testable without a browser.
  */
 
 import { LEVEL_ORDER } from './classify';
@@ -31,19 +32,6 @@ import {
   type SortBy,
   type SourceKind,
 } from './types';
-
-const KEY = {
-  companies: 'jobwatch:companies:v1',
-  prefs: 'jobwatch:prefs:v1',
-  jobState: 'jobwatch:jobstate:v1',
-  cache: 'jobwatch:cache:v1',
-} as const;
-
-/** Pre-v1 keys. Read once by the migration, then left alone as a fallback. */
-const LEGACY_KEY = {
-  marks: 'jobwatch:marks:v1',
-  seen: 'jobwatch:seen:v1',
-} as const;
 
 /**
  * Seed watchlist — the fallback when the swept index is unavailable.
@@ -175,82 +163,48 @@ export const SEED_COMPANIES: Company[] = SEED.map(([source, token, label]) => ({
   key: companyKey(source, token),
 }));
 
-/**
- * Every read is wrapped and falls back to a default. `getItem` returns null for
- * a key that was never written, but the call itself throws outright when
- * storage is disabled or partitioned, and `JSON.parse` throws on anything
- * half-written — all three end up in the same place.
- */
-function read<T>(key: string, fallback: T): T {
-  if (typeof window === 'undefined') return fallback;
-  try {
-    const raw = window.localStorage.getItem(key);
-    if (raw == null) return fallback;
-    const parsed = JSON.parse(raw) as T;
-    return parsed == null ? fallback : parsed;
-  } catch {
-    return fallback;
-  }
-}
-
-function write(key: string, value: unknown): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // Quota exceeded or storage disabled. Persistence is a convenience here,
-    // not a requirement — the session keeps working from memory.
-  }
-}
-
 /* ------------------------------------------------------------- companies */
 
-export function loadCompanies(): Company[] {
-  const saved = read<Company[]>(KEY.companies, []);
-  if (!Array.isArray(saved) || saved.length === 0) return SEED_COMPANIES;
-  return saved.filter((c) => c && c.source && c.token).map((c) => ({
-    ...c,
-    key: c.key || companyKey(c.source, c.token),
-  }));
+/**
+ * Rows from the database into watchlist entries.
+ *
+ * An empty list is a real answer — a new account with no boards — but it is the
+ * same answer as an account that has never fetched anything, and for the second
+ * one the seed is what makes the tool useful on arrival. Falling back to it is
+ * therefore right on the way in and wrong on the way out: `writeCompanies`
+ * would then treat the seed as a list somebody built and store 170 rows nobody
+ * asked for. The fallback lives here, on the read.
+ */
+export function toCompanies(rows: Array<Partial<Company>> | null | undefined): Company[] {
+  if (!Array.isArray(rows) || rows.length === 0) return SEED_COMPANIES;
+  return rows
+    .filter((c): c is Company => Boolean(c && c.source && c.token))
+    .map((c) => ({ ...c, key: c.key || companyKey(c.source, c.token) }));
 }
-
-export const saveCompanies = (companies: Company[]) => write(KEY.companies, companies);
 
 /* ----------------------------------------------------------------- prefs */
 
 export const PREFS_VERSION = 1;
 
 /**
- * The job types the tool ships looking for.
+ * What a new account watches for: nothing in particular.
  *
- * This is the old hardcoded design-title test, written out as terms you can
- * edit. It is close to but not identical to what that test did: the regexes it
- * replaces also carried a reject list (silicon "Design Verification Engineer",
- * "Brand Designer", and so on), and that still runs — see `prefs.exclude` for
- * the tunable half of it.
+ * This shipped as seventeen terms — the old hardcoded design-title test written
+ * out as editable chips. That made sense as a migration and stopped making
+ * sense the moment there were accounts to open: a new arrival met a field
+ * already full of somebody else's search, in a control whose whole job is to
+ * say what *you* are looking for. Seventeen chips also read as configuration
+ * rather than as an invitation, and the first instinct is to start deleting.
  *
- * Ordered roughly by how often each one earns its place, because this list is
- * on screen now and the first few are what gets read.
+ * Empty means no narrowing, not no results. The index is already a design
+ * board — see the sweep's `isDesignRole` fallback, which is what fills it when
+ * no account has asked for anything specific — so an untouched field shows
+ * everything indexed and every term added from here is a narrowing you chose.
+ *
+ * Existing accounts are untouched: this is the default for a prefs row that
+ * does not exist yet, not a migration over the ones that do.
  */
-export const DEFAULT_JOB_TYPES = [
-  'product design',
-  'ux',
-  'ui',
-  'user experience',
-  'user research',
-  'design system',
-  'interaction design',
-  'experience design',
-  'content design',
-  'service design',
-  'design technologist',
-  'head of design',
-  'design director',
-  'design manager',
-  'design lead',
-  'principal designer',
-  'founding designer',
-];
+export const DEFAULT_JOB_TYPES: string[] = [];
 
 export const DEFAULT_PREFS: Prefs = {
   version: PREFS_VERSION,
@@ -333,11 +287,11 @@ const coercePositive = (raw: unknown): number | null =>
  * instead of losing everything else it had. Anything that could have been
  * hand-edited into an impossible value is coerced back into range.
  *
- * Exported because localStorage is not the only source of a prefs object: the
- * database holds one too, and a row written before a field existed is missing
- * it just the same. Adopting that copy raw is what blanked `jobTypes` on every
- * browser that had ever synced — the field arrived as `undefined` and the
- * filter it drives read `.length` off it.
+ * Every prefs object now arrives over the wire, and a row written before a
+ * field existed is missing it — so this runs on the way in, always. Adopting a
+ * stored copy raw is what blanked `jobTypes` on every browser that had ever
+ * synced: the field arrived as `undefined` and the filter it drives read
+ * `.length` off it.
  */
 export function normalizePrefs(stored: Partial<Prefs> | null | undefined): Prefs {
   if (!stored || typeof stored !== 'object') return DEFAULT_PREFS;
@@ -361,25 +315,6 @@ export function normalizePrefs(stored: Partial<Prefs> | null | undefined): Prefs
     sortDir: stored.sortDir === 'asc' ? 'asc' : 'desc',
   };
 }
-
-export function loadPrefs(): Prefs {
-  const stored = read<Partial<Prefs> | null>(KEY.prefs, null);
-  if (!stored || typeof stored !== 'object') return DEFAULT_PREFS;
-
-  const merged = normalizePrefs(stored);
-
-  const version = typeof stored.version === 'number' ? stored.version : 0;
-  if (version < PREFS_VERSION) {
-    console.info(
-      `[jobwatch] prefs upgraded ${version ? `v${version}` : '(unversioned)'} → v${PREFS_VERSION}; saved settings kept`,
-    );
-    write(KEY.prefs, merged);
-  }
-
-  return merged;
-}
-
-export const savePrefs = (prefs: Prefs) => write(KEY.prefs, prefs);
 
 /* ------------------------------------------------------------- job state */
 
@@ -420,7 +355,7 @@ function coerceEntry(raw: unknown): JobStateEntry | null {
   return entry;
 }
 
-function normalize(raw: Record<string, unknown>): JobState {
+export function normalizeJobState(raw: Record<string, unknown>): JobState {
   const out: JobState = {};
   for (const [id, value] of Object.entries(raw)) {
     const entry = coerceEntry(value);
@@ -428,60 +363,6 @@ function normalize(raw: Record<string, unknown>): JobState {
   }
   return out;
 }
-
-/**
- * Folds the pre-v1 `marks` and `seen` maps into a single job-state record.
- *
- * Runs only when `jobwatch:jobstate:v1` is absent, and leaves the old keys in
- * place afterwards — they cost a few KB and they are the only way back if this
- * goes wrong. No shipped version ever kept per-job flags on the company list,
- * so the watchlist has nothing to contribute here.
- */
-function migrate(): JobState {
-  const marks = read<Record<string, JobMark>>(LEGACY_KEY.marks, {});
-  const seen = read<Record<string, number>>(LEGACY_KEY.seen, {});
-
-  const next: JobState = {};
-  const entryFor = (id: string): JobStateEntry => (next[id] ??= { firstSeen: PRE_EXISTING });
-
-  for (const [id, stamp] of Object.entries(seen)) {
-    if (typeof stamp === 'number' && Number.isFinite(stamp)) entryFor(id).firstSeen = stamp;
-  }
-
-  let applied = 0;
-  let hidden = 0;
-
-  for (const [id, mark] of Object.entries(marks)) {
-    const entry = entryFor(id);
-    // The old marks map had no timestamps, so `appliedAt` stays undefined
-    // rather than being invented. The Applied tab renders those as an unknown
-    // date and sorts them last, which is at least true.
-    //
-    // `saved` marks are read and dropped: the feature is gone, and carrying the
-    // flag forward would only put a field in the store that nothing reads.
-    if (mark === 'applied') { entry.applied = true; applied += 1; }
-    else if (mark === 'hidden') { entry.hidden = true; hidden += 1; }
-  }
-
-  const total = Object.keys(next).length;
-  if (total > 0) {
-    console.info(
-      `[jobwatch] migrated ${total} job records into ${KEY.jobState} — ` +
-      `${applied} applied, ${hidden} hidden. Legacy keys left in place.`,
-    );
-    write(KEY.jobState, next);
-  }
-
-  return next;
-}
-
-export function loadJobState(): JobState {
-  const stored = read<Record<string, unknown> | null>(KEY.jobState, null);
-  if (stored && typeof stored === 'object') return normalize(stored);
-  return migrate();
-}
-
-export const saveJobState = (state: JobState) => write(KEY.jobState, state);
 
 /**
  * Stamps a first-seen time on anything not already tracked.
@@ -583,66 +464,3 @@ export function pruneJobState(state: JobState, liveIds: Set<string>): JobState {
   }
   return next;
 }
-
-/* ----------------------------------------------------------------- cache */
-
-/**
- * Job records minus `descriptionHtml`. Descriptions are by far the biggest
- * field — a single Greenhouse board with `content=true` runs to megabytes —
- * and would blow the ~5MB localStorage budget within a couple of companies.
- * So the list is cached for an instant first paint, and descriptions are
- * refilled by the background refresh that follows.
- */
-export type CachedJob = JobSnapshot;
-
-export type CacheEntry = {
-  jobs: CachedJob[];
-  fetchedAt: number;
-};
-
-export const loadCache = (): Record<string, CacheEntry> =>
-  read<Record<string, CacheEntry>>(KEY.cache, {});
-
-/**
- * Roughly what localStorage will take, minus room for prefs and job state.
- * A snapshot measures about 323 bytes serialized, so this is ~11k postings.
- */
-const CACHE_BUDGET = 3_600_000;
-
-export function saveCache(results: Record<string, { jobs: Job[]; fetchedAt: number | null }>): void {
-  const slim: Record<string, CacheEntry> = {};
-  for (const [key, entry] of Object.entries(results)) {
-    if (!entry.fetchedAt) continue;
-    slim[key] = {
-      fetchedAt: entry.fetchedAt,
-      jobs: entry.jobs.map(toSnapshot),
-    };
-  }
-
-  // A watchlist this size can outgrow the quota, and the write would then throw
-  // and be swallowed — leaving no cache at all, which is the worst outcome.
-  // Dropping the biggest boards keeps a warm start for most of the list.
-  let payload = JSON.stringify(slim);
-  if (payload.length > CACHE_BUDGET) {
-    const bySize = Object.entries(slim)
-      .map(([key, entry]) => [key, JSON.stringify(entry).length] as const)
-      .sort((a, b) => b[1] - a[1]);
-
-    let dropped = 0;
-    for (const [key] of bySize) {
-      if (payload.length <= CACHE_BUDGET) break;
-      delete slim[key];
-      dropped += 1;
-      payload = JSON.stringify(slim);
-    }
-    console.info(
-      `[jobwatch] cache over budget — dropped the ${dropped} largest ${plural(dropped, 'board')} from the warm-start copy`,
-    );
-  }
-
-  write(KEY.cache, payload === '{}' ? {} : JSON.parse(payload));
-}
-
-/** Rehydrates cached rows into full `Job`s with an empty description. */
-export const hydrate = (jobs: CachedJob[]): Job[] =>
-  jobs.map((j) => ({ ...j, descriptionHtml: '' }));

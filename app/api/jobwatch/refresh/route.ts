@@ -10,13 +10,13 @@
  * Driven by cron (see `vercel.ts`), which picks the shard from the clock.
  */
 
+import { currentAccount } from '@/lib/jobwatch/auth';
 import { isDesignRole, matchesJobType } from '@/lib/jobwatch/classify';
-import { readPrefs } from '@/lib/jobwatch/db';
+import { readAllJobTypes } from '@/lib/jobwatch/db';
 import { discoverBoards, shardOf } from '@/lib/jobwatch/discover';
 import {
   mergeShards, readIndex, readShards, shardWrittenAt, writeIndex, writeShard, type ShardFile,
 } from '@/lib/jobwatch/index-store';
-import { isAuthed } from '@/lib/jobwatch/session';
 import { stampFirstSeen, sweepBoards } from '@/lib/jobwatch/sweep';
 import { PRE_EXISTING } from '@/lib/jobwatch/types';
 
@@ -44,32 +44,75 @@ const SHARD_COUNT = 3;
 const WRITE_BUDGET_MS = 25_000;
 
 /**
- * Two callers, both of them trusted, and nobody else.
+ * How long a hand-triggered sweep has to wait behind the last one.
+ *
+ * This exists because registration is open. "Any signed-in user" used to mean
+ * one person, and it was a perfectly good rule when the alternative was typing
+ * a shared password; it now means anybody on the internet who wants to spend
+ * fifteen thousand outbound requests, as often as they can click. A per-user
+ * limit would not help — the cost is global, so the limit has to be too.
+ *
+ * Ten minutes is picked off what a sweep is worth rather than what it costs: a
+ * shard takes minutes to run and the boards behind it are updated daily, so two
+ * sweeps inside ten minutes cannot return meaningfully different postings even
+ * when they are free.
+ */
+const SWEEP_COOLDOWN_MS = 10 * 60 * 1000;
+
+type Gate =
+  | { ok: true }
+  | { ok: false; status: number; error: string };
+
+/**
+ * Who may spend a sweep.
  *
  * Vercel Cron sends `Authorization: Bearer $CRON_SECRET` on every firing once
- * that variable is set on the project. The signed-in operator is the other:
- * there is a Sweep button in the tool now, and a browser cannot send the cron
- * secret — nor should it, since shipping it to the client would put it in every
- * page load. The session cookie is already the thing that says who you are, and
- * `isAuthed` verifies its signature rather than merely its presence.
+ * that variable is set on the project, and it is never subject to the cooldown
+ * — the schedule *is* the rate limit, and making the cron wait behind a user's
+ * press is how a shard silently stops being covered.
  *
- * Fails closed otherwise. This endpoint spends real time and money — fifteen
- * thousand outbound requests a run — so an unconfigured deployment should do
- * nothing at all, not run the sweep for anyone who finds the URL. Local
- * development stays exempt so the sweep is testable without either.
+ * Everyone signed in may still press the button, which matters more than it
+ * looks: adding a job type does nothing until the boards have been asked about
+ * it, so taking the button away would leave a field that appears to work and
+ * silently does not for up to three days. Admins skip the cooldown, because
+ * somebody has to be able to force one.
+ *
+ * Fails closed otherwise. An unconfigured deployment should do nothing at all,
+ * not run the sweep for anyone who finds the URL. Local development stays
+ * exempt so the sweep is testable without either.
  */
-async function authorized(request: Request): Promise<boolean> {
+async function authorized(request: Request): Promise<Gate> {
   const secret = process.env.CRON_SECRET;
-  if (secret && request.headers.get('authorization') === `Bearer ${secret}`) return true;
-  if (await isAuthed()) return true;
-  return !secret && process.env.NODE_ENV === 'development';
+  if (secret && request.headers.get('authorization') === `Bearer ${secret}`) return { ok: true };
+
+  const account = await currentAccount();
+  if (account) {
+    if (account.isAdmin) return { ok: true };
+
+    const written = await shardWrittenAt();
+    const last = Math.max(0, ...written.values());
+    const waited = Date.now() - last;
+    if (last > 0 && waited < SWEEP_COOLDOWN_MS) {
+      const minutes = Math.ceil((SWEEP_COOLDOWN_MS - waited) / 60_000);
+      return {
+        ok: false,
+        status: 429,
+        error: `Swept moments ago — the boards refresh daily, so try again in ${minutes} min.`,
+      };
+    }
+    return { ok: true };
+  }
+
+  if (!secret && process.env.NODE_ENV === 'development') return { ok: true };
+  return { ok: false, status: 401, error: 'Unauthorized' };
 }
 
 export async function GET(request: Request) {
   const started = Date.now();
 
-  if (!(await authorized(request))) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  const gate = await authorized(request);
+  if (!gate.ok) {
+    return Response.json({ error: gate.error }, { status: gate.status });
   }
 
   const url = new URL(request.url);
@@ -154,16 +197,22 @@ export async function GET(request: Request) {
     const boards = await discoverBoards();
     const slice = shardOf(boards, shard, SHARD_COUNT);
 
-    // What to keep comes from the saved job types, so the sweep goes looking
-    // for what you actually asked for rather than a rule compiled in here.
+    // What to keep is the union of every account's job types, so one sweep
+    // serves everybody and each browser narrows the result with its own
+    // filters. Per-account sweeps would multiply the expensive half of this job
+    // — the run visits every board either way, and the terms only decide what
+    // survives — to change the half that is already free.
     //
-    // Falls back to the old design test on two paths that both mean "no answer
-    // stored": no database yet, and a saved list edited down to nothing. An
-    // empty list means "no narrowing" on the client, which is a fine answer for
-    // 1,000 rows already in hand and a terrible one for 5,000 live boards.
-    const jobTypes = await readPrefs()
-      .then((prefs) => prefs?.jobTypes ?? [])
-      .catch(() => [] as string[]);
+    // The consequence to keep an eye on is size rather than time: the union
+    // only grows, and the index has a cap. `unionTypes` in the response is that
+    // number, reported on every run so it is visible before it is a problem.
+    //
+    // Falls back to the old design test on the paths that mean "no answer
+    // stored": no database yet, no accounts yet, or every saved list edited down
+    // to nothing. An empty list means "no narrowing" on the client, which is a
+    // fine answer for 1,000 rows already in hand and a terrible one for 5,000
+    // live boards.
+    const jobTypes = await readAllJobTypes().catch(() => [] as string[]);
 
     // Title only. Seniority is a client-side band now, so a posting is indexed
     // on what it is called and the band re-cuts what is already in hand —
@@ -179,6 +228,9 @@ export async function GET(request: Request) {
       shard,
       shardCount: SHARD_COUNT,
       jobTypes: jobTypes.length > 0 ? jobTypes : ['(default design test)'],
+      // The number to watch: this only grows as accounts are added, and the
+      // index has a size cap it will eventually meet.
+      unionTypes: jobTypes.length,
       discovered: boards.length,
       boardsInShard: slice.length,
       probed: result.probed,

@@ -17,6 +17,14 @@ type Props = {
   /** Result of the last sweep, or the reason it failed. */
   sweepNote: string | null;
   onSweep: () => void;
+  /**
+   * Sweeping costs fifteen thousand outbound requests, so the route refuses it
+   * without an account — see `authorized` in the refresh route. Without this the
+   * button is still here for anonymous visitors, still pressable, and answers
+   * every press with a 401 in the console and "Unauthorized" under the field:
+   * a control that exists only to fail.
+   */
+  canSweep: boolean;
 };
 
 /**
@@ -31,17 +39,18 @@ type Props = {
  * casing someone typed would only produce two chips that behave identically.
  */
 export default function JobTypesInput({
-  value, onChange, unswept, sweeping, sweepNote, onSweep,
+  value, onChange, unswept, sweeping, sweepNote, onSweep, canSweep,
 }: Props) {
-  const pending = unswept.length > 0;
+  // Only worth flagging as pending when it can actually be acted on.
+  const pending = canSweep && unswept.length > 0;
 
   /**
    * Names a few and counts the rest.
    *
-   * Listing them all is unreadable at the sizes this actually reaches — a fresh
-   * install has seventeen terms and none of them swept yet, and seventeen job
-   * types set inline is a paragraph, not a hint. Three is enough to make the
-   * warning concrete; the tooltip carries the full list.
+   * Listing them all is unreadable at the sizes this reaches once somebody has
+   * built a real search — a dozen job types set inline is a paragraph, not a
+   * hint. Three is enough to make the warning concrete; the tooltip carries the
+   * full list.
    */
   const named = unswept.slice(0, 3).join(', ');
   const rest = unswept.length - 3;
@@ -133,16 +142,18 @@ export default function JobTypesInput({
           type="button"
           className={styles.typesSweep}
           onClick={onSweep}
-          disabled={sweeping}
+          disabled={sweeping || !canSweep}
           aria-busy={sweeping}
           // Filled only when there is a term the boards have not been asked
           // about. Everything else — narrowing, removing, reordering — is
           // already answered by what is indexed, and a button lit for those is
           // a button you learn to ignore.
           data-urgent={pending && !sweeping}
-          title={pending
-            ? `Not yet searched for: ${unswept.join(', ')}`
-            : 'Re-check a third of the boards for these terms'}
+          title={!canSweep
+            ? 'Sign in to send these terms back out to the boards'
+            : pending
+              ? `Not yet searched for: ${unswept.join(', ')}`
+              : 'Re-check a third of the boards for these terms'}
         >
           {sweeping ? 'Sweeping…' : 'Sweep'}
         </button>

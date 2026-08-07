@@ -1,20 +1,19 @@
-import { redirect } from 'next/navigation';
-import { isAuthed } from '@/lib/jobwatch/session';
 import JobwatchApp from './_components/JobwatchApp';
 
 /**
- * The authorization boundary.
+ * No gate. That is the change.
  *
- * `proxy.ts` bounces cookie-less requests before they reach the app, but it
- * only checks that a cookie exists — it never verifies the signature. This
- * does, so a hand-written cookie gets no further than here.
+ * This page used to be the authorization boundary — it verified a signed cookie
+ * and redirected anyone without one to a password screen. Both halves of that
+ * are gone: there is no shared password, and being signed out is a way to use
+ * Jobwatch rather than a reason to be turned away. The index is public, the
+ * filtering runs in the browser, and an anonymous session gets the whole board.
  *
- * The check lives in the page rather than in `layout.tsx` because that layout
- * also wraps /jobs/login, and redirecting there would bounce the login screen
- * to itself. The tool itself is a client component, which cannot read cookies,
- * so this server page wraps it.
+ * What signing in buys is persistence, and that boundary lives where the data
+ * is: `/api/jobwatch/state` resolves an account and refuses to write without
+ * one. So there is nothing left here to check, and a redirect would only be a
+ * door in front of an open room.
  */
-export default async function JobsPage() {
-  if (!(await isAuthed())) redirect('/jobs/login');
+export default function JobsPage() {
   return <JobwatchApp />;
 }

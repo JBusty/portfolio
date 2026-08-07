@@ -11,9 +11,9 @@
  * rather than three APIs built to be polled.
  */
 
+import { currentAccount } from '@/lib/jobwatch/auth';
 import { harvestBuiltIn, BUILTIN_CATEGORIES } from '@/lib/jobwatch/builtin';
 import { readHarvest, writeHarvest } from '@/lib/jobwatch/index-store';
-import { isAuthed } from '@/lib/jobwatch/session';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -24,11 +24,21 @@ const WRITE_BUDGET_MS = 15_000;
 /** Ceiling on `?pages=`. See where it is read. */
 const MAX_PAGES = 20;
 
-/** Same two trusted callers as the sweep — see the note in `refresh/route.ts`. */
+/**
+ * Cron and admins, and deliberately not "anyone signed in" — which is where
+ * this parts company with the sweep next door.
+ *
+ * The sweep polls three APIs built to be polled, so letting every account press
+ * its button behind a cooldown is a fair use of them. This crawls somebody
+ * else's website. Handing that to open registration would make a stranger's
+ * signup into traffic against a third party under this deployment's name, and
+ * no cooldown makes that a reasonable thing to have built. There is also no
+ * button for it in the UI, so restricting it costs nothing anyone will notice.
+ */
 async function authorized(request: Request): Promise<boolean> {
   const secret = process.env.CRON_SECRET;
   if (secret && request.headers.get('authorization') === `Bearer ${secret}`) return true;
-  if (await isAuthed()) return true;
+  if ((await currentAccount())?.isAdmin) return true;
   return !secret && process.env.NODE_ENV === 'development';
 }
 

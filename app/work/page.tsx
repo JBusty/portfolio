@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import ProjectRow from '@/components/ProjectRow';
 import ScrollReveal from '@/components/ScrollReveal';
-import { PROJECTS } from '@/lib/data';
+import { CLIENT_PROJECTS, PERSONAL_PROJECTS, PROJECTS, type Project } from '@/lib/data';
 import heroStyles from '../page.module.css';
 
 export default function WorkPage() {
@@ -14,10 +14,14 @@ export default function WorkPage() {
   }, []);
 
   const [activeTag, setActiveTag] = useState('All');
-  const list = useMemo(() => {
-    if (activeTag === 'All') return PROJECTS;
-    return PROJECTS.filter((p) => p.tags.includes(activeTag));
+
+  const [client, personal] = useMemo(() => {
+    const narrow = (list: Project[]) =>
+      activeTag === 'All' ? list : list.filter((p) => p.tags.includes(activeTag));
+    return [narrow(CLIENT_PROJECTS), narrow(PERSONAL_PROJECTS)];
   }, [activeTag]);
+
+  const empty = client.length === 0 && personal.length === 0;
 
   return (
     <main id="main-content" tabIndex={-1} className="page-enter">
@@ -79,17 +83,92 @@ export default function WorkPage() {
             </div>
           </div>
 
-          <div style={{ borderBottom: '1px solid var(--rule)' }}>
-            {list.map((project, index) => (
-              <ScrollReveal key={project.slug} delayMs={Math.min(index * 36, 180)}>
-                <ProjectRow p={project} first={index === 0} index={index} />
-              </ScrollReveal>
-            ))}
-          </div>
+          {/* Two groups rather than one date-ordered list. A group with nothing
+              in it under the active tag is dropped entirely — a heading over an
+              empty rule reads as a loading state. */}
+          <ProjectGroup
+            label="Client & in-house"
+            note="Shipped with a team, inside a business."
+            projects={client}
+          />
+          <ProjectGroup
+            label="Personal projects"
+            note="Designed and built solo, start to finish."
+            projects={personal}
+            // Only the first group on the page starts at the top of the section.
+            spaced={client.length > 0}
+          />
+
+          {empty && (
+            <p style={{ margin: '48px 0 0', fontSize: 17, color: 'var(--ink-2)' }}>
+              Nothing tagged “{activeTag}”.
+            </p>
+          )}
         </div>
       </section>
 
     </main>
+  );
+}
+
+function ProjectGroup({
+  label,
+  note,
+  projects,
+  spaced = false,
+}: {
+  label: string;
+  note: string;
+  projects: Project[];
+  spaced?: boolean;
+}) {
+  if (projects.length === 0) return null;
+
+  return (
+    <section style={{ marginTop: spaced ? 96 : 32 }}>
+      <ScrollReveal>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'baseline',
+            gap: '8px 16px',
+            paddingBottom: 20,
+            marginBottom: 8,
+            borderBottom: '1px solid var(--ink)',
+          }}
+        >
+          <h2
+            className="mono upper"
+            style={{
+              margin: 0,
+              fontSize: 12,
+              fontWeight: 500,
+              letterSpacing: '0.22em',
+              color: 'var(--accent-ink)',
+            }}
+          >
+            {label}
+            <span className="accent">.</span>
+          </h2>
+          <span style={{ fontSize: 15, color: 'var(--sub)' }}>{note}</span>
+          <span
+            className="mono"
+            style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--sub)' }}
+          >
+            {String(projects.length).padStart(2, '0')}
+          </span>
+        </div>
+      </ScrollReveal>
+
+      <div style={{ borderBottom: '1px solid var(--rule)' }}>
+        {projects.map((project, index) => (
+          <ScrollReveal key={project.slug} delayMs={Math.min(index * 36, 180)}>
+            <ProjectRow p={project} first={index === 0} index={index} />
+          </ScrollReveal>
+        ))}
+      </div>
+    </section>
   );
 }
 

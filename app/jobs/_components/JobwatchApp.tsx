@@ -107,6 +107,7 @@ export default function JobwatchApp() {
     addCompany, removeCompany, loadDescription,
     markApplied, unapply, dismissJob, restoreJob,
     updatePrefs, resetPrefs,
+    signedIn, accountState, saveStatus,
   } = useJobwatch();
 
   const [query, setQuery] = useState('');
@@ -489,7 +490,12 @@ export default function JobwatchApp() {
 
   return (
     <main id="main-content" tabIndex={-1} ref={shellRef} className={`page-enter ${styles.shell}`}>
-      <JobwatchNav ref={navRef} stuck={navStuck} />
+      <JobwatchNav
+        ref={navRef}
+        stuck={navStuck}
+        saveStatus={saveStatus}
+        account={accountState}
+      />
 
       {/* ---- header ----
           The standing story, in the order it is worth reading: who this is,
@@ -532,6 +538,7 @@ export default function JobwatchApp() {
               sweeping={sweeping}
               sweepNote={sweepNote}
               onSweep={() => void runSweep()}
+              canSweep={signedIn}
             />
             <p
               className={styles.headerSynced}

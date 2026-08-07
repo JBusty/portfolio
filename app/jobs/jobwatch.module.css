@@ -718,7 +718,6 @@
 
 .showing strong { color: var(--ink); font-weight: 600; }
 
-
 /* ------------------------------------------------------------ prefs panel */
 
 /* Sits inside the sticky bar, which already draws the bottom edge — so this
@@ -1133,7 +1132,6 @@
   border-color: rgba(238, 90, 30, 0.4);
   color: var(--accent-ink);
 }
-
 
 .pillApplied {
   background: rgba(11, 20, 23, 0.08);
@@ -1929,112 +1927,162 @@
 
 .navLogoStop { color: var(--accent-lift); }
 
-.navAccount { position: relative; }
-
-.navProfile {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 5px 12px 5px 5px;
-  border: 1px solid rgba(231, 236, 237, 0.16);
-  border-radius: 999px;
-  background: rgba(231, 236, 237, 0.06);
-  color: rgba(231, 236, 237, 0.82);
-  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
-}
-
-.navProfile:hover {
-  background: rgba(231, 236, 237, 0.12);
-  border-color: rgba(231, 236, 237, 0.3);
-  color: var(--paper);
-}
-
-.navProfile:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(238, 90, 30, 0.4);
-}
-
-/* Initials rather than a photo: there is one account, and a face here would be
-   decoration where a label is information. */
-.navAvatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  background: var(--accent-ink);
-  color: var(--paper);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-}
-
-.navMenu {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 60;
-  min-width: 208px;
-  padding: 6px;
-  border: 1px solid var(--rule);
-  border-radius: 10px;
-  background: var(--paper);
-  box-shadow: 0 14px 32px rgba(11, 20, 23, 0.26);
-}
-
-.navMenuHead {
+.navAccount {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 3px;
-  margin: 0;
-  padding: 9px 11px 11px;
-  border-bottom: 1px solid var(--rule);
+  align-items: center;
+  gap: 12px;
+}
+
+/* The anonymous strip. Deliberately quiet — this is a statement of fact about
+   the session, not a warning, and styling it as an alert would make the
+   supported way to try Jobwatch look like something had gone wrong. */
+.navAnon {
   font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--sub);
+  color: rgba(231, 236, 237, 0.45);
 }
 
-.navMenuHead span {
-  font-size: 12px;
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--ink);
-}
-
-.navMenuItem {
-  display: block;
-  width: 100%;
-  margin-top: 4px;
-  padding: 9px 11px;
-  border: none;
+/* The quiet half of the pair.
+ *
+ * Not `.navMenuItem`, which is what this borrowed at first and is the wrong
+ * component twice over: that one is a row in the light dropdown, so it is
+ * `display: block; width: 100%` and painted `--ink` — near-black type, at full
+ * width, on a bar whose ground is #10262B. It looked like a bug because it was
+ * one. A bar link is inline, sized by its text, and lit for a dark ground. */
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 4px;
   border-radius: 6px;
-  background: transparent;
-  color: var(--ink);
+  color: rgba(231, 236, 237, 0.72);
   font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
   font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  text-align: left;
-  cursor: pointer;
-  transition: background 160ms ease, color 160ms ease;
+  white-space: nowrap;
+  transition: color 160ms ease;
 }
 
-.navMenuItem:hover { background: rgba(238, 90, 30, 0.1); color: var(--accent-ink); }
+.navLink:hover { color: var(--paper); }
 
-.navMenuItem:focus-visible {
+.navLink:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--accent);
+  box-shadow: 0 0 0 2px rgba(238, 90, 30, 0.55);
+}
+
+/* The one thing in the bar that is asking for something, so it is the only
+   filled control in it. */
+.navCta {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border-radius: 999px;
+  /* --accent-ink, not --accent: this is small uppercase type on a fill, and
+     the lighter orange does not carry white at 11px. Same rule the confirm
+     dialog's destructive button follows. */
+  background: var(--accent-ink);
+  color: #FFFFFF;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background 160ms ease;
+}
+
+.navCta:hover { background: var(--accent); }
+
+.navCta:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(238, 90, 30, 0.4);
+}
+
+/* Failure, and the unconfirmed-email case. Both mean "your work is not being
+   kept", which is the one thing in this bar worth interrupting for. */
+.navNote {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-lift);
+  white-space: nowrap;
 }
 
 @media (max-width: 640px) {
-  .navName { display: none; }
+  /* The two sentences go first: on a phone the controls are what have to
+     survive, and "not saving" is repeated by the sign-up button beside it. */
+  .navAnon, .navNote { display: none; }
+}
+
+/* The signed-in pill.
+ *
+ * Clerk's UserButton is a bare avatar by default, which lost the outlined pill
+ * with the name in it that this bar had before accounts existed — and that pill
+ * was doing real work, because an avatar alone on a dark bar reads as an
+ * ornament rather than as "you are signed in as this person". `showName` puts
+ * the name back; the rest of this restores the shape around it.
+ *
+ * Targets Clerk's element hooks rather than its class names, which are hashed
+ * and not contractual. `:global` because those elements are rendered outside
+ * this module's scope, so the generated class prefix never reaches them. */
+.navUser :global(.cl-userButtonTrigger) {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 5px 6px;
+  border: 1px solid rgba(231, 236, 237, 0.28);
+  border-radius: 999px;
+  background: transparent;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.navUser :global(.cl-userButtonTrigger:hover) {
+  border-color: rgba(231, 236, 237, 0.5);
+  background: rgba(231, 236, 237, 0.06);
+}
+
+.navUser :global(.cl-userButtonTrigger:focus-visible) {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(238, 90, 30, 0.4);
+}
+
+.navUser :global(.cl-userButtonOuterIdentifier) {
+  color: var(--paper);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  /* The avatar survives; the name is the part that costs a phone its toolbar. */
+  .navUser :global(.cl-userButtonOuterIdentifier) { display: none; }
+  .navUser :global(.cl-userButtonTrigger) { padding: 4px; }
+}
+
+/* ---- sign in / sign up ---- */
+
+.authPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 72px 24px 96px;
+}
+
+.authLead {
+  max-width: 46ch;
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--sub);
+  text-align: center;
+}
+
+@media (max-width: 640px) {
   .navInner { padding: 12px 20px; }
 }

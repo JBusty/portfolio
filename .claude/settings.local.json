@@ -107,7 +107,24 @@
       "Bash(DATABASE_URL='postgres://nobody:nobody@127.0.0.1:1/none' npx next start -p 3111)",
       "Bash(taskkill //F //FI \"WINDOWTITLE eq *3111*\")",
       "PowerShell($c = Get-NetTCPConnection -LocalPort 3111 -State Listen -ErrorAction SilentlyContinue; if \\($c\\) { $c | Select-Object -First 1 -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force; \"killed $_\" } } else { \"nothing listening\" })",
-      "PowerShell($c = Get-NetTCPConnection -LocalPort 3111 -State Listen -ErrorAction SilentlyContinue; if \\($c\\) { $c | Select-Object -First 1 -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force; \"stopped test server $_\" } } else { \"already stopped\" })"
+      "PowerShell($c = Get-NetTCPConnection -LocalPort 3111 -State Listen -ErrorAction SilentlyContinue; if \\($c\\) { $c | Select-Object -First 1 -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force; \"stopped test server $_\" } } else { \"already stopped\" })",
+      "Bash(python -)",
+      "Bash(npm ls *)",
+      "Bash(npm audit *)",
+      "PowerShell(New-Item *)",
+      "PowerShell($c = Get-NetTCPConnection -LocalPort 3111 -State Listen -ErrorAction SilentlyContinue; if \\($c\\) { $c | Select-Object -First 1 -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force } }; \"stopped\")",
+      "Bash(echo \"state api now : $\\(curl -s -o /dev/null -w '%{http_code}' http://localhost:3111/api/jobwatch/state\\)\")",
+      "Bash(echo \"jobs page     : $\\(curl -s -o /dev/null -w '%{http_code}' http://localhost:3111/jobs\\)\")",
+      "PowerShell(Remove-Item *)",
+      "Bash(cmd //c \"rmdir \\\\\"C:\\\\\\\\Users\\\\\\\\jbuss\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--dev-portfolio\\\\\\\\ba624933-82fe-4d64-a029-8ab6592e9471\\\\\\\\wt\\\\\\\\node_modules\\\\\"\")",
+      "PowerShell(Test-Path *)",
+      "Bash(npm ci *)",
+      "PowerShell(Get-NetTCPConnection *)",
+      "Bash(vercel link *)",
+      "Bash(vercel integration *)",
+      "Bash(sed -n '/^\\\\.navMenuItem {/,/^}/p;/^\\\\.navMenu {/,/^}/p' app/jobs/jobwatch.module.css)",
+      "Bash(sed -n '/^\\\\.navInner {/,/^}/p' app/jobs/jobwatch.module.css)",
+      "Bash(vercel domains *)"
     ]
   }
 }

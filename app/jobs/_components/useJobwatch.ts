@@ -16,23 +16,13 @@ import {
 import {
   coerceNote,
   DEFAULT_PREFS,
-  hydrate,
-
-  loadCache,
-  loadCompanies,
-  loadJobState,
-  loadPrefs,
   observeJobs,
   pruneJobState,
-  saveCache,
-  saveCompanies,
-  saveJobState,
-  savePrefs,
   SEED_COMPANIES,
   toSnapshot,
 } from '@/lib/jobwatch/store';
 import type { JobIndex } from '@/lib/jobwatch/sweep';
-import { useRemoteState } from './useRemoteState';
+import { useAccountState } from './useAccountState';
 
 import { titleCase } from '@/lib/jobwatch/format';
 import {
@@ -203,72 +193,49 @@ export function useJobwatch() {
     }
   }, [applyIndex]);
 
-  /* ------------------------------------------------------------- hydrate */
-
-  useEffect(() => {
-    const savedCompanies = loadCompanies();
-    // Runs the pre-v1 marks/seen migration on first load if it hasn't happened.
-    const savedState = loadJobState();
-    const savedPrefs = loadPrefs();
-    const cache = loadCache();
-
-    const restored: Results = {};
-    for (const c of savedCompanies) {
-      const hit = cache[c.key];
-      restored[c.key] = hit
-        ? { key: c.key, status: 'ok', jobs: hydrate(hit.jobs), error: null, fetchedAt: hit.fetchedAt }
-        : blank(c.key);
-    }
-
-    resultsRef.current = restored;
-    companiesRef.current = savedCompanies;
-    jobStateRef.current = savedState;
-
-    setCompanies(savedCompanies);
-    setJobState(savedState);
-    setPrefs(savedPrefs);
-    setResults(restored);
-    setReady(true);
-  }, []);
-
-  /* -------------------------------------------------------------- persist */
-
-  useEffect(() => {
-    companiesRef.current = companies;
-    if (ready) saveCompanies(companies);
-  }, [companies, ready]);
-
-  useEffect(() => {
-    jobStateRef.current = jobState;
-    if (ready) saveJobState(jobState);
-  }, [jobState, ready]);
-
-  useEffect(() => {
-    if (ready) savePrefs(prefs);
-  }, [prefs, ready]);
+  /* ----------------------------------------------------- account state */
 
   /**
-   * The durable copy. localStorage above is still the working copy — this
-   * mirrors it so clearing a browser, switching machines, or Safari evicting
-   * storage no longer takes the application history with it.
+   * One load, from the account, and a mirror back on every change.
+   *
+   * There is no local copy to hydrate from first, which costs a round trip
+   * before the filters are right — and buys the thing that matters more: what
+   * renders belongs to whoever is signed in. The list itself does not wait on
+   * this, because it comes from the public index.
+   *
+   * Signed out, `onLoad` still runs with the defaults, `ready` still flips, and
+   * nothing is ever pushed. That is the anonymous session: everything works,
+   * nothing is kept.
    */
-  useRemoteState({
-    ready,
+  const { signedIn, state: accountState, status: saveStatus } = useAccountState({
     prefs,
     jobState,
     companies,
-    onReconcile: (merged) => {
-      if (merged.prefs) setPrefs(merged.prefs);
-      if (merged.jobState) {
-        jobStateRef.current = merged.jobState;
-        setJobState(merged.jobState);
-      }
-      if (merged.companies?.length) {
-        companiesRef.current = merged.companies;
-        setCompanies(merged.companies);
-      }
+    onLoad: (loaded) => {
+      if (loaded.prefs) setPrefs(loaded.prefs);
+
+      jobStateRef.current = loaded.jobState;
+      setJobState(loaded.jobState);
+
+      companiesRef.current = loaded.companies;
+      setCompanies(loaded.companies);
+
+      // The board results are keyed by company, and until this point there were
+      // no companies to key them by — so the placeholders are built here rather
+      // than in a mount effect that would have had nothing to work from.
+      const restored: Results = {};
+      for (const c of loaded.companies) restored[c.key] = blank(c.key);
+      resultsRef.current = restored;
+      setResults(restored);
+
+      setReady(true);
     },
   });
+
+  // The refs shadow state for the async paths — `runSync` reads them after
+  // awaiting, so they cannot be allowed to lag behind a render.
+  useEffect(() => { companiesRef.current = companies; }, [companies]);
+  useEffect(() => { jobStateRef.current = jobState; }, [jobState]);
 
   /* ----------------------------------------------------------------- sync */
 
@@ -338,7 +305,10 @@ export function useJobwatch() {
     const stamped = observeJobs(jobStateRef.current, everything);
     commitJobState(pruneJobState(stamped, new Set(everything.map((j) => j.id))));
 
-    saveCache(resultsRef.current);
+    // No warm-start copy is written any more. It was a slice of localStorage
+    // holding a few thousand postings, and postings are public data that the
+    // index serves off a CDN — so the fast path it bought is one the index
+    // already provides, on the path that actually runs.
     setSyncing(false);
   }, [commitResult, commitJobState]);
 
@@ -390,7 +360,6 @@ export function useJobwatch() {
     delete next[key];
     resultsRef.current = next;
     setResults(next);
-    saveCache(next);
   }, []);
 
   /* ------------------------------------------------------------ job state */
@@ -570,5 +539,7 @@ export function useJobwatch() {
     sync, addCompany, removeCompany, loadDescription,
     markApplied, unapply, dismissJob, restoreJob,
     updatePrefs, resetPrefs,
+    /** Whether any of the above is being kept. See `useAccountState`. */
+    signedIn, accountState, saveStatus,
   };
 }

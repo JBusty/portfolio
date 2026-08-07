@@ -705,6 +705,124 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       ],
     },
   },
+  jobwatch: {
+    images: {
+      problem: '/images/jobwatch/problem-overview.png',
+      wireframes: ['/images/jobwatch/wireframe-1.svg'],
+      wireframeCaptions: [
+        { label: 'Triage, not browsing', body: 'The bet the layout had to prove: judge a posting and act on it without leaving the row, read it without leaving the frame, and keep the controls pinned while the rest scrolls away.' },
+      ],
+      solution: [
+        '/images/jobwatch/solution-1.png',
+        '/images/jobwatch/solution-2.png',
+        '/images/jobwatch/solution-3.png',
+        '/images/jobwatch/solution-4.png',
+        '/images/jobwatch/solution-5.png',
+      ],
+      solutionCaptions: [
+        { label: 'The working view', body: 'List on the left, posting on the right, filters pinned above both. Every row says why it surfaced — seniority and pay — so a posting can be ruled out without opening it.' },
+        { label: 'Dismissals, turned into a proposal', body: 'Three answers that agree become a specific change with the evidence attached: exclude a word, drop a seniority, raise the pay floor. Nothing applies itself.' },
+        { label: 'Ask after, not before', body: 'The posting is gone the moment the button is pressed; this only decides whether the removal teaches anything. A question standing between you and a list you are clearing gets answered at random.' },
+        { label: 'A room, not a filter', body: 'The dismissed pile ignores every preference except the search box — tighten a filter and the posting you wanted back would vanish from the only view that could return it.' },
+        { label: 'Where the postings come from', body: '1,166 companies in the current index, discovered rather than typed. The watchlist stopped being a list of companies I could think of.' },
+      ],
+    },
+    summary:
+      'Job boards search their own index, not the internet, and the hiring platforms underneath them have no cross-company search at all. Jobwatch sweeps roughly 15,900 company career pages across seven ATS platforms on a schedule and hands back one list — currently 2,626 postings from 1,166 companies — with the triage tools to get through it. I designed it and wrote every line of it.',
+    problemTitle: ['15,900 boards.', 'No way to search across them'],
+    problemBody: [
+      'Every applicant tracking system publishes a public feed per company, and none of them publish an index across companies. There is no "every job on Greenhouse" endpoint. That makes a watchlist structurally required, and a hand-typed watchlist caps your search at the companies you happened to think of.',
+      'I found that out the expensive way: a role I would have applied for was live for weeks and invisible to me, because the company was not on a list I had written by hand. Aggregators have the same shape of problem one level up — you are searching their coverage, not the market.',
+    ],
+    decisionQuestion: 'Should the tool change my search for me?',
+    decisionContext:
+      'Every time I marked a posting not relevant I was handing over a usable signal, and four of the reasons name a filter that already exists. The tool had enough evidence to start tuning itself. The question was whether it should.',
+    decisionAnswerTitle: 'Propose it. Never apply it.',
+    decisionAnswerBody:
+      'A pattern in what you rejected is not the same as an intention. So a suggestion names the exact setting it would move, shows the postings it was read off, and waits to be pressed — and it stays quiet until at least three dismissals agree, because narrowing a job search wrongly costs you roles you never find out about.',
+    outcomes: {
+      painPoints: [
+        'ATS platforms publish a feed per company and no index across them, so there is nothing to search.',
+        'A hand-built watchlist silently caps coverage at the companies you already know to name.',
+        'Everything a job aggregator shows you is filtered by its coverage before you ever see it.',
+      ],
+      role: [
+        'Sole designer and engineer: product thinking, interaction design, and all of the code.',
+        'Designed the triage loop — what a dismissal is worth, and what the tool is allowed to do with it.',
+        'Built the discovery, sweep, and index pipeline on Next.js, Vercel Cron, Blob, and Neon Postgres.',
+      ],
+      shipped: [
+        'One searchable list across seven ATS platforms, refreshed on a three-day lap.',
+        'Board discovery that finds companies I would never have thought to add.',
+        'A feedback loop that turns "not relevant" into a specific, reversible change to the search.',
+      ],
+    },
+    solutionTitle: ['Sweep the boards.', 'Then make triage cheap'],
+    solutionIntro:
+      'Two halves that only work together: a pipeline that assembles the list nobody publishes, and an interface built for getting through it rather than browsing it.',
+    solutionCards: [
+      {
+        n: '01',
+        h: 'Discover boards, don\'t type them',
+        b: 'Board tokens are derived from a crawl-backed dataset and a crawler of my own rather than a list I maintain. Nothing is ever removed automatically — a bad crawl must not be able to delete what a good one found.',
+      },
+      {
+        n: '02',
+        h: 'Filter before the network',
+        b: 'The sweep runs server-side and applies the title test where the data already is, turning ~13,000 postings a shard into a few hundred. The browser makes one request for the result instead of fifteen thousand for the raw material.',
+      },
+      {
+        n: '03',
+        h: 'Make a dismissal worth something',
+        b: 'Removing a posting is useful on its own. The reason is the other half: enough of them agreeing is a filter that is wrong, and the panel where filters live is where the evidence and the fix sit next to each other.',
+      },
+    ],
+    explorationBody:
+      'The layout had one question to answer before anything else: can you judge a posting, act on it, and read it without ever leaving the frame you are scanning in?',
+    shippedBody: 'The tool as it runs today, against a live index.',
+    processTitle: ['Three days to a list.', 'The rest on the loop'],
+    processStats: [
+      { n: '7', label: 'ATS platforms' },
+      { n: '~15,900', label: 'Boards swept' },
+      { n: '2,626', label: 'Postings indexed' },
+    ],
+    processSteps: [
+      {
+        n: '01',
+        h: 'Try it in the browser, and fail',
+        body: 'The first version fetched every board from the page. It worked at a dozen companies and fell apart at a hundred — tens of megabytes to render a few hundred rows. That failure is what defined the real architecture.',
+      },
+      {
+        n: '02',
+        h: 'Move the work to a schedule',
+        body: 'A full pass does not fit in one serverless invocation, so the sweep is sharded across cron runs and each shard writes only its own file. Reading, merging, and rewriting one index looks fine and silently loses postings to CDN staleness.',
+      },
+      {
+        n: '03',
+        h: 'Design the triage loop',
+        body: 'Dismiss first, ask second. The dismissed pile became its own room rather than a filtered view, because a posting you want back has to still be findable after you tighten something.',
+      },
+      {
+        n: '04',
+        h: 'Make the numbers describe the list',
+        body: 'Every figure in the header was counted off the raw index while the list below showed a filtered subset. Two numbers that can never be reconciled by looking is worse than no numbers, so they all moved onto the list you actually get.',
+      },
+    ],
+    reflection: {
+      wins: [
+        'Keeping filtering and feedback as pure functions meant the part that decides what you see could be reasoned about without a browser in the way.',
+        'Per-shard files removed a data-loss race outright instead of trying to order around it.',
+        '"Propose, never apply" held up every time I was tempted to let the tool be cleverer.',
+        'Being the only user meant the tool got corrected the week it was wrong — the mismatched header counts were caught by using it, not by reviewing it.',
+      ],
+      challenges: [
+        'The suggestion thresholds took real tuning — two agreeing dismissals is a coincidence, and shipping it as a finding was embarrassing.',
+        'Blob\'s CDN cannot be made to serve a fresh read, which I only established by measuring it; the fix was a rule about never re-reading your own write.',
+        'What "new" means needed three passes before the badge and the count agreed with each other.',
+        'A per-company industry filter had to be deleted once discovery scaled — nothing publishes a sector, so almost every row read "other".',
+      ],
+    },
+  },
   groundbase: {
     images: {
       problem: '/images/groundbase/problem-overview.png',

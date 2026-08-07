@@ -1,14 +1,16 @@
+import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 
 /**
- * Jobwatch is a private tool, not part of the portfolio. It is deliberately
- * absent from the top nav and from `sitemap.ts`.
+ * Jobwatch is a tool with accounts, served from its own host — see `proxy.ts`,
+ * which rewrites jobwatch.joshuabussey.com onto this tree. It is deliberately
+ * absent from the portfolio's top nav and from `sitemap.ts`.
  *
- * `noindex` is the whole mechanism, and it is intentionally *not* paired with a
- * `Disallow` in robots.ts. A disallow would stop crawlers fetching the page,
- * which also stops them ever reading this tag — the standard way pages end up
- * indexed as a bare URL anyway. It would also publish the path in a file
- * anyone can read, which is the opposite of the point.
+ * `noindex` is a holdover from when this was one person's private board behind
+ * a shared password, and it is worth a deliberate decision now that anyone can
+ * register: a product nobody can find is a strange thing to open registration
+ * on. Left as it stands rather than flipped quietly, because making a domain
+ * indexable is not a change to sneak into a refactor.
  */
 export const metadata: Metadata = {
   title: 'Jobwatch',
@@ -21,10 +23,16 @@ export const metadata: Metadata = {
 };
 
 /**
- * No auth check here on purpose: this layout also wraps /jobs/login, so a
- * redirect at this level would bounce the login screen to itself. The gate
- * lives in `page.tsx`, which is a server component for exactly that reason.
+ * The Clerk boundary is here rather than in the root layout, and that placement
+ * is load-bearing twice over.
+ *
+ * The portfolio is statically prerendered — `/`, `/work`, `/contact` and the
+ * case studies are all built at deploy time. `ClerkProvider` at the root would
+ * pull every one of them into Clerk's runtime and make a build depend on
+ * credentials that have nothing to do with them. Scoped here, the marketing
+ * site keeps building and rendering exactly as it did, with no Clerk JavaScript
+ * in its bundle at all.
  */
 export default function JobsLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return <ClerkProvider>{children}</ClerkProvider>;
 }

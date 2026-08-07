@@ -1,12 +1,16 @@
 /**
- * Creates Jobwatch's tables. Idempotent — safe to re-run.
+ * Creates and migrates Jobwatch's tables. Idempotent — safe to re-run, and
+ * meant to be, since the statements are the schema's definition rather than a
+ * one-shot migration.
  *
  *   node --env-file=.env.local scripts/db-init.mjs
  *
  * Node loads .env.local here; only Next does that automatically, and this is a
- * plain script.
+ * plain script. The statements themselves live in `db-schema.mjs` so the
+ * rehearsal in `db-migrate-check.mjs` runs the real ones.
  */
 import { neon } from '@neondatabase/serverless';
+import { OWNER_EMAIL, statements } from './db-schema.mjs';
 
 const url = process.env.DATABASE_URL;
 if (!url) {
@@ -16,63 +20,38 @@ if (!url) {
 
 const sql = neon(url);
 
-// Single-user by construction: no user column anywhere, because the gate in
-// session.ts decides whether a request reaches this data at all.
-const STATEMENTS = [
-  `create table if not exists prefs (
-     id          text primary key,
-     data        jsonb not null,
-     updated_at  timestamptz not null default now()
-   )`,
-
-  `create table if not exists job_state (
-     job_id         text primary key,
-     first_seen     timestamptz not null,
-     applied        boolean not null default false,
-     applied_at     timestamptz,
-     hidden         boolean not null default false,
-     saved          boolean not null default false,
-     dismiss_reason text,
-     dismiss_note   text,
-     snapshot       jsonb,
-     updated_at     timestamptz not null default now()
-   )`,
-
-  // For databases created before the reason was asked for: `create table if
-  // not exists` is a no-op on those, so the two columns have to be added on
-  // their own. This is what re-running the script is for.
-  //
-  // Plain text, not an enum or a check constraint. The set of reasons belongs
-  // to the client and will grow; constraining it here would turn adding one
-  // into a migration, while an unrecognised value costs nothing — both readers
-  // drop what they don't know.
-  `alter table job_state add column if not exists dismiss_reason text`,
-  `alter table job_state add column if not exists dismiss_note text`,
-
-  `create table if not exists companies (
-     key       text primary key,
-     source    text not null,
-     token     text not null,
-     label     text not null,
-     industry  text not null default 'other',
-     added_at  timestamptz not null default now()
-   )`,
-
-  // The Applied tab is the one view that filters rather than reading everything,
-  // and it is a small slice of the table — a partial index keeps it that size.
-  `create index if not exists job_state_applied_idx
-     on job_state (applied_at desc) where applied`,
-];
-
-for (const statement of STATEMENTS) {
+for (const statement of statements()) {
   // `sql(...)` is tagged-template-only in @neondatabase/serverless v1; a plain
   // call throws. DDL has no interpolation, so `sql.query` is the right door.
   await sql.query(statement);
-  console.log('ok:', statement.trim().split('\n')[0]);
+  console.log('ok:', statement.trim().split('\n')[0].slice(0, 76));
 }
+
+/* --------------------------------------------------------------- report */
 
 const [{ count }] = await sql`
   select count(*)::int as count from information_schema.tables
-  where table_schema = 'public' and table_name in ('prefs', 'job_state', 'companies')
+  where table_schema = 'public'
+    and table_name in ('users', 'prefs', 'job_state', 'companies')
 `;
-console.log(`\ntables present: ${count}/3`);
+
+// Per account, because "did the data survive" is a question about whose it is
+// now — a total would look identical whether the backfill worked or not.
+const owned = await sql`
+  select u.email,
+         u.clerk_id is not null as linked,
+         (select count(*)::int from job_state s where s.user_id = u.id) as jobs,
+         (select count(*)::int from job_state s where s.user_id = u.id and s.applied) as applied,
+         (select count(*)::int from job_state s where s.user_id = u.id and s.hidden)  as dismissed,
+         (select count(*)::int from companies c where c.user_id = u.id) as boards,
+         (select count(*)::int from prefs p where p.user_id = u.id)     as prefs
+  from users u order by u.created_at
+`;
+
+const [{ orphans }] = await sql`
+  select (select count(*)::int from job_state where user_id is null) as orphans
+`;
+
+console.log(`\ntables present: ${count}/4   owner: ${OWNER_EMAIL}`);
+console.table(owned);
+if (orphans > 0) console.error(`WARNING: ${orphans} job_state rows belong to nobody`);
