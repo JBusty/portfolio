@@ -3,7 +3,7 @@
 import { memo } from 'react';
 import { LEVEL_LABELS, usEligibility } from '@/lib/jobwatch/classify';
 import { REASON_SHORT } from '@/lib/jobwatch/feedback';
-import { timeAgo, timeAgoFrom } from '@/lib/jobwatch/format';
+import { salaryLabel, timeAgo, timeAgoFrom } from '@/lib/jobwatch/format';
 import { SOURCE_CODES, SOURCE_LABELS } from '@/lib/jobwatch/sources';
 import type { Job, JobStateEntry } from '@/lib/jobwatch/types';
 import { HideIcon } from './icons';
@@ -95,18 +95,22 @@ function JobRow({
           {job.salary && (
             <span
               className={`${styles.pill} ${styles.pillSalary} ${job.salary.estimated ? styles.pillEstimated : ''}`}
-              // An estimated band was scraped out of the description rather than
-              // read from a compensation field, so it says so on hover.
-              title={job.salary.estimated ? 'Parsed from the job description' : undefined}
+              // Two things worth saying on hover, and the verbatim string is the
+              // one that got trimmed — see `salaryLabel`. An estimated band was
+              // scraped out of the description rather than read from a
+              // compensation field, so it still says so.
+              title={job.salary.estimated
+                ? `${job.salary.text} — parsed from the job description`
+                : job.salary.text}
             >
-              {job.salary.text}
+              {salaryLabel(job.salary.text)}
               {job.salary.estimated && '*'}
             </span>
           )}
 
           <span className={styles.dot}>/</span>
           <span
-            className={locationUnconfirmed ? styles.locationUnconfirmed : undefined}
+            className={`${styles.rowLocation} ${locationUnconfirmed ? styles.locationUnconfirmed : ''}`}
             // The posting named no country, so the row says so rather than
             // letting a US-only board imply one.
             title={locationUnconfirmed ? 'No location given — US eligibility unconfirmed' : undefined}

@@ -34,5 +34,18 @@ export const metadata: Metadata = {
  * in its bundle at all.
  */
 export default function JobsLayout({ children }: { children: React.ReactNode }) {
-  return <ClerkProvider>{children}</ClerkProvider>;
+  return (
+    /**
+     * `afterSignOutUrl` because Clerk's default is `/`, and `/` is the
+     * portfolio — so signing out of the tool ejected you onto a marketing site
+     * with no way back except the browser's back button. Signing out should
+     * leave you where you signed out from, which for an app that works signed
+     * out is the board itself.
+     *
+     * Set as a prop rather than through `NEXT_PUBLIC_CLERK_AFTER_SIGN_OUT_URL`:
+     * this is a fact about how the app is laid out, not a per-environment
+     * setting, and it should not be able to drift between them.
+     */
+    <ClerkProvider afterSignOutUrl="/jobs">{children}</ClerkProvider>
+  );
 }

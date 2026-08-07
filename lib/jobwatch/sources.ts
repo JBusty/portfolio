@@ -431,9 +431,12 @@ type WorkdayJob = {
  *
  * "30+" deliberately returns null rather than a date 30 days back: it is an
  * open-ended bucket that also holds year-old reqs, and inventing a boundary
- * date would let the age filter treat them as fresher than they are. A null
- * sends the posting down the `firstSeen` path instead, which is honest — we
- * know when *we* first saw it and nothing more.
+ * date would let the age filter treat them as fresher than they are.
+ *
+ * Null is not free — it is what the age filter cannot judge, and what makes
+ * `isNewSince` fall back to a first sighting for want of anything better. That
+ * is still the right trade: an invented date is wrong quietly and in the
+ * direction that flatters the posting, a null is wrong loudly.
  */
 function workdayPostedAt(posted: string | undefined, now: number): string | null {
   const text = clean(posted).toLowerCase();
@@ -580,8 +583,9 @@ function normalizeRippling(payload: unknown, company: Company): Job[] {
       level: inferLevel(title),
       location,
       url: clean(job.url),
-      // Nothing dated in this payload at all — `firstSeen` is the only age
-      // signal a Rippling posting ever gets.
+      // Nothing dated in this payload at all, so a Rippling posting is never
+      // judged by the age filter and is badged new on a first sighting alone —
+      // the only signal it gives us. See `isNewSince`.
       publishedAt: null,
       salary: null,
       descriptionHtml: '',

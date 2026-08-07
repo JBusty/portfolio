@@ -32,7 +32,6 @@ type Props = {
 };
 
 const SORTS: Array<[SortBy, string]> = [
-  ['firstSeen', 'First seen'],
   ['published', 'Published'],
   ['salary', 'Salary'],
   ['company', 'Company'],

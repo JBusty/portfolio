@@ -42,3 +42,22 @@ export function titleCase(token: string): string {
 }
 
 export const plural = (n: number, one: string, many = `${one}s`) => (n === 1 ? one : many);
+
+/**
+ * The glanceable part of a salary string.
+ *
+ * `salary.text` is kept verbatim from the source, which is right for storage
+ * and wrong for a pill: Ashby and SmartRecruiters append their own prose after
+ * a bullet — "$165K – $185K • Base salary $165k-$185k with a 10% Management
+ * Bonus" — and the band is the only part anyone reads at a glance. Cutting at
+ * the bullet leaves the number and drops the commentary.
+ *
+ * The full string still reaches the reader: both callers put it in `title`. A
+ * hard cap follows for sources that use no bullet at all, because the point of
+ * this is that no posting can dictate how wide a row gets.
+ */
+export function salaryLabel(text: string): string {
+  const band = text.split('•')[0].trim();
+  const chosen = band || text.trim();
+  return chosen.length > 32 ? `${chosen.slice(0, 31).trimEnd()}…` : chosen;
+}

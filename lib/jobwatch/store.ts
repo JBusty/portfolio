@@ -206,19 +206,32 @@ export const PREFS_VERSION = 1;
  */
 export const DEFAULT_JOB_TYPES: string[] = [];
 
+/**
+ * Nothing narrowed, on purpose.
+ *
+ * Every filter here is off: no job types, every seniority, no excluded words,
+ * no pay floor, no age limit, unlisted pay kept. A new account sees the whole
+ * indexed board and narrows it from there.
+ *
+ * `exclude` was the last holdout — it shipped as `['manager', 'research']`,
+ * which is a real opinion about which design jobs are worth seeing and one
+ * nobody consented to. Two words is enough to hide an entire discipline: a user
+ * researcher would have opened Jobwatch, seen no research roles at all, and had
+ * no reason to suspect a default was doing it, because the count of tuned
+ * filters counts *changes from the default* and so read as zero.
+ *
+ * `includeUnlistedSalary: true` looks like the odd one out and is not — it is
+ * the un-narrowed setting. Turning it off is what filters.
+ */
 export const DEFAULT_PREFS: Prefs = {
   version: PREFS_VERSION,
   jobTypes: [...DEFAULT_JOB_TYPES],
-  // Empty means every level, so nothing is hidden until you say so. Trimming
-  // the top is the common move — Director+ postings are a different search that
-  // shares most of its vocabulary — but defaulting to it would silently drop
-  // the "head of design" and "design director" types that ship above.
   levels: [],
-  exclude: ['manager', 'research'],
+  exclude: [],
   salaryFloor: null,
   includeUnlistedSalary: true,
   maxAgeDays: null,
-  sortBy: 'firstSeen',
+  sortBy: 'published',
   sortDir: 'desc',
 };
 
@@ -249,7 +262,13 @@ export const AGE_STEPS: Array<[number | null, string]> = [
   [30, 'Last month'],
 ];
 
-const SORT_KEYS = new Set<string>(['firstSeen', 'published', 'salary', 'company']);
+/**
+ * Doubles as the migration off `firstSeen`, which was the default and so is
+ * what most stored prefs hold: it is no longer a member, so `normalizePrefs`
+ * drops it to the default like any other unrecognised value. No dated branch to
+ * delete later.
+ */
+const SORT_KEYS = new Set<string>(['published', 'salary', 'company']);
 
 /**
  * Kept in `LEVEL_ORDER` rather than the order they were clicked, so the stored
@@ -395,47 +414,49 @@ export function observeJobs(state: JobState, jobs: Job[], now = Date.now()): Job
  *
  * The index wins, and has to. On the index path `observeJobs` never runs — the
  * client stops fetching boards entirely — so a browser's job state has no
- * opinion about an indexed posting at all, and everything downstream of a
- * missing stamp went quiet: nothing was ever badged new, the "new this week"
- * figure sat at zero, sorting by first-seen was a no-op, and the age filter
- * fell through to `publishedAt` on every row. One shared stamp on the posting
- * itself answers all four, and answers them the same way in every browser.
+ * opinion about an indexed posting at all, and a missing stamp meant nothing
+ * was ever badged new and the "new this week" figure sat at zero. One shared
+ * stamp on the posting itself answers that the same way in every browser.
+ *
+ * `isNewSince` is the only reader. Sorting and the age filter both used to call
+ * this and no longer do — see `SortBy` — because neither question it answers is
+ * about the posting: it records when a sweep got round to the board, and after
+ * a first run it is the same `PRE_EXISTING` for the entire index.
  */
 export const firstSeenOf = (job: Job, state: JobState): number =>
   job.firstSeen ?? state[job.id]?.firstSeen ?? PRE_EXISTING;
 
 /**
- * Whether a posting turned up inside the window.
+ * Whether to badge a posting new: two things have to be true of it.
  *
- * Prefers Jobwatch's own sighting, and falls back to the board's date where
- * there isn't one — exactly what the age filter does a few lines away in
- * `filterJobs`, for exactly the same reason. `PRE_EXISTING` means "here before
- * we started looking", which is not the same as "not new", and reading it as
- * not-new is what makes the figure report zero for a whole lap of the sweep:
- * every posting is baselined on the run that first stamps its shard, so with no
- * fallback there is nothing to count until that shard runs a second time.
+ *   1. It was just posted — the board's own date is inside the window.
+ *   2. We hadn't already shown it to you — it is new to the index, not
+ *      something that has been sitting on the list.
  *
- * The fallback is permanent, not transitional. A baselined posting keeps
- * `firstSeen === PRE_EXISTING` for as long as it stays on its board:
- * `stampFirstSeen` carries a known stamp forward with `known.get(id) ?? …`, and
- * `0` is not `undefined`, so the baseline is never overwritten by a later run.
- * Only postings that are new to the index ever get a real sighting. So which
- * date a source publishes decides whether its postings can be counted new at
- * all, indefinitely:
+ * An AND, and it has to be. Either half alone is a claim the data doesn't
+ * support. A recent `publishedAt` on its own re-badges a posting you have
+ * scrolled past for six days running, because nothing about the board's date
+ * changes when you read the row. A fresh sighting on its own badges a
+ * three-year-old req the moment its company joins the watchlist, which is new
+ * to Jobwatch and not remotely new to you — and that is the common case, since
+ * discovery adds boards continuously.
  *
- *   - Greenhouse, Lever, Ashby, SmartRecruiters and Breezy all publish a real
- *     creation date. Greenhouse sends `first_published` alongside `updated_at`
- *     and `sources.ts` prefers it, so an edited description no longer reads as
- *     a fresh posting.
- *   - Workday publishes prose, and "Posted 30+ Days Ago" deliberately becomes
- *     null rather than an invented boundary date — see `workdayPostedAt`.
- *   - Rippling publishes no date anywhere in its payload.
+ * This used to be a fallback chain — our sighting where there was one, the
+ * board's date otherwise — which made "new" mean a different thing per posting
+ * depending on which stamps it happened to carry. Both stamps are now required
+ * to agree, and `PRE_EXISTING` reads as plain "was already here", with none of
+ * the special pleading a fallback needed to make it mean something else.
  *
- * The last two therefore never count as new once baselined. That is the honest
- * answer rather than a bug to route around: neither source tells us when the
- * posting appeared, and the alternative is to guess. Postings discovered on a
- * later sweep are unaffected — they carry a real stamp and take the branch
- * above.
+ * The known gap is condition 1 on a source that publishes no date: Workday
+ * turns "Posted 30+ Days Ago" into null rather than inventing a boundary (see
+ * `workdayPostedAt`), and Rippling sends no date anywhere in its payload.
+ * Refusing to badge those at all would cost two whole sources their badge
+ * permanently, including genuinely fresh postings, so a first sighting stands
+ * in as evidence of a recent posting where there is nothing better. The cron
+ * sweeps one of three shards daily, so "newly in the index" resolves to about
+ * three days against a seven-day window — coarse, and the only signal those
+ * two sources give us. Every other source publishes a real creation date and
+ * takes the strict path.
  */
 export function isNewSince(
   job: Job,
@@ -443,11 +464,20 @@ export function isNewSince(
   windowMs: number,
   now = Date.now(),
 ): boolean {
+  // 2 — had we shown it to you? A baseline says it was here before we started
+  // recording, which is a yes. Checked first because it is the half that is
+  // always answerable.
   const stamp = firstSeenOf(job, state);
-  if (stamp !== PRE_EXISTING) return now - stamp < windowMs;
+  if (stamp === PRE_EXISTING || now - stamp >= windowMs) return false;
 
-  const published = job.publishedAt ? Date.parse(job.publishedAt) : Number.NaN;
-  // A posting with neither is unjudgeable, and unjudgeable is not new.
+  // 1 — was it just posted? No date at all means no better evidence than the
+  // sighting above, which has already passed.
+  if (!job.publishedAt) return true;
+
+  const published = Date.parse(job.publishedAt);
+  // An unparseable date is a broken date, not a missing one: the source claimed
+  // to have published a value. Falling back here would badge whatever a parser
+  // change happened to break, so it doesn't.
   return Number.isFinite(published) && now - published < windowMs;
 }
 

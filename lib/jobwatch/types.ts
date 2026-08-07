@@ -116,9 +116,16 @@ export type JobMark = 'saved' | 'applied' | 'hidden';
 
 /**
  * A `firstSeen` of `PRE_EXISTING` means "already on the board when Jobwatch
- * first looked" — a baseline rather than a sighting. Those are never new, and
- * an age filter can't judge them either. See `observeJobs` and `stampFirstSeen`,
- * which write it on the client and on the server for the same reason.
+ * first looked" — a baseline rather than a sighting. See `observeJobs` and
+ * `stampFirstSeen`, which write it on the client and on the server for the same
+ * reason.
+ *
+ * It answers exactly one question, in `isNewSince`: had we shown you this
+ * posting before? A baseline says yes — it was in the data from the moment
+ * there was any data — so a `PRE_EXISTING` posting is never badged new. That is
+ * the whole of its meaning now. It used to also stand in for the posting's age,
+ * which it was never able to do: a baseline is a fact about when Jobwatch
+ * started looking, not about the job.
  *
  * The one value in this file, because it is what gives both `firstSeen` fields
  * their meaning and both sides of the wire have to agree on it.
@@ -189,7 +196,15 @@ export type JobState = Record<string, JobStateEntry>;
 
 /* ----------------------------------------------------------------- prefs */
 
-export type SortBy = 'firstSeen' | 'published' | 'salary' | 'company';
+/**
+ * There is no `firstSeen` here any more. Ordering the board by when *we* noticed
+ * a posting sorted it by the sweep's shard lap rather than by anything about the
+ * job: a board swept this morning outranked one swept two days ago regardless of
+ * what either was advertising, and after the first run the whole index shared a
+ * single `PRE_EXISTING` stamp, which is not an order at all. `published` is the
+ * date the row already shows, so the list can be checked against itself.
+ */
+export type SortBy = 'published' | 'salary' | 'company';
 export type SortDir = 'asc' | 'desc';
 
 
@@ -242,7 +257,10 @@ export type Prefs = {
   exclude: string[];
   salaryFloor: number | null;
   includeUnlistedSalary: boolean;
-  /** Measured against `firstSeen`, falling back to `publishedAt` — see `filterJobs`. */
+  /**
+   * Measured against `publishedAt` alone — see `filterJobs`. A posting whose
+   * source published no date is unjudgeable and is kept rather than dropped.
+   */
   maxAgeDays: number | null;
   sortBy: SortBy;
   sortDir: SortDir;

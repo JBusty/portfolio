@@ -7,8 +7,8 @@
  */
 
 import { LEVEL_LABELS, matchesJobType, salaryFloor, usEligibility } from './classify';
-import { DEFAULT_PREFS, firstSeenOf } from './store';
-import { PRE_EXISTING, type Job, type JobState, type Prefs } from './types';
+import { DEFAULT_PREFS } from './store';
+import type { Job, JobState, Prefs } from './types';
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -126,25 +126,22 @@ export function filterJobs(
       return false;
     }
 
-    // 9 — age. Prefers our own first-seen stamp, because Greenhouse exposes
-    // only `updated_at` and that bumps on any description edit.
+    // 9 — age. The board's own date, and only that.
     //
-    // But everything present at the first sweep is stamped PRE_EXISTING, so on
-    // a fresh index *every* posting has a baseline stamp — and treating that as
-    // "age unknown, therefore excluded" emptied the board for any age setting.
-    // Falling back to the board's own date is less precise and still right far
-    // more often than showing nothing.
-    if (prefs.maxAgeDays != null) {
-      const cutoff = now - prefs.maxAgeDays * DAY;
-      const first = firstSeenOf(job, state);
-      const stamp =
-        first !== PRE_EXISTING
-          ? first
-          : job.publishedAt
-            ? Date.parse(job.publishedAt)
-            : Number.NaN;
-      // Only a posting with neither stamp is unjudgeable; those are kept.
-      if (Number.isFinite(stamp) && stamp < cutoff) return false;
+    // This used to prefer Jobwatch's first-seen stamp on the grounds that
+    // Greenhouse exposed only `updated_at`, which bumps on any description
+    // edit. That reason is gone — `sources.ts` reads `first_published` now — and
+    // the stamp was never an age to begin with: it records when a sweep reached
+    // the board, so "posted in the last 3 days" quietly meant "swept in the last
+    // 3 days", and every posting present at the first sweep shared one
+    // `PRE_EXISTING` baseline that had to be special-cased back out again. A
+    // filter that says "last week" should mean the date printed on the row.
+    //
+    // Same rule as pay above for a posting that published no date: unjudgeable
+    // is kept, not guessed at.
+    if (prefs.maxAgeDays != null && job.publishedAt) {
+      const published = Date.parse(job.publishedAt);
+      if (Number.isFinite(published) && published < now - prefs.maxAgeDays * DAY) return false;
     }
 
     // View-scoped narrowing, after the preferences so the order above is the
@@ -153,15 +150,33 @@ export function filterJobs(
   });
 
   // 10 — sort.
-  return sortJobs(kept, prefs, state);
+  return sortJobs(kept, prefs);
 }
 
 /* ------------------------------------------------------------------ sort */
 
-export function sortJobs(jobs: Job[], prefs: Prefs, state: JobState): Job[] {
+export function sortJobs(jobs: Job[], prefs: Prefs): Job[] {
   const dir = prefs.sortDir === 'asc' ? 1 : -1;
-  const seen = (job: Job) => firstSeenOf(job, state);
-  const newestFirst = (a: Job, b: Job) => seen(b) - seen(a);
+
+  const at = (job: Job) => (job.publishedAt ? Date.parse(job.publishedAt) : Number.NaN);
+
+  /**
+   * The tiebreaker under every other sort, and the whole of the default one.
+   *
+   * A posting with no date is not an old posting, so it settles to the end of
+   * its tie on title rather than sorting as 1970 — the same rule the salary and
+   * published cases apply to their own missing values, kept in one place so a
+   * dateless row lands consistently whichever column is chosen.
+   */
+  const newestFirst = (a: Job, b: Job) => {
+    const av = at(a);
+    const bv = at(b);
+    if (Number.isNaN(av) || Number.isNaN(bv)) {
+      if (Number.isNaN(av) && Number.isNaN(bv)) return a.title.localeCompare(b.title);
+      return Number.isNaN(av) ? 1 : -1;
+    }
+    return bv - av || a.title.localeCompare(b.title);
+  };
 
   return [...jobs].sort((a, b) => {
     switch (prefs.sortBy) {
@@ -182,19 +197,21 @@ export function sortJobs(jobs: Job[], prefs: Prefs, state: JobState): Job[] {
         // Alphabetical, then newest-first inside each company.
         return a.company.localeCompare(b.company) * dir || newestFirst(a, b);
 
-      case 'published': {
-        const at = a.publishedAt ? Date.parse(a.publishedAt) : Number.NaN;
-        const bt = b.publishedAt ? Date.parse(b.publishedAt) : Number.NaN;
-        // Same rule as salary: no date sorts last, not oldest.
-        if (Number.isNaN(at) || Number.isNaN(bt)) {
-          if (Number.isNaN(at) && Number.isNaN(bt)) return newestFirst(a, b);
-          return Number.isNaN(at) ? 1 : -1;
+      // The default, and the only one that reads a date directly. Descending —
+      // the stored default — is exactly `newestFirst`, so this delegates rather
+      // than restating the missing-date rule a second, subtly different way.
+      default: {
+        if (prefs.sortDir === 'desc') return newestFirst(a, b);
+        const av = at(a);
+        const bv = at(b);
+        // Still last, not first: ascending means oldest-first, and a posting
+        // with no date is not the oldest posting.
+        if (Number.isNaN(av) || Number.isNaN(bv)) {
+          if (Number.isNaN(av) && Number.isNaN(bv)) return a.title.localeCompare(b.title);
+          return Number.isNaN(av) ? 1 : -1;
         }
-        return (at - bt) * dir;
+        return av - bv || a.title.localeCompare(b.title);
       }
-
-      default:
-        return (seen(a) - seen(b)) * dir || a.title.localeCompare(b.title);
     }
   });
 }

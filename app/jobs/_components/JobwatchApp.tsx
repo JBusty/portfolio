@@ -518,11 +518,18 @@ export default function JobwatchApp() {
                   <Image
                     className={styles.headerSourceMark}
                     src={SOURCE_MARKS[source]}
-                    alt=""
+                    alt={SOURCE_LABELS[source]}
                     width={18}
                     height={18}
                   />
-                  {SOURCE_LABELS[source]}
+                  {/* Wrapped so the phone can drop the words and keep the
+                      marks. Seven names wrap to three lines at 390px, which is
+                      a fifth of the first screen spent on provenance before a
+                      single job — and the marks alone still answer "where do
+                      these come from". The alt text above carries the name for
+                      anyone who cannot see the mark, which is why it stopped
+                      being decorative. */}
+                  <span className={styles.headerSourceName}>{SOURCE_LABELS[source]}</span>
                 </span>
               ))}
             </p>

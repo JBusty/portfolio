@@ -124,7 +124,8 @@
       "Bash(vercel integration *)",
       "Bash(sed -n '/^\\\\.navMenuItem {/,/^}/p;/^\\\\.navMenu {/,/^}/p' app/jobs/jobwatch.module.css)",
       "Bash(sed -n '/^\\\\.navInner {/,/^}/p' app/jobs/jobwatch.module.css)",
-      "Bash(vercel domains *)"
+      "Bash(vercel domains *)",
+      "Bash(sed 's/[: ]//g')"
     ]
   }
 }

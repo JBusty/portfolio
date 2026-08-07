@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import Mark from '@/components/Mark';
 import { LEVEL_LABELS } from '@/lib/jobwatch/classify';
 import { REASON_SHORT } from '@/lib/jobwatch/feedback';
-import { timeAgo, timeAgoFrom } from '@/lib/jobwatch/format';
+import { salaryLabel, timeAgo, timeAgoFrom } from '@/lib/jobwatch/format';
 import { sanitizeHtml } from '@/lib/jobwatch/html';
 import { hasDescriptionEndpoint, SOURCE_CODES, SOURCE_LABELS } from '@/lib/jobwatch/sources';
 import type { Job, JobStateEntry } from '@/lib/jobwatch/types';
@@ -103,8 +103,11 @@ export default function JobDetail({
           <span className={styles.pill}>{job.location}</span>
           {job.team && <span className={styles.pill}>{job.team}</span>}
           {salary && (
-            <span className={`${styles.pill} ${styles.pillSalary} ${salary.estimated ? styles.pillEstimated : ''}`}>
-              {salary.text}
+            <span
+              className={`${styles.pill} ${styles.pillSalary} ${salary.estimated ? styles.pillEstimated : ''}`}
+              title={salary.text}
+            >
+              {salaryLabel(salary.text)}
               {salary.estimated && ' (estimated)'}
             </span>
           )}

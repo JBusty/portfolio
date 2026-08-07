@@ -1087,6 +1087,18 @@
  * A posting that named no country. Borrows the dashed-underline reading of
  * `.pillEstimated` — the value is real, what it implies is not confirmed.
  */
+/* One posting listed eight cities and took four lines of a phone screen to do
+   it — more room than its title, company and pay combined. The location is a
+   qualifier on a row you are scanning, not the thing you are scanning for, so
+   it gets a line and the rest goes to the tooltip and the detail pane. */
+.rowLocation {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
 .locationUnconfirmed {
   text-decoration: underline dashed;
   text-underline-offset: 3px;
@@ -1112,6 +1124,17 @@
   text-transform: uppercase;
   color: var(--ink-2);
   white-space: nowrap;
+  /* A pill may never be wider than what contains it.
+   *
+   * `nowrap` plus text of unbounded length is a document that scrolls sideways,
+   * and it did: some boards return a whole sentence in the salary field
+   * ("$165K – $185K • Base salary … with a 10% Management Bonus"), which made a
+   * 787px pill inside a 375px phone and took the entire page with it. The row
+   * already wraps its pills; this is what stops any single one from being
+   * unwrappable *and* enormous. */
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .pillNew {
@@ -1120,7 +1143,13 @@
   color: var(--bone);
 }
 
+/* Block rather than inline-flex, so a clipped band ends in an ellipsis instead
+   of being cut mid-character. `text-overflow` needs a block container; on an
+   inline-flex box the text is an anonymous flex item and the ellipsis never
+   renders. Salary pills are text only, so nothing is lost by the change. */
 .pillSalary {
+  display: inline-block;
+  text-overflow: ellipsis;
   background: rgba(11, 20, 23, 0.04);
   border-color: rgba(11, 20, 23, 0.14);
   color: var(--ink);
@@ -1538,7 +1567,25 @@
 
   .headerInner { padding: 13px 16px 12px; gap: 12px; }
   .headerId { gap: 14px; }
-  .wordmark { font-size: 19px; }
+
+  /* The masthead goes. It is the second time the word appears on this screen —
+     the nav above it is pinned and says the same thing — and on a phone the
+     hero is not a title card, it is whatever stands between arriving and
+     seeing a job. Everything cut here is either duplicated above or answerable
+     by scrolling; the figures stay, because they are the one part of the hero
+     that is about *your* search rather than about the tool. */
+  .wordmark { display: none; }
+
+  /* Marks without names, on one line. See the note in JobwatchApp: seven
+     labels wrap to three lines at this width, and the marks alone still say
+     where the postings come from. */
+  .headerSourceName { display: none; }
+  .headerSources { gap: 0 10px; }
+
+  /* The placeholder already reads "Any title — add one to narrow", so the
+     label above it was saying the same thing twice in a column where vertical
+     space is the scarce thing. */
+  .typesLabel { display: none; }
 
   /* A grid rather than a wrapping flex row. The figures are 90–130px wide
      depending on their label and there is a fourth of them when a board is
@@ -1558,9 +1605,16 @@
   .headerStat strong { font-size: 26px; }
   .headerStatLabel { font-size: 9px; letter-spacing: 0.08em; line-height: 1.3; text-align: center; }
 
-  /* Tightened rather than dropped — this is the line that says what the tool
-     is looking at, and it fits on one row at this size. */
-  .headerSources { gap: 6px 14px; font-size: 10px; letter-spacing: 0.1em; }
+  /* The "sourced from" lead-in goes with the names — a label with nothing but
+     icons after it is a colon pointing at pictures. */
+  .headerSourcesLabel { display: none; }
+
+  /* The match reason is "mid" or "lead · $180k+", and both halves are already
+     pills on the line under it — the seniority verbatim, the pay as a band. On
+     a desktop row it is a useful aside in the whitespace; on a phone it is a
+     whole line per posting restating the line below it, which is four fewer
+     jobs per screen on the one screen where that costs most. */
+  .row .reason { display: none; }
 
   /* The field keeps its full width; only the chrome around it tightens. The
      row height is the shared touch floor rather than the 40px it was, because
@@ -2085,4 +2139,39 @@
 
 @media (max-width: 640px) {
   .navInner { padding: 12px 20px; }
+}
+
+/* ---- touch targets ----
+ *
+ * Keyed off the pointer rather than the viewport. A 26px icon button is fine
+ * for a mouse and roughly half what a fingertip needs, and the two are not the
+ * same question as "is the screen small" — a touchscreen laptop gets this and a
+ * narrow desktop window does not. Only padding and min-size grow, so nothing
+ * reflows on the pointer devices that were already correct. */
+@media (pointer: coarse) {
+  .iconBtn {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* The row's dismiss control is permanently visible without a hover to
+     reveal it — see `.rowDismiss` — so on touch it needs to be reachable
+     without being in the way of the row it sits on. */
+  .rowDismiss { margin-right: 6px; }
+
+  .navLink,
+  .navCta {
+    min-height: 44px;
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
+
+  .navLink { padding-left: 10px; padding-right: 10px; }
+
+  /* Chips carry a remove button each; at 10px square they are unhittable. */
+  .typeChipX,
+  .termRemove {
+    width: 28px;
+    height: 28px;
+  }
 }
