@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Mark from '@/components/Mark';
-import { FEATURED_PROJECTS, type Project } from '@/lib/data';
+import { FEATURED_PROJECTS, PROJECTS, type Project } from '@/lib/data';
 
 export default function FeaturedWork() {
   return (
@@ -21,8 +21,10 @@ export default function FeaturedWork() {
           >
             The work<span className="accent">.</span>
           </h2>
+          {/* Counted, not typed — the hardcoded number went stale the first time
+              the project list changed. */}
           <Link href="/work" className="btn ghost featured-head-cta">
-            All 7 case studies <Mark />
+            All {PROJECTS.length} case studies <Mark />
           </Link>
         </div>
 
