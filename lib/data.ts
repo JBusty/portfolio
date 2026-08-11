@@ -78,10 +78,10 @@ export interface CrewMember {
 
 export const PROJECTS: Project[] = [
   {
-    slug: 'jobwatch',
+    slug: 'remote-tech-roles',
     num: '01',
     company: 'Personal Project',
-    title: 'Jobwatch',
+    title: 'RemoteTechRoles',
     blurb:
       'Job boards search their own index, not the internet. So I swept 15,900 company career pages myself and built the triage tool on top.',
     year: '2026',
@@ -93,8 +93,11 @@ export const PROJECTS: Project[] = [
     // The landing state rather than the list view: the working view is a pale
     // two-pane screenshot that turns to grey mush at 168px, and this one carries
     // the wordmark and the three figures legibly at thumbnail size.
-    thumb: '/images/jobwatch/problem-overview.png',
-    liveUrl: 'https://jobwatch-topaz.vercel.app',
+    thumb: '/images/remote-tech-roles/problem-overview.png',
+    // `www` because that is the host that answers 200 — the apex redirects to it.
+    // Costs nothing in the label: the link is rendered with a leading `www.`
+    // stripped, so it still reads "remotetechroles.com".
+    liveUrl: 'https://www.remotetechroles.com',
     personal: true,
   },
   {
@@ -309,7 +312,7 @@ export const COMPANIES: Company[] = [
 export const STATS: Stat[] = [
   { n: '12+', label: 'Years building things people use', unit: 'yrs' },
   { n: '1M+', label: 'Humans impacted by work I shipped', unit: 'ppl' },
-  // Counted from the 0→1 tag: Security Data Lake, Fleet Card, Groundbase, Jobwatch.
+  // Counted from the 0→1 tag: Security Data Lake, Fleet Card, Groundbase, RemoteTechRoles.
   { n: '4', label: 'Products taken 0→1, concept to ship', unit: 'builds' },
   // Derived from COMPANIES below: security (Zscaler, Circadence, Red Canary),
   // banking (CIT Bank), healthcare (U. of Rochester), benefits + payments (Edenred),

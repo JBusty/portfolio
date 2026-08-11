@@ -74,7 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main-content" className="skip-link">Skip to content</a>
         <SectionRevealObserver />
         {/* Rendered unconditionally. These used to route through SiteChrome,
-            which existed only to hide them on /jobs — Jobwatch is its own
+            which existed only to hide them on /jobs — RemoteTechRoles is its own
             deployment now, so there is no bare route left to special-case. */}
         <TopBar />
         {children}

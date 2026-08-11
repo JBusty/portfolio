@@ -705,30 +705,30 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
       ],
     },
   },
-  jobwatch: {
+  'remote-tech-roles': {
     images: {
-      problem: '/images/jobwatch/problem-overview.png',
-      wireframes: ['/images/jobwatch/wireframe-1.svg'],
+      problem: '/images/remote-tech-roles/problem-overview.png',
+      wireframes: ['/images/remote-tech-roles/wireframe-1.svg'],
       wireframeCaptions: [
         { label: 'Triage, not browsing', body: 'The bet the layout had to prove: judge a posting and act on it without leaving the row, read it without leaving the frame, and keep the controls pinned while the rest scrolls away.' },
       ],
       solution: [
-        '/images/jobwatch/solution-1.png',
-        '/images/jobwatch/solution-2.png',
-        '/images/jobwatch/solution-3.png',
-        '/images/jobwatch/solution-4.png',
-        '/images/jobwatch/solution-5.png',
+        '/images/remote-tech-roles/solution-1.png',
+        '/images/remote-tech-roles/solution-2.png',
+        '/images/remote-tech-roles/solution-3.png',
+        '/images/remote-tech-roles/solution-4.png',
+        '/images/remote-tech-roles/solution-5.png',
       ],
       solutionCaptions: [
         { label: 'The working view', body: 'List on the left, posting on the right, filters pinned above both. Every row says why it surfaced — seniority and pay — so a posting can be ruled out without opening it.' },
-        { label: 'Dismissals, turned into a proposal', body: 'Three answers that agree become a specific change with the evidence attached: exclude a word, drop a seniority, raise the pay floor. Nothing applies itself.' },
+        { label: 'Dismissals, turned into a proposal', body: 'Answers that agree become a specific change with the evidence attached: exclude a word, hide a seniority, stop trusting postings with no published band. Nothing applies itself.' },
         { label: 'Ask after, not before', body: 'The posting is gone the moment the button is pressed; this only decides whether the removal teaches anything. A question standing between you and a list you are clearing gets answered at random.' },
         { label: 'A room, not a filter', body: 'The dismissed pile ignores every preference except the search box — tighten a filter and the posting you wanted back would vanish from the only view that could return it.' },
-        { label: 'Where the postings come from', body: '1,166 companies in the current index, discovered rather than typed. The watchlist stopped being a list of companies I could think of.' },
+        { label: 'Where the postings come from', body: '2,151 companies in the current index, discovered rather than typed. The watchlist stopped being a list of companies I could think of.' },
       ],
     },
     summary:
-      'Job boards search their own index, not the internet, and the hiring platforms underneath them have no cross-company search at all. Jobwatch sweeps roughly 15,900 company career pages across seven ATS platforms on a schedule and hands back one list — currently 2,626 postings from 1,166 companies — with the triage tools to get through it. I designed it and wrote every line of it.',
+      'Job boards search their own index, not the internet, and the hiring platforms underneath them have no cross-company search at all. RemoteTechRoles sweeps roughly 15,900 company career pages across seven ATS platforms on a schedule and hands back one list — currently 8,909 postings from 2,151 companies, across design, engineering, product, research, and writing — with the triage tools to get through it. I designed it and wrote every line of it.',
     problemTitle: ['15,900 boards.', 'No way to search across them'],
     problemBody: [
       'Every applicant tracking system publishes a public feed per company, and none of them publish an index across companies. There is no "every job on Greenhouse" endpoint. That makes a watchlist structurally required, and a hand-typed watchlist caps your search at the companies you happened to think of.',
@@ -752,7 +752,7 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
         'Built the discovery, sweep, and index pipeline on Next.js, Vercel Cron, Blob, and Neon Postgres.',
       ],
       shipped: [
-        'One searchable list across seven ATS platforms, refreshed on a three-day lap.',
+        'One searchable list across seven ATS platforms, refreshed daily.',
         'Board discovery that finds companies I would never have thought to add.',
         'A feedback loop that turns "not relevant" into a specific, reversible change to the search.',
       ],
@@ -780,11 +780,11 @@ export const CASE_STUDIES: Partial<Record<string, CaseStudy>> = {
     explorationBody:
       'The layout had one question to answer before anything else: can you judge a posting, act on it, and read it without ever leaving the frame you are scanning in?',
     shippedBody: 'The tool as it runs today, against a live index.',
-    processTitle: ['Three days to a list.', 'The rest on the loop'],
+    processTitle: ['A day to a list.', 'The rest on the loop'],
     processStats: [
       { n: '7', label: 'ATS platforms' },
       { n: '~15,900', label: 'Boards swept' },
-      { n: '2,626', label: 'Postings indexed' },
+      { n: '8,909', label: 'Postings indexed' },
     ],
     processSteps: [
       {

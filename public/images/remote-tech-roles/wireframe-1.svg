@@ -10,7 +10,7 @@
   <!-- Hero — scrolls away. Everything that describes the search lives up here. -->
   <rect x="0" y="0" width="960" height="150" fill="#16211F"/>
   <rect x="404" y="22" width="152" height="20" rx="3" fill="#3A4442"/>
-  <text x="416" y="37" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#CFCFCB">Jobwatch</text>
+  <text x="416" y="37" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#CFCFCB">RemoteTechRoles</text>
 
   <text x="404" y="62" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#5D6A67" letter-spacing="1">WATCHING FOR</text>
   <rect x="404" y="68" width="152" height="18" rx="9" fill="#2A3634"/>

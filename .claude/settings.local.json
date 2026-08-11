@@ -146,7 +146,15 @@
       "Bash(vercel curl *)",
       "Bash(vercel teams *)",
       "Bash(nslookup jobwatch.joshuabussey.com)",
-      "Bash(echo \"=== exit: $? ===\")"
+      "Bash(echo \"=== exit: $? ===\")",
+      "Bash(netstat -ano)",
+      "PowerShell(foreach \\($p in 29504, 20172\\) { $proc = Get-Process -Id $p -ErrorAction SilentlyContinue; if \\($proc\\) { $cmd = \\(Get-CimInstance Win32_Process -Filter \"ProcessId=$p\"\\).CommandLine; Write-Output \"PID $p : $\\($proc.ProcessName\\)\"; Write-Output \"   cwd/cmd: $cmd\" } })",
+      "Bash(SHOT_OUT=__TRACKED_VAR__/anon.png node __TRACKED_VAR__/shot.mjs)",
+      "Bash(awk '{print \"bytes:\",$5}')",
+      "Bash(cp __TRACKED_VAR__/shot.mjs /c/dev/portfolio/.shot.mjs)",
+      "Bash(SHOT_OUT=__TRACKED_VAR__/anon.png node /c/dev/portfolio/.shot.mjs)",
+      "WebFetch(domain:remotetechroles.com)",
+      "WebFetch(domain:www.remotetechroles.com)"
     ]
   }
 }
