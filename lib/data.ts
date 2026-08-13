@@ -226,7 +226,7 @@ export const PERSONAL_PROJECTS: Project[] = PROJECTS.filter((p) => p.personal);
  * The three studies that lead the homepage. Chosen to cover security, fintech,
  * and founder/0→1 range rather than to be the three most recent.
  */
-export const FEATURED_SLUGS = ['identity-profiles', 'commuter-benefits', 'remote-tech-roles'] as const;
+export const FEATURED_SLUGS = ['identity-profiles', 'commuter-benefits', 'groundbase'] as const;
 
 export const FEATURED_PROJECTS: Project[] = FEATURED_SLUGS.map((slug) => {
   const project = PROJECTS.find((p) => p.slug === slug);

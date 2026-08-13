@@ -33,7 +33,7 @@ export const IMAGE_META: Record<string, ImageMeta> = {
   '/images/identity-profiles/solution-3.png': { w: 752, h: 817 },
   '/images/identity-profiles/solution-4.png': { w: 1032, h: 581 },
   '/images/identity-profiles/wireframe-1.svg': { w: 960, h: 540 },
-  '/images/remote-tech-roles/problem-overview.png': { w: 1920, h: 1200 },
+  '/images/remote-tech-roles/problem-overview.png': { w: 3064, h: 1810 },
   '/images/remote-tech-roles/solution-1.png': { w: 1920, h: 1200 },
   '/images/remote-tech-roles/solution-2.png': { w: 1920, h: 1200 },
   '/images/remote-tech-roles/solution-3.png': { w: 1920, h: 1200 },
