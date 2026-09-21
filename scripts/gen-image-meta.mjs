@@ -33,7 +33,24 @@ function svgSize(text) {
   return w && h ? { w: Math.round(+w[1]), h: Math.round(+h[1]) } : null;
 }
 
+function mp4Size(buf) {
+  // Each track has a tkhd box ending in 16.16 fixed-point width and height.
+  // Audio tracks report 0×0, so take the first track with a picture.
+  for (let i = buf.indexOf('tkhd'); i !== -1; i = buf.indexOf('tkhd', i + 4)) {
+    const version = buf[i + 4];
+    const at = i + 4 + (version === 1 ? 88 : 76);
+    if (at + 8 > buf.length) break;
+    const w = buf.readUInt32BE(at) >>> 16;
+    const h = buf.readUInt32BE(at + 4) >>> 16;
+    if (w && h) return { w, h };
+  }
+  return null;
+}
+
 function sizeOf(file) {
+  // Deep-dive slides can play prototype recordings. WebM keeps its size in
+  // EBML, which is not worth parsing here — those fall back to 16:9.
+  if (file.endsWith('.mp4') || file.endsWith('.mov')) return mp4Size(readFileSync(file));
   if (file.endsWith('.png')) return pngSize(readFileSync(file));
   if (file.endsWith('.jpg') || file.endsWith('.jpeg')) return jpgSize(readFileSync(file));
   if (file.endsWith('.svg')) return svgSize(readFileSync(file, 'utf8'));
