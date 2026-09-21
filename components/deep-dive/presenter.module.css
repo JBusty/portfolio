@@ -1,0 +1,245 @@
+/* Presenter view: the laptop screen while the slides are on the projector.
+   Built to be read at a glance, mid-sentence. */
+
+/* Exactly one screen tall, so notes and pushback scroll inside their panels
+   instead of pushing the current slide off the top. */
+.root {
+  height: 100dvh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 20px 24px;
+  padding: 16px 24px 24px;
+  background: var(--ink);
+  color: var(--bone);
+}
+
+.bar {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(236, 231, 220, 0.16);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(236, 231, 220, 0.65);
+}
+
+.deckName { color: var(--bone); }
+.grow { flex: 1; }
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time {
+  min-width: 5ch;
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--bone);
+}
+
+.time[data-paused] { color: rgba(236, 231, 220, 0.45); }
+
+.clock { font-variant-numeric: tabular-nums; }
+
+.hint { color: var(--accent-lift); }
+
+.plan { font-variant-numeric: tabular-nums; }
+
+.pace {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+  background: rgba(236, 231, 220, 0.1);
+  color: var(--bone);
+}
+
+.pace[data-tone="behind"] { background: var(--accent-ink); }
+.pace[data-tone="ahead"] { background: rgba(215, 222, 204, 0.2); }
+
+.button {
+  --mk: var(--accent-lift);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid rgba(236, 231, 220, 0.28);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--bone);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.button:hover { background: rgba(236, 231, 220, 0.1); }
+.button:focus-visible { outline: 2px solid var(--accent-lift); outline-offset: 2px; }
+.button:disabled { opacity: 0.35; background: transparent; cursor: default; }
+.button[aria-pressed="true"] { background: var(--bone); color: var(--ink); border-color: var(--bone); }
+
+.buttonReturn { --mk: var(--bone); background: var(--accent-ink); border-color: var(--accent-ink); }
+.buttonReturn:hover { background: var(--accent); }
+
+/* Sits under an answer: the evidence for it, one press away. */
+.showButton {
+  display: flex;
+  justify-content: flex-start;
+  max-width: 100%;
+  margin-top: 10px;
+  text-align: left;
+  white-space: normal;
+}
+
+.showLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 13px;
+}
+
+.column {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.frame { position: relative; }
+
+.canvas {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px rgba(236, 231, 220, 0.14);
+}
+
+.blackNote {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.72);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.position {
+  flex: 1;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: rgba(236, 231, 220, 0.75);
+}
+
+.flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--accent-lift);
+}
+
+.panel {
+  min-height: 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(236, 231, 220, 0.16);
+}
+
+.panelScroll { overflow-y: auto; }
+
+.heading {
+  margin: 0 0 12px;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-lift);
+}
+
+.upNext { font-size: 15px; line-height: 1.4; color: rgba(236, 231, 220, 0.75); margin: 10px 0 0; }
+
+.notes {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notes li {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  font-size: clamp(18px, 1.6vw, 24px);
+  line-height: 1.4;
+}
+
+.notes li::before {
+  content: "";
+  width: 10px;
+  height: 2px;
+  margin-top: 0.7em;
+  background: var(--accent);
+}
+
+.pushback { margin: 0; }
+
+.pushback > div + div { margin-top: 18px; }
+
+.pushback dt {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.pushback dd {
+  margin: 6px 0 0;
+  padding-left: 14px;
+  border-left: 2px solid rgba(236, 231, 220, 0.2);
+  font-size: 16px;
+  line-height: 1.45;
+  color: rgba(236, 231, 220, 0.8);
+}
+
+.empty { margin: 0; font-size: 15px; color: rgba(236, 231, 220, 0.5); }
+
+.ph {
+  color: rgba(236, 231, 220, 0.55);
+  text-decoration: underline dashed rgba(240, 86, 47, 0.6);
+  text-underline-offset: 0.18em;
+}
+
+@media (max-width: 900px) {
+  .root { height: auto; min-height: 100dvh; grid-template-columns: 1fr; }
+}

@@ -151,7 +151,8 @@ export default function Footer() {
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
         }}>
-          <span>© {new Date().getFullYear()} Josh. Hand-built in HTML &amp; opinions.</span>
+          {/* data-knock: five quick taps on the © open the deep dives. See SecretPassage. */}
+          <span><span data-knock>©</span> {new Date().getFullYear()} Josh. Hand-built in HTML &amp; opinions.</span>
           <span>No robots were harmed in the making of this portfolio.</span>
           <BackToTop />
         </div>

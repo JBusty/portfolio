@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Instrument_Serif } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
-import TopBar from '@/components/TopBar';
-import Footer from '@/components/Footer';
+import { SiteNav, SiteFooter } from '@/components/SiteChrome';
+import SecretPassage from '@/components/SecretPassage';
 import SectionRevealObserver from '@/components/SectionRevealObserver';
 import { SITE_URL } from '@/lib/site';
 import './globals.css';
@@ -73,12 +73,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <a href="#main-content" className="skip-link">Skip to content</a>
         <SectionRevealObserver />
-        {/* Rendered unconditionally. These used to route through SiteChrome,
-            which existed only to hide them on /jobs — RemoteTechRoles is its own
-            deployment now, so there is no bare route left to special-case. */}
-        <TopBar />
+        <SecretPassage />
+        {/* Through SiteChrome, which drops both on the deep-dive decks. */}
+        <SiteNav />
         {children}
-        <Footer />
+        <SiteFooter />
         <Analytics />
       </body>
     </html>
