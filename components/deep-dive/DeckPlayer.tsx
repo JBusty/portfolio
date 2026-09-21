@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ImageViewer from '@/components/ImageViewer';
 import Mark from '@/components/Mark';
@@ -276,6 +277,11 @@ export default function DeckPlayer({
       )}
 
       <nav className={p.controls} aria-label="Deck controls">
+        <Link href={DEEP_DIVE_PATH} className={`${p.control} ${p.controlWide}`}>
+          <Mark dir="left" />
+          Deep dives
+        </Link>
+        <span className={p.divider} aria-hidden />
         {returnTo && (
           <>
             <button type="button" className={`${p.control} ${p.controlReturn}`} onClick={back}>

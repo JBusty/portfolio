@@ -547,12 +547,11 @@ export interface Deck {
    * the cover, so the room knows what to look for before the first slide.
    */
   shows: string[];
-  /** Planned talk time. Presenter view paces against it. */
+  /** Planned talk time. Only presenter view uses it, to pace; the cover doesn't show it. */
   minutes: number;
   /**
    * For a talk given from somewhere else — a Figma file — rather than these
-   * slides. The cover's row opens it in a new tab, it stays out of the cover's
-   * running time, and no deck hands off to it.
+   * slides. The cover's row opens it in a new tab, and no deck hands off to it.
    */
   link?: { href: string; label: string };
   /** A short tag on the cover's row, e.g. "Work in progress". */

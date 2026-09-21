@@ -311,6 +311,7 @@ export const unifiedOnboarding: Deck = {
           points: [
             { text: 'Step 1 = Name, ingest method, storage.' },
             { text: 'Step 2 = Provisioning and any follow-up steps for permissions.' },
+            { text: 'Step 3 = Customize how data from this integration is handled.' },
           ],
         },
         {

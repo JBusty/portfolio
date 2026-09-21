@@ -128,12 +128,6 @@
   color: var(--ink-2);
 }
 
-.total {
-  margin: 16px 0 0;
-  font-size: 14px;
-  color: var(--sub);
-}
-
 .rowMeta {
   display: flex;
   flex-direction: column;

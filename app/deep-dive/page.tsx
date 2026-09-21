@@ -7,9 +7,6 @@ import type { Deck } from '@/lib/deepDive/types';
 import c from '@/components/deep-dive/cover.module.css';
 
 export default function DeepDiveCover() {
-  // A talk given from a link is there if there is time, so it is not counted.
-  const minutes = DECKS.filter((deck) => !deck.link).reduce((sum, deck) => sum + deck.minutes, 0);
-
   return (
     <main id="main-content" tabIndex={-1} className={c.root}>
       <CoverKeys hrefs={DECKS.map(coverHref)} />
@@ -49,7 +46,6 @@ export default function DeepDiveCover() {
             </li>
           ))}
         </ol>
-        <p className={c.total}>About {minutes} minutes, with time left for questions.</p>
       </div>
 
       <div className={c.keys}>
@@ -92,10 +88,7 @@ function Row({ deck, n }: { deck: Deck; n: number }) {
         {deck.link ? (
           <span>{deck.link.label} ↗</span>
         ) : (
-          <>
-            <span>About {deck.minutes} min</span>
-            <span>{deck.slides.length} slides{backup > 0 && ` + ${backup} backup`}</span>
-          </>
+          <span>{deck.slides.length} slides{backup > 0 && ` + ${backup} backup`}</span>
         )}
         {remaining > 0 && <span className={c.todo}>{remaining} to fill</span>}
       </span>
