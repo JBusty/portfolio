@@ -5,7 +5,8 @@ import { FEATURED_PROJECTS, PROJECTS, type Project } from '@/lib/data';
 
 export default function FeaturedWork() {
   return (
-    <section style={{ background: 'var(--bone)' }}>
+    // Ink, between the light hero and the light values section, so the homepage alternates.
+    <section className="on-dark featured" style={{ background: 'var(--ink)', color: 'var(--bone)' }}>
       <div className="container sp-large" style={{ padding: '112px 32px 120px' }}>
         <div className="featured-head">
           <h2

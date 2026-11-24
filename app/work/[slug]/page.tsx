@@ -60,7 +60,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
 
   return (
     <main id="main-content" tabIndex={-1} className="page-enter">
-      <section style={{ borderBottom: '1px solid var(--ink)', background: 'var(--hero-case)' }}>
+      <section className="hero-wash" style={{ backgroundColor: 'var(--hero-case)' }}>
         <div className="container sp-hero" style={{ padding: '66px 32px 88px' }}>
           <div
             className="mono upper"
@@ -112,7 +112,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
 
             <div
               style={{
-                border: '1px solid var(--ink)',
+                border: '1px solid var(--edge)',
                 padding: 24,
                 background: 'var(--paper)',
                 borderRadius: 'var(--radius-lg)',
@@ -196,7 +196,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
         </div>
       </section>
 
-<section style={{ background: 'var(--ink)', color: 'var(--bone)' }}>
+<section className="on-dark" style={{ background: 'var(--ink)', color: 'var(--bone)' }}>
         <ScrollReveal as="div" className="container" style={{ padding: '40px' }}>
           <div className="r-outcome">
             <OutcomeColumn label="Friction" title="Pain points for the customer" items={study.outcomes.painPoints} />
@@ -207,7 +207,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
       </section>
 
       <section>
-        <div style={{ borderTop: '1px solid var(--ink)' }}>
+        <div style={{ borderTop: '1px solid var(--edge)' }}>
           <ScrollReveal as="div" className="container r-problem-full" style={{ padding: '80px 32px 160px', gap: '96px' }}>
             <div>
               <div className="mono upper" style={{
@@ -238,7 +238,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
       </section>
 
       <section>
-        <div style={{ borderTop: '1px solid var(--ink)' }}>
+        <div style={{ borderTop: '1px solid var(--edge)' }}>
           <ScrollReveal as="div" className="container r-problem-full" style={{ padding: '80px 32px 160px', gap: '96px' }}>
             <div>
               <div className="mono upper" style={{
@@ -305,14 +305,14 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
           gridTemplateColumns: '1fr 1fr',
           borderRadius: 'var(--radius-lg)',
           overflow: 'hidden',
-          border: '1px solid var(--ink)',
+          border: '1px solid var(--edge)',
         }}>
           <ReflectionColumn title="Tough spots" items={study.reflection.challenges} isWins={false} />
           <ReflectionColumn title="What went right" items={study.reflection.wins} isWins />
         </div>
       </CSection>
 
-      <section style={{ borderTop: '1px solid var(--ink)', background: 'var(--paper)' }}>
+      <section style={{ borderTop: '1px solid var(--edge)', background: 'var(--paper)' }}>
         <ScrollReveal as="div" className="container sp-case-nav" style={{ padding: '112px 32px 160px' }}>
           <div className="r-grid-2">
             <NavCard dir="prev" p={prev} />
@@ -360,6 +360,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
         setPos({ x: e.clientX - r.left, y: e.clientY - r.top, on: true });
       }}
       onMouseLeave={() => setPos(p => ({ ...p, on: false }))}
+      className="on-dark"
       style={{ position: 'relative', overflow: 'hidden', background: 'var(--ink)', color: 'var(--bone)' }}
     >
       {/* Mouse spotlight */}
@@ -368,7 +369,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
         width: 700,
         height: 700,
         borderRadius: '50%',
-        background: 'radial-gradient(closest-side, rgba(225,59,20,0.22), transparent 70%)',
+        background: 'radial-gradient(closest-side, rgba(169, 192, 224,0.22), transparent 70%)',
         left: pos.x,
         top: pos.y,
         transform: 'translate(-50%,-50%)',
@@ -381,26 +382,26 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
       {/* Animated grid */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
-        backgroundImage: 'linear-gradient(rgba(236,231,220,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(236,231,220,0.04) 1px, transparent 1px)',
+        backgroundImage: 'linear-gradient(rgba(248, 248, 247,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(248, 248, 247,0.04) 1px, transparent 1px)',
         backgroundSize: '24px 24px',
       }} />
 
       <ScrollReveal as="div" className="container sp-case-key" style={{ position: 'relative', zIndex: 1, padding: '140px 32px 160px', textAlign: 'center' }}>
         <div style={{ marginBottom: 48, display: 'flex', alignItems: 'center', gap: 16, maxWidth: '800px', margin: '0 auto 48px' }}>
-          <div style={{ flex: 1, height: 1, background: 'rgba(225,59,20,0.35)' }} />
+          <div style={{ flex: 1, height: 1, background: 'rgba(169, 192, 224,0.35)' }} />
           <span className="mono upper" style={{
             fontSize: 12,
             letterSpacing: '0.14em',
             color: 'var(--accent-lift)',
             whiteSpace: 'nowrap',
-            border: '1px solid rgba(225,59,20,0.5)',
-            background: 'rgba(225,59,20,0.1)',
+            border: '1px solid rgba(169, 192, 224,0.5)',
+            background: 'rgba(169, 192, 224,0.1)',
             borderRadius: 999,
             padding: '6px 18px',
           }}>
             Key Decision
           </span>
-          <div style={{ flex: 1, height: 1, background: 'rgba(225,59,20,0.35)' }} />
+          <div style={{ flex: 1, height: 1, background: 'rgba(169, 192, 224,0.35)' }} />
         </div>
 
         <div
@@ -418,7 +419,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
           "{question}"
         </div>
 
-        <div style={{ margin: '36px auto 0', maxWidth: '58ch', fontSize: 17, lineHeight: 1.65, color: 'rgba(236,231,220,0.72)' }}>
+        <div style={{ margin: '36px auto 0', maxWidth: '58ch', fontSize: 17, lineHeight: 1.65, color: 'rgba(248, 248, 247,0.72)' }}>
           {context}
         </div>
 
@@ -428,13 +429,13 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
             width: '100%',
             maxWidth: '800px',
             margin: '64px auto 0',
-            border: `1px solid ${revealed ? 'var(--accent)' : 'rgba(236,231,220,0.15)'}`,
-            background: revealed ? 'rgba(225,59,20,0.08)' : 'rgba(236,231,220,0.03)',
+            border: `1px solid ${revealed ? 'var(--accent)' : 'rgba(248, 248, 247,0.15)'}`,
+            background: revealed ? 'rgba(169, 192, 224,0.08)' : 'rgba(248, 248, 247,0.03)',
             borderRadius: 'var(--radius-lg)',
             overflow: 'hidden',
             textAlign: 'left',
             transition: 'border-color 300ms, background 300ms, box-shadow 300ms',
-            boxShadow: revealed ? '0 0 60px -20px rgba(225,59,20,0.35)' : '0 0 0 0 transparent',
+            boxShadow: revealed ? '0 0 60px -20px rgba(169, 192, 224,0.35)' : '0 0 0 0 transparent',
           }}
         >
           {/* Collapsed CTA — a real disclosure button so it works by keyboard and is announced */}
@@ -453,7 +454,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
               gap: 24,
               background: 'transparent',
               border: 'none',
-              borderBottom: `1px solid ${revealed ? 'rgba(225,59,20,0.2)' : 'transparent'}`,
+              borderBottom: `1px solid ${revealed ? 'rgba(169, 192, 224,0.2)' : 'transparent'}`,
               transition: 'border-color 300ms',
               textAlign: 'left',
               color: 'inherit',
@@ -470,7 +471,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
                 fontWeight: 700,
                 letterSpacing: '-0.03em',
                 lineHeight: 1.05,
-                color: revealed ? 'var(--bone)' : 'rgba(236,231,220,0.55)',
+                color: revealed ? 'var(--bone)' : 'rgba(248, 248, 247,0.55)',
                 filter: revealed ? 'none' : 'blur(6px)',
                 transition: 'color 400ms, filter 400ms',
                 userSelect: 'none',
@@ -478,7 +479,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
                 {answerTitle}
               </span>
               {!revealed && (
-                <span className="mono upper" aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 18, fontSize: 10, color: 'rgba(236,231,220,0.55)', letterSpacing: '0.14em' }}>
+                <span className="mono upper" aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 18, fontSize: 10, color: 'rgba(248, 248, 247,0.55)', letterSpacing: '0.14em' }}>
                   Click to unlock
                   <Mark color="var(--accent-lift)" />
                 </span>
@@ -487,10 +488,10 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
             <span style={{
               flexShrink: 0,
               width: 52, height: 52,
-              border: `1px solid ${revealed ? 'var(--accent)' : 'rgba(236,231,220,0.2)'}`,
+              border: `1px solid ${revealed ? 'var(--accent)' : 'rgba(248, 248, 247,0.2)'}`,
               borderRadius: '50%',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: revealed ? 'var(--accent)' : 'rgba(236,231,220,0.5)',
+              color: revealed ? 'var(--accent)' : 'rgba(248, 248, 247,0.5)',
               transition: 'all 280ms cubic-bezier(.2,.7,.2,1)',
             }}>
               <LockIcon open={revealed} />
@@ -511,7 +512,7 @@ function KeyDecisionBlock({ question, context, answerTitle, answerBody }: {
           >
             <div style={{ overflow: 'hidden' }}>
               <div style={{ padding: '28px 36px 36px' }}>
-                <div style={{ fontFamily: 'var(--font-jetbrains-mono)', fontSize: 14, color: 'rgba(236,231,220,0.75)', letterSpacing: '0.02em', lineHeight: 1.7 }}>
+                <div style={{ fontFamily: 'var(--font-jetbrains-mono)', fontSize: 14, color: 'rgba(248, 248, 247,0.75)', letterSpacing: '0.02em', lineHeight: 1.7 }}>
                   {answerBody}
                 </div>
               </div>
@@ -560,28 +561,28 @@ function ProblemArt() {
           <g key={`${panel.x}-${panel.y}`} transform={`rotate(${panel.rot} ${cx} ${cy})`}>
             <rect
               x={panel.x} y={panel.y} width={panel.w} height={panel.h} rx="12"
-              fill="rgba(245,241,230,0.78)"
+              fill="rgba(255, 255, 255,0.78)"
               className={`pa-fade ${panel.step}`}
             />
             <rect
               x={panel.x} y={panel.y} width={panel.w} height={panel.h} rx="12"
-              pathLength="100" stroke="rgba(17,17,16,0.22)" strokeWidth="1.25"
+              pathLength="100" stroke="rgba(27, 34, 51,0.22)" strokeWidth="1.25"
               className={`pa-draw ${panel.step}`}
             />
             {/* Header rule, then two lines of "content" — same shorthand the other art uses. */}
             <line
               x1={panel.x} y1={panel.y + 20} x2={panel.x + panel.w} y2={panel.y + 20}
-              pathLength="100" stroke="rgba(17,17,16,0.14)" strokeWidth="1.25"
+              pathLength="100" stroke="rgba(27, 34, 51,0.14)" strokeWidth="1.25"
               className={`pa-draw ${panel.step}`}
             />
             <rect
               x={panel.x + 14} y={panel.y + 32} width={panel.w * 0.42} height="8" rx="4"
-              fill="rgba(17,17,16,0.1)"
+              fill="rgba(27, 34, 51,0.1)"
               className={`pa-fade ${panel.step}`}
             />
             <rect
               x={panel.x + 14} y={panel.y + 46} width={panel.w * 0.66} height="8" rx="4"
-              fill="rgba(17,17,16,0.07)"
+              fill="rgba(27, 34, 51,0.07)"
               className={`pa-fade ${panel.step}`}
             />
           </g>
@@ -642,8 +643,8 @@ function ProblemImage({ src, alt }: { src: string; alt: string }) {
           cursor: 'zoom-in',
           transform: hover ? 'scale(1.035) rotate(-1.2deg)' : 'scale(1) rotate(0deg)',
           boxShadow: hover
-            ? '0 40px 80px -24px rgba(17,17,16,0.38), 0 0 0 1px rgba(225,59,20,0.18)'
-            : '0 8px 24px -12px rgba(17,17,16,0.14)',
+            ? '0 40px 80px -24px rgba(27, 34, 51,0.38), 0 0 0 1px rgba(61, 90, 128,0.18)'
+            : '0 8px 24px -12px rgba(27, 34, 51,0.14)',
           transition: 'transform 440ms cubic-bezier(.2,.7,.2,1), box-shadow 440ms cubic-bezier(.2,.7,.2,1)',
         }}
       >
@@ -686,7 +687,7 @@ function OutcomeColumn({
       className="outcome-col"
       style={{
         padding: '40px 28px',
-        borderRight: last ? 'none' : '1px solid rgba(236,231,220,0.18)',
+        borderRight: last ? 'none' : '1px solid rgba(248, 248, 247,0.18)',
         paddingLeft: 28,
         paddingRight: last ? 0 : 28,
       }}
@@ -694,7 +695,7 @@ function OutcomeColumn({
       <h3 className="tight" style={{ margin: 0, fontSize: 'clamp(44px, 5vw, 72px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.95, color: 'var(--bone)' }}>
         {label}
       </h3>
-      <div className="mono upper" style={{ marginTop: 18, fontSize: 10, color: 'rgba(236,231,220,0.55)', letterSpacing: '0.1em' }}>
+      <div className="mono upper" style={{ marginTop: 18, fontSize: 10, color: 'rgba(248, 248, 247,0.55)', letterSpacing: '0.1em' }}>
         — {title}
       </div>
       <ul style={{ margin: '20px 0 0', padding: 0, listStyle: 'none' }}>
@@ -706,10 +707,10 @@ function OutcomeColumn({
               gridTemplateColumns: '20px 1fr',
               gap: 8,
               padding: '10px 0',
-              borderTop: '1px solid rgba(236,231,220,0.12)',
+              borderTop: '1px solid rgba(248, 248, 247,0.12)',
               fontSize: 14,
               lineHeight: 1.5,
-              color: 'rgba(236,231,220,0.9)',
+              color: 'rgba(248, 248, 247,0.9)',
             }}
           >
             <span style={{ color: 'var(--accent)' }}>&#8599;</span>
@@ -731,21 +732,21 @@ function ReflectionColumn({
   isWins: boolean;
 }) {
   return (
-    <div style={{
+    <div className={isWins ? 'on-dark' : undefined} style={{
       background: isWins ? 'var(--ink)' : 'var(--bone)',
       padding: '40px 36px 52px',
-      borderRight: isWins ? '1px solid rgba(236,231,220,0.12)' : 'none',
+      borderRight: isWins ? '1px solid rgba(248, 248, 247,0.12)' : 'none',
     }}>
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12,
         paddingBottom: 28,
         marginBottom: 28,
-        borderBottom: `1px solid ${isWins ? 'rgba(236,231,220,0.10)' : 'rgba(17,17,16,0.08)'}`,
+        borderBottom: `1px solid ${isWins ? 'rgba(248, 248, 247,0.10)' : 'rgba(27, 34, 51,0.08)'}`,
       }}>
         <span style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
-          background: isWins ? 'rgba(225,59,20,0.18)' : 'rgba(17,17,16,0.07)',
+          background: isWins ? 'rgba(169, 192, 224,0.16)' : 'rgba(27, 34, 51,0.07)',
           fontSize: 14, color: 'var(--accent)',
         }}>
           {isWins ? (
@@ -784,7 +785,7 @@ function ReflectionItem({ item, isWins, last }: {
       onMouseLeave={() => setHover(false)}
       style={{
         padding: '20px 0',
-        borderBottom: last ? 'none' : `1px solid ${isWins ? 'rgba(236,231,220,0.08)' : 'rgba(17,17,16,0.07)'}`,
+        borderBottom: last ? 'none' : `1px solid ${isWins ? 'rgba(248, 248, 247,0.08)' : 'rgba(27, 34, 51,0.07)'}`,
         transform: hover ? 'translateX(8px)' : 'translateX(0)',
         transition: 'transform 260ms cubic-bezier(.2,.7,.2,1)',
         cursor: 'default',
@@ -793,7 +794,7 @@ function ReflectionItem({ item, isWins, last }: {
       <p style={{
         margin: 0, fontSize: 17, lineHeight: 1.6,
         color: isWins
-          ? (hover ? 'var(--bone)' : 'rgba(236,231,220,0.72)')
+          ? (hover ? 'var(--bone)' : 'rgba(248, 248, 247,0.72)')
           : (hover ? 'var(--ink)' : 'var(--ink-2)'),
         transition: 'color 220ms ease',
       }}>
@@ -944,7 +945,7 @@ function ProcessTimeline({ steps }: { steps: EnhancedStep[] }) {
                   position: 'absolute', left: 5, top: 52, width: 22, height: 22, borderRadius: '50%',
                   background: isActive || isPast ? 'var(--accent)' : 'var(--bone)',
                   border: `2px solid ${isActive || isPast ? 'var(--accent)' : 'var(--rule-strong)'}`,
-                  boxShadow: isActive ? '0 0 0 7px rgba(225,59,20,0.16)' : 'none',
+                  boxShadow: isActive ? '0 0 0 7px rgba(61, 90, 128,0.16)' : 'none',
                   transition: 'all 280ms cubic-bezier(.2,.7,.2,1)',
                 }}>
                   {isActive && <span style={{ position: 'absolute', inset: 4, borderRadius: '50%', background: 'var(--bone)' }} />}
@@ -998,14 +999,14 @@ function TimelineGalleryItem({
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        border: `1px solid ${hover ? 'rgba(225,59,20,0.32)' : 'var(--rule)'}`,
+        border: `1px solid ${hover ? 'rgba(61, 90, 128,0.32)' : 'var(--rule)'}`,
         borderRadius: 'var(--radius)',
         background: 'var(--paper)',
         overflow: 'hidden',
         transform: hover ? 'translateY(-4px)' : 'translateY(0)',
         boxShadow: hover
-          ? '0 24px 48px -24px rgba(17,17,16,0.28)'
-          : '0 10px 24px -20px rgba(17,17,16,0.16)',
+          ? '0 24px 48px -24px rgba(27, 34, 51,0.28)'
+          : '0 10px 24px -20px rgba(27, 34, 51,0.16)',
         transition: 'transform 240ms cubic-bezier(.2,.7,.2,1), box-shadow 240ms cubic-bezier(.2,.7,.2,1), border-color 180ms ease',
       }}
     >
@@ -1045,8 +1046,8 @@ function TimelineGalleryItem({
             justifyContent: 'space-between',
             padding: '12px 14px',
             background: hover
-              ? 'linear-gradient(180deg, rgba(10,8,6,0) 28%, rgba(10,8,6,0.42) 100%)'
-              : 'linear-gradient(180deg, rgba(10,8,6,0) 42%, rgba(10,8,6,0.12) 100%)',
+              ? 'linear-gradient(180deg, rgba(14, 18, 28,0) 28%, rgba(14, 18, 28,0.42) 100%)'
+              : 'linear-gradient(180deg, rgba(14, 18, 28,0) 42%, rgba(14, 18, 28,0.12) 100%)',
             transition: 'background 200ms ease',
             pointerEvents: 'none',
           }}
@@ -1056,7 +1057,7 @@ function TimelineGalleryItem({
             style={{
               fontSize: 10,
               letterSpacing: '0.12em',
-              color: 'rgba(236,231,220,0.92)',
+              color: 'rgba(248, 248, 247,0.92)',
               opacity: hover ? 1 : 0.72,
               transform: hover ? 'translateY(0)' : 'translateY(2px)',
               transition: 'opacity 180ms ease, transform 180ms ease',
@@ -1069,8 +1070,8 @@ function TimelineGalleryItem({
               width: 30,
               height: 30,
               borderRadius: '50%',
-              border: '1px solid rgba(236,231,220,0.26)',
-              background: hover ? 'rgba(236,231,220,0.18)' : 'rgba(236,231,220,0.08)',
+              border: '1px solid rgba(248, 248, 247,0.26)',
+              background: hover ? 'rgba(248, 248, 247,0.18)' : 'rgba(248, 248, 247,0.08)',
               color: 'var(--bone)',
               display: 'inline-flex',
               alignItems: 'center',
@@ -1108,7 +1109,7 @@ function NavCard({ dir, p }: { dir: 'prev' | 'next'; p: typeof PROJECTS[number] 
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        border: '1px solid var(--ink)',
+        border: '1px solid var(--edge)',
         background: hover ? 'var(--ink)' : 'var(--bone)',
         color: hover ? 'var(--bone)' : 'var(--ink)',
         padding: 28,
@@ -1145,7 +1146,7 @@ function NavCard({ dir, p }: { dir: 'prev' | 'next'; p: typeof PROJECTS[number] 
           </>
         )}
       </div>
-      <div className="mono upper" style={{ fontSize: 11, letterSpacing: '0.08em', color: hover ? 'rgba(236,231,220,0.65)' : 'var(--sub)' }}>
+      <div className="mono upper" style={{ fontSize: 11, letterSpacing: '0.08em', color: hover ? 'rgba(248, 248, 247,0.65)' : 'var(--sub)' }}>
         {p.company} - {p.year}
       </div>
       <div className="tight" style={{ fontSize: 'clamp(28px, 3.4vw, 44px)', fontWeight: 600, letterSpacing: '-0.035em', lineHeight: 1.02 }}>

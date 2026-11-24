@@ -27,20 +27,21 @@
 
 .tint {
   background: var(--deck-tint, var(--hero-case));
-  --panel: rgba(245, 241, 230, 0.7);
+  --panel: rgba(255, 255, 255, 0.7);
   --slide-bg: var(--deck-tint, var(--hero-case));
 }
 
 .ink {
   background: var(--ink);
   color: var(--bone);
-  --fg-2: rgba(236, 231, 220, 0.8);
-  --fg-sub: rgba(236, 231, 220, 0.6);
-  --line: rgba(236, 231, 220, 0.16);
-  --line-strong: rgba(236, 231, 220, 0.4);
+  --fg-2: rgba(248, 248, 247, 0.8);
+  --fg-sub: rgba(248, 248, 247, 0.6);
+  --line: rgba(248, 248, 247, 0.16);
+  --line-strong: rgba(248, 248, 247, 0.4);
   --label: var(--accent-lift);
-  --panel: rgba(236, 231, 220, 0.05);
-  --panel-line: rgba(236, 231, 220, 0.14);
+  --accent: var(--accent-lift);  /* navy is 2.25:1 on ink */
+  --panel: rgba(248, 248, 247, 0.05);
+  --panel-line: rgba(248, 248, 247, 0.14);
   --slide-bg: var(--ink);
 }
 
@@ -236,9 +237,9 @@ button.railHit:focus-visible {
 /* Unfilled '[...]' copy. Loud enough to catch in rehearsal, clearly not content. */
 .ph {
   color: var(--fg-sub);
-  background: rgba(225, 59, 20, 0.08);
+  background: rgba(61, 90, 128, 0.08);
   border-radius: 0.12em;
-  text-decoration: underline dashed rgba(225, 59, 20, 0.55);
+  text-decoration: underline dashed rgba(61, 90, 128, 0.55);
   text-decoration-thickness: max(2px, 0.035em);
   text-underline-offset: 0.16em;
   -webkit-box-decoration-break: clone;
@@ -251,7 +252,7 @@ button.railHit:focus-visible {
   position: relative;
   flex: none;
   border-radius: 14px;
-  box-shadow: 0 0 0 1px var(--panel-line), 0 30px 60px -36px rgba(17, 17, 16, 0.5);
+  box-shadow: 0 0 0 1px var(--panel-line), 0 30px 60px -36px rgba(27, 34, 51, 0.5);
 }
 
 .img img,
@@ -517,7 +518,7 @@ button.railHit:focus-visible {
   line-height: 1.25;
   letter-spacing: -0.01em;
   text-wrap: balance;
-  box-shadow: 0 16px 32px -14px rgba(17, 17, 16, 0.4);
+  box-shadow: 0 16px 32px -14px rgba(27, 34, 51, 0.4);
   pointer-events: none;
 }
 
@@ -688,8 +689,8 @@ button.railHit:focus-visible {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(236, 231, 220, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(236, 231, 220, 0.035) 1px, transparent 1px);
+    linear-gradient(rgba(248, 248, 247, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(248, 248, 247, 0.035) 1px, transparent 1px);
   background-size: 32px 32px;
   pointer-events: none;
 }
@@ -725,7 +726,7 @@ button.railHit:focus-visible {
   padding: 22px 28px 24px;
   border: 2px solid var(--line);
   border-radius: 20px;
-  background: rgba(236, 231, 220, 0.03);
+  background: rgba(248, 248, 247, 0.03);
   transition:
     border-color 420ms ease,
     background 420ms ease,
@@ -851,8 +852,8 @@ button.railHit:focus-visible {
 
 .revealed .option[data-chosen] {
   border-color: var(--accent);
-  background: rgba(225, 59, 20, 0.1);
-  box-shadow: 0 0 90px -30px rgba(225, 59, 20, 0.5);
+  background: rgba(61, 90, 128, 0.1);
+  box-shadow: 0 0 90px -30px rgba(61, 90, 128, 0.5);
   transform: translateY(-6px);
 }
 
@@ -992,7 +993,7 @@ button.railHit:focus-visible {
   width: 52px;
   height: 52px;
   font-size: 22px;
-  box-shadow: 0 0 0 7px rgba(225, 59, 20, 0.25), 0 10px 24px rgba(17, 17, 16, 0.3);
+  box-shadow: 0 0 0 7px rgba(61, 90, 128, 0.25), 0 10px 24px rgba(27, 34, 51, 0.3);
   pointer-events: none;
 }
 
@@ -1362,7 +1363,7 @@ button.railHit:focus-visible {
   padding: 0;
   border: 3px dashed var(--accent);
   border-radius: 12px;
-  background: rgba(225, 59, 20, 0.14);
+  background: rgba(61, 90, 128, 0.14);
   cursor: pointer;
 }
 
@@ -1385,9 +1386,10 @@ button.railHit:focus-visible {
 /* Pin tones. A trap is louder than a note; something that already worked is
    deliberately quiet — it is the control, not the finding. */
 .pinTrap { background: var(--accent); }
+.ink .pinTrap { color: var(--ink); }
 .pinGood { background: var(--ink); }
-.marker.pinTrap { box-shadow: 0 0 0 9px rgba(225, 59, 20, 0.28), 0 10px 24px rgba(17, 17, 16, 0.3); }
-.marker.pinGood { box-shadow: 0 0 0 7px rgba(17, 17, 16, 0.14), 0 10px 24px rgba(17, 17, 16, 0.3); }
+.marker.pinTrap { box-shadow: 0 0 0 9px rgba(61, 90, 128, 0.28), 0 10px 24px rgba(27, 34, 51, 0.3); }
+.marker.pinGood { box-shadow: 0 0 0 7px rgba(27, 34, 51, 0.14), 0 10px 24px rgba(27, 34, 51, 0.3); }
 
 /* What the product did while the screen said nothing. Reads as a readout, not
    as copy — it is the system talking. */
@@ -1551,8 +1553,8 @@ button.railHit:focus-visible {
 }
 
 @keyframes ping {
-  0% { box-shadow: 0 0 0 0 rgba(225, 59, 20, 0.45); }
-  70%, 100% { box-shadow: 0 0 0 26px rgba(225, 59, 20, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(61, 90, 128, 0.45); }
+  70%, 100% { box-shadow: 0 0 0 26px rgba(61, 90, 128, 0); }
 }
 
 @keyframes strike {

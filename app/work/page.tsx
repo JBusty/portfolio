@@ -25,15 +25,17 @@ export default function WorkPage() {
 
   return (
     <main id="main-content" tabIndex={-1} className="page-enter">
-      <section style={{ borderBottom: '1px solid var(--ink)', background: 'var(--hero-work)' }}>
+      <section className="hero-wash" style={{ backgroundColor: 'var(--hero-work)' }}>
         <div className="container r-hero-split sp-hero" style={{ padding: '88px 32px 72px', gap: 40 }}>
-          <div>
+          {/* Sized off the column, not the viewport: in the two-column layout a
+              vw size outgrew the column and dropped "makes" onto a line alone. */}
+          <div style={{ containerType: 'inline-size' }}>
           <h1
             className={`tight ${heroStyles.heroTitle}`}
             style={{
-              fontSize: 'clamp(48px, 9vw, 98px)',
+              fontSize: 'clamp(34px, min(12.5cqi, 9vw + 12px), 98px)',
               lineHeight: 0.9,
-              maxWidth: '11ch',
+              maxWidth: 'none',
             }}
           >
             <span className={heroStyles.heroLine} style={{ animationDelay: '0ms' }}>
@@ -47,7 +49,7 @@ export default function WorkPage() {
           <p
               style={{
                 margin: '32px 0 0',
-                fontSize: 'clamp(17px, 1.4vw, 20px)',
+                fontSize: 'clamp(18px, 1.5vw, 22px)', // same as every other page's intro
                 lineHeight: 1.5,
                 color: 'var(--ink-2)',
                 maxWidth: '60ch',
@@ -135,7 +137,7 @@ function ProjectGroup({
             gap: '8px 16px',
             paddingBottom: 20,
             marginBottom: 8,
-            borderBottom: '1px solid var(--ink)',
+            borderBottom: '1px solid var(--edge)',
           }}
         >
           <h2
@@ -202,7 +204,7 @@ function WorkHeroArt() {
           width="126"
           height="92"
           rx="14"
-          fill="rgba(245,241,230,0.72)"
+          fill="rgba(255, 255, 255,0.72)"
           className={fade('hero-draw-1')}
         />
         <rect
@@ -213,7 +215,7 @@ function WorkHeroArt() {
           rx="14"
           pathLength="100"
           fill="none"
-          stroke="rgba(17,17,16,0.26)"
+          stroke="rgba(27, 34, 51,0.26)"
           strokeWidth="1.25"
           className={draw('hero-draw-1')}
         />
@@ -223,12 +225,12 @@ function WorkHeroArt() {
           x2="210"
           y2="160"
           pathLength="100"
-          stroke="rgba(17,17,16,0.16)"
+          stroke="rgba(27, 34, 51,0.16)"
           strokeWidth="1.25"
           className={draw('hero-draw-2')}
         />
-        <rect x="102" y="176" width="40" height="12" rx="6" fill="rgba(17,17,16,0.08)" className={fade('hero-draw-2')} />
-        <rect x="102" y="196" width="66" height="10" rx="5" fill="rgba(17,17,16,0.06)" className={fade('hero-draw-3')} />
+        <rect x="102" y="176" width="40" height="12" rx="6" fill="rgba(27, 34, 51,0.08)" className={fade('hero-draw-2')} />
+        <rect x="102" y="196" width="66" height="10" rx="5" fill="rgba(27, 34, 51,0.06)" className={fade('hero-draw-3')} />
       </g>
 
       <g transform="rotate(9 292 180)">
@@ -238,7 +240,7 @@ function WorkHeroArt() {
           width="122"
           height="94"
           rx="14"
-          fill="rgba(245,241,230,0.72)"
+          fill="rgba(255, 255, 255,0.72)"
           className={fade('hero-draw-1')}
         />
         <rect
@@ -249,7 +251,7 @@ function WorkHeroArt() {
           rx="14"
           pathLength="100"
           fill="none"
-          stroke="rgba(17,17,16,0.26)"
+          stroke="rgba(27, 34, 51,0.26)"
           strokeWidth="1.25"
           className={draw('hero-draw-2')}
         />
@@ -259,12 +261,12 @@ function WorkHeroArt() {
           x2="354"
           y2="154"
           pathLength="100"
-          stroke="rgba(17,17,16,0.16)"
+          stroke="rgba(27, 34, 51,0.16)"
           strokeWidth="1.25"
           className={draw('hero-draw-3')}
         />
-        <rect x="252" y="170" width="54" height="12" rx="6" fill="rgba(225,59,20,0.10)" className={fade('hero-draw-3')} />
-        <rect x="252" y="190" width="74" height="10" rx="5" fill="rgba(17,17,16,0.06)" className={fade('hero-draw-4')} />
+        <rect x="252" y="170" width="54" height="12" rx="6" fill="rgba(61, 90, 128,0.10)" className={fade('hero-draw-3')} />
+        <rect x="252" y="190" width="74" height="10" rx="5" fill="rgba(27, 34, 51,0.06)" className={fade('hero-draw-4')} />
       </g>
 
       <g>
@@ -274,7 +276,7 @@ function WorkHeroArt() {
           width="206"
           height="160"
           rx="18"
-          fill="#F5F1E6"
+          fill="#FFFFFF"
           className={fade('hero-draw-2')}
         />
         <rect
@@ -285,7 +287,7 @@ function WorkHeroArt() {
           rx="18"
           pathLength="100"
           fill="none"
-          stroke="#111110"
+          stroke="#1B2233"
           strokeWidth="1.5"
           className={draw('hero-draw-1')}
         />
@@ -295,20 +297,20 @@ function WorkHeroArt() {
           x2="324"
           y2="146"
           pathLength="100"
-          stroke="rgba(17,17,16,0.22)"
+          stroke="rgba(27, 34, 51,0.22)"
           strokeWidth="1.5"
           className={draw('hero-draw-2')}
         />
-        <circle cx="136" cy="131" r="4" fill="#111110" className={fade('hero-draw-2')} />
-        <circle cx="150" cy="131" r="4" fill="rgba(17,17,16,0.28)" className={fade('hero-draw-2')} />
-        <circle cx="164" cy="131" r="4" fill="rgba(17,17,16,0.16)" className={fade('hero-draw-2')} />
+        <circle cx="136" cy="131" r="4" fill="#1B2233" className={fade('hero-draw-2')} />
+        <circle cx="150" cy="131" r="4" fill="rgba(27, 34, 51,0.28)" className={fade('hero-draw-2')} />
+        <circle cx="164" cy="131" r="4" fill="rgba(27, 34, 51,0.16)" className={fade('hero-draw-2')} />
       </g>
 
       <path
         d="M 126 114 C 106 158, 104 212, 142 244 C 176 272, 222 270, 250 240 C 276 212, 298 208, 320 220"
         pathLength="100"
         fill="none"
-        stroke="rgba(17,17,16,0.35)"
+        stroke="rgba(27, 34, 51,0.35)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -319,7 +321,7 @@ function WorkHeroArt() {
         d="M 315 214 L 329 221 L 317 230"
         pathLength="100"
         fill="none"
-        stroke="rgba(17,17,16,0.35)"
+        stroke="rgba(27, 34, 51,0.35)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -327,23 +329,23 @@ function WorkHeroArt() {
       />
 
       <g className={fade('hero-draw-3')}>
-        <circle cx="144" cy="244" r="10" fill="#F5F1E6" />
-        <circle cx="144" cy="244" r="10" pathLength="100" fill="none" stroke="#111110" strokeWidth="1.5" className={draw('hero-draw-3')} />
+        <circle cx="144" cy="244" r="10" fill="#FFFFFF" />
+        <circle cx="144" cy="244" r="10" pathLength="100" fill="none" stroke="#1B2233" strokeWidth="1.5" className={draw('hero-draw-3')} />
       </g>
       <g className={fade('hero-draw-4')}>
-        <circle cx="226" cy="256" r="10" fill="#F5F1E6" />
-        <circle cx="226" cy="256" r="10" pathLength="100" fill="none" stroke="#111110" strokeWidth="1.5" className={draw('hero-draw-4')} />
+        <circle cx="226" cy="256" r="10" fill="#FFFFFF" />
+        <circle cx="226" cy="256" r="10" pathLength="100" fill="none" stroke="#1B2233" strokeWidth="1.5" className={draw('hero-draw-4')} />
       </g>
       <g className={fade('hero-draw-5')}>
-        <circle cx="302" cy="216" r="10" fill="#E13B14" />
-        <circle cx="302" cy="216" r="10" pathLength="100" fill="none" stroke="#111110" strokeWidth="1.5" className={draw('hero-draw-5')} />
+        <circle cx="302" cy="216" r="10" fill="#3D5A80" />
+        <circle cx="302" cy="216" r="10" pathLength="100" fill="none" stroke="#1B2233" strokeWidth="1.5" className={draw('hero-draw-5')} />
       </g>
 
       <path
         d="M 142 244 l 4 4 l 7 -9"
         pathLength="100"
         fill="none"
-        stroke="#111110"
+        stroke="#1B2233"
         strokeWidth="1.75"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -354,7 +356,7 @@ function WorkHeroArt() {
         d="M 223 256 l 4 4 l 8 -10"
         pathLength="100"
         fill="none"
-        stroke="#111110"
+        stroke="#1B2233"
         strokeWidth="1.75"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -362,22 +364,22 @@ function WorkHeroArt() {
       />
 
       <g>
-        <rect x="144" y="174" width="56" height="38" rx="10" fill="rgba(17,17,16,0.05)" className={fade('hero-draw-3')} />
-        <rect x="212" y="174" width="56" height="38" rx="10" fill="rgba(17,17,16,0.05)" className={fade('hero-draw-4')} />
-        <rect x="168" y="224" width="56" height="26" rx="10" fill="rgba(225,59,20,0.1)" className={fade('hero-draw-5')} />
-        <rect x="144" y="174" width="56" height="38" rx="10" pathLength="100" fill="none" stroke="rgba(17,17,16,0.18)" strokeWidth="1.25" className={draw('hero-draw-3')} />
-        <rect x="212" y="174" width="56" height="38" rx="10" pathLength="100" fill="none" stroke="rgba(17,17,16,0.18)" strokeWidth="1.25" className={draw('hero-draw-4')} />
-        <rect x="168" y="224" width="56" height="26" rx="10" pathLength="100" fill="none" stroke="rgba(225,59,20,0.32)" strokeWidth="1.25" className={draw('hero-draw-5')} />
+        <rect x="144" y="174" width="56" height="38" rx="10" fill="rgba(27, 34, 51,0.05)" className={fade('hero-draw-3')} />
+        <rect x="212" y="174" width="56" height="38" rx="10" fill="rgba(27, 34, 51,0.05)" className={fade('hero-draw-4')} />
+        <rect x="168" y="224" width="56" height="26" rx="10" fill="rgba(61, 90, 128,0.1)" className={fade('hero-draw-5')} />
+        <rect x="144" y="174" width="56" height="38" rx="10" pathLength="100" fill="none" stroke="rgba(27, 34, 51,0.18)" strokeWidth="1.25" className={draw('hero-draw-3')} />
+        <rect x="212" y="174" width="56" height="38" rx="10" pathLength="100" fill="none" stroke="rgba(27, 34, 51,0.18)" strokeWidth="1.25" className={draw('hero-draw-4')} />
+        <rect x="168" y="224" width="56" height="26" rx="10" pathLength="100" fill="none" stroke="rgba(61, 90, 128,0.32)" strokeWidth="1.25" className={draw('hero-draw-5')} />
       </g>
 
       <g transform="translate(286 154) rotate(7)">
-        <rect width="48" height="48" rx="16" fill="rgba(225,59,20,0.12)" className={fade('hero-draw-5')} />
-        <rect width="48" height="48" rx="16" pathLength="100" fill="none" stroke="#E13B14" strokeWidth="1.5" className={draw('hero-draw-5')} />
+        <rect width="48" height="48" rx="16" fill="rgba(61, 90, 128,0.12)" className={fade('hero-draw-5')} />
+        <rect width="48" height="48" rx="16" pathLength="100" fill="none" stroke="#3D5A80" strokeWidth="1.5" className={draw('hero-draw-5')} />
         <path
           d="M 14 24 l 7 7 l 13 -16"
           pathLength="100"
           fill="none"
-          stroke="#B12C0C"
+          stroke="#3D5A80"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"

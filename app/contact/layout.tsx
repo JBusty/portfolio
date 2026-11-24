@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SITE_URL } from '@/lib/site';
 
 const description =
-  "Available for staff and lead product design roles in security and fintech. Remote only. Let's talk about what you're building.";
+  "Available for staff and lead product design roles in security and fintech. Remote Roles. Let's talk about what you're building.";
 
 export const metadata: Metadata = {
   title: 'Contact',

@@ -19,6 +19,8 @@ export default function SectionRevealObserver() {
     for (let index = 0; index < children.length; index += 1) {
       const current = children[index];
       const next = children[index + 1];
+      // sections that run their own entrance animation opt out of the generic fade
+      if (current.matches('[data-own-reveal]')) continue;
       const currentIsHead = current.matches('[data-reveal]');
       const nextIsSection = next?.tagName === 'SECTION';
 

@@ -7,30 +7,72 @@
 }
 
 :root {
-  --bone:        #ECE7DC;
-  --bone-2:      #E2DCCE;
-  --bone-3:      #D7D0BF;
-  --ink:         #111110;
-  --ink-2:       #2A2924;
-  /* Darkened from #6F6B61 — that failed AA at the 10–12px sizes it's used at
-     (4.31 on bone, 3.49 on the contact hero tint). #5A574F clears 4.5 on every
-     surface in the palette, worst case 4.74 on --hero-contact. */
-  --sub:         #5A574F;
-  --rule:        rgba(17, 17, 16, 0.16);
-  --rule-strong: rgba(17, 17, 16, 0.45);
-  /* --accent is for large display type only (passes the 3:1 large-text bar).
-     Small text needs one of the two variants below. */
-  --accent:      #E13B14;
-  --accent-ink:  #B12C0C;  /* small accent text on light surfaces — 4.75+ */
-  --accent-lift: #F0562F;  /* small accent text on ink/dark surfaces — 5.08+ */
-  --paper:       #F5F1E6;
-  --hero-home:   #EBDAC1;
-  --hero-work:   #D7DECC;
-  --hero-case:   #ECD5C8;
-  --hero-contact: #DACED8;
-  --radius:      14px;
+  --bone:        #F8F8F7;
+  --bone-2:      #EEEFF1;
+  --bone-3:      #DFE1E6;
+  --ink:         #1B2233;
+  --ink-2:       #2C3446;
+  /* Clears 4.5 on every light surface in the palette, worst case 5.36 on --hero-work. */
+  --sub:         #5A6172;
+  --rule:        rgba(27, 34, 51, 0.16);
+  --rule-strong: rgba(27, 34, 51, 0.45);
+  /* Dusty navy. Unlike the old orange it passes AA as small text on every light
+     surface (6.1+), so --accent and --accent-ink are the same colour. It does
+     NOT work on ink (2.25) — dark surfaces carry .on-dark, which re-points
+     --accent at --accent-lift. */
+  --accent:      #3D5A80;
+  --accent-ink:  #3D5A80;
+  --accent-lift: #A9C0E0;  /* accent on ink/dark surfaces — 8.5 */
+  --paper:       #FFFFFF;
+  --hero-home:   #EDF0F5;
+  --hero-work:   #ECEFF0;
+  --hero-case:   #F0EEF2;
+  --hero-contact: #EBF0EE;
+  --hero-skills: #EDF0F5;
+  --dock-space:  100px;  /* room left above each page for the floating nav */
+  --radius:     14px;
   --radius-sm:   10px;
   --radius-lg:   20px;
+  --edge:        var(--ink);                 /* the hard rule between sections */
+  --open-row:    rgba(255, 255, 255, 0.35);  /* an expanded FAQ row */
+  /* the hero wash, top to bottom */
+  --wash-0: rgba(169, 192, 224, 0.6);
+  --wash-1: rgba(169, 192, 224, 0.28);
+}
+
+/* ---- dark mode ----
+   Set by the toggle in the top bar (html[data-theme="dark"], applied before
+   paint by the script in app/layout.tsx). The names keep their roles, not their
+   literal colours: --bone is still "the page", --ink is still "the type". */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bone:        #0F131B;
+  --bone-2:      #161B25;
+  --bone-3:      #232A38;
+  --ink:         #E7EAF0;
+  --ink-2:       #C2C8D3;
+  --sub:         #9AA2B2;  /* 6.9 on the page, 5.6 on the lightest hero */
+  --rule:        rgba(231, 234, 240, 0.13);
+  --rule-strong: rgba(231, 234, 240, 0.34);
+  --accent:      #A9C0E0;
+  --accent-ink:  #A9C0E0;
+  --paper:       #161B25;
+  --hero-home:   #121826;
+  --hero-work:   #111720;
+  --hero-case:   #15141D;
+  --hero-contact: #0F1716;
+  --hero-skills: #121826;
+  --wash-0: rgba(61, 90, 128, 0.55);
+  --wash-1: rgba(61, 90, 128, 0.22);
+  --dot: rgba(231, 234, 240, 0.1);
+  --edge:     rgba(231, 234, 240, 0.22);
+  --open-row: rgba(231, 234, 240, 0.04);
+}
+/* The ink bands (the work, values, outcomes, footer) stay the navy they are in
+   light mode: a step up from the dark page, so the sections still alternate. */
+html[data-theme="dark"] .on-dark {
+  --ink:  #1B2233;
+  --bone: #F8F8F7;
 }
 
 * { box-sizing: border-box; }
@@ -136,6 +178,16 @@ main { scroll-margin-top: 96px; }
 /* The footer is the one full-ink surface — lift the mark off it. */
 footer { --mk: var(--accent-lift); }
 
+/* Ink surfaces (values, outcomes, key insight, wins, footer). Navy is 2.25:1 on
+   ink, so everything accent inside re-points at the lifted blue. A solid button
+   that fills with it on hover has to switch to ink type. */
+.on-dark {
+  --accent: var(--accent-lift);
+  --accent-ink: var(--accent-lift);
+  --mk: var(--accent-lift);
+}
+.on-dark .btn:not(.ghost):hover { color: var(--ink); --mk: var(--ink); }
+
 /* ---- buttons ---- */
 .btn {
   display: inline-flex;
@@ -211,7 +263,7 @@ footer { --mk: var(--accent-lift); }
   border-radius: var(--radius);
   transform-origin: center bottom;
   transform: rotate(var(--sol-tilt, 0deg));
-  box-shadow: 0 10px 22px -18px rgba(17, 17, 16, 0.4);
+  box-shadow: 0 10px 22px -18px rgba(27, 34, 51, 0.4);
   transition:
     transform 340ms cubic-bezier(0.2, 0.7, 0.2, 1),
     background 220ms ease,
@@ -256,7 +308,7 @@ footer { --mk: var(--accent-lift); }
     transform: translateY(-8px) rotate(0deg) scale(1.01);
     background: var(--bone);
     border-color: var(--accent);
-    box-shadow: 0 24px 56px -28px rgba(17, 17, 16, 0.45);
+    box-shadow: 0 24px 56px -28px rgba(27, 34, 51, 0.45);
   }
   .sol-card:hover .sol-card-title { color: var(--accent); }
   .sol-card:hover .sol-card-rule { width: 44px; }
@@ -278,6 +330,9 @@ footer { --mk: var(--accent-lift); }
   background: transparent;
 }
 .chip.solid { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+/* tinted tag chips on the case-study rows (hue set per tag in ProjectRow) */
+.tag-chip { background: rgba(var(--tc), 0.10); border-color: rgba(var(--tc), 0.24); color: var(--tt); }
+html[data-theme="dark"] .tag-chip { background: rgba(var(--tc), 0.22); border-color: rgba(var(--tc), 0.55); color: var(--tt-d); }
 
 .work-filter-bar {
   display: flex;
@@ -292,9 +347,9 @@ footer { --mk: var(--accent-lift); }
   flex-wrap: wrap;
   align-items: center;
   padding: 14px 16px;
-  border: 1px solid rgba(17, 17, 16, 0.12);
+  border: 1px solid rgba(27, 34, 51, 0.12);
   border-radius: 18px;
-  background: rgba(245, 241, 230, 0.92);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: saturate(160%) blur(12px);
 }
 
@@ -307,8 +362,8 @@ footer { --mk: var(--accent-lift); }
 }
 
 .work-filter-chip {
-  background: rgba(17,17,16,0.03);
-  border-color: rgba(17,17,16,0.12);
+  background: rgba(27, 34, 51,0.03);
+  border-color: rgba(27, 34, 51,0.12);
   color: var(--ink-2);
   transition:
     background 160ms ease,
@@ -319,15 +374,15 @@ footer { --mk: var(--accent-lift); }
 
 /* Holds still like the pill buttons — colour carries the state. */
 .work-filter-chip:hover {
-  background: rgba(225,59,20,0.08);
-  border-color: rgba(225,59,20,0.34);
+  background: rgba(61, 90, 128,0.08);
+  border-color: rgba(61, 90, 128,0.34);
   color: var(--ink);
 }
 
 .work-filter-chip:focus-visible {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(225,59,20,0.18);
+  box-shadow: 0 0 0 3px rgba(61, 90, 128,0.18);
 }
 
 .work-filter-chip[data-active="true"] {
@@ -358,26 +413,6 @@ footer { --mk: var(--accent-lift); }
   .work-filter-chip { flex-shrink: 0; }
 }
 
-/* ---- value card "tap" affordance ----
-   A real button so the easter egg is reachable by keyboard; the surrounding
-   card keeps its pointer shortcut for touch. */
-.value-card-tap {
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  padding: 2px 6px;
-  font-size: inherit;
-  letter-spacing: inherit;
-  color: rgba(236, 231, 220, 0.55);
-  transition: color 160ms ease, border-color 160ms ease;
-}
-
-.value-card-tap:hover,
-.value-card-tap:focus-visible {
-  color: var(--accent-lift);
-  border-color: rgba(225, 59, 20, 0.5);
-  outline: none;
-}
 
 /* ---- featured work (homepage) ---- */
 .featured-head {
@@ -395,6 +430,28 @@ footer { --mk: var(--accent-lift); }
   gap: 24px;
 }
 
+/* On the ink section the cards go dark too: a faint raised panel in the same
+   family as the process line's, bone type, and the lifted blue (.on-dark) for
+   company, metric and hover. */
+.featured .featured-card {
+  background: rgba(248, 248, 247, 0.04);
+  border-color: rgba(248, 248, 247, 0.12);
+  color: var(--bone);
+  box-shadow: 0 14px 30px -20px rgba(0, 0, 0, 0.6);
+}
+.featured .featured-card:hover,
+.featured .featured-card:focus-visible {
+  background: rgba(248, 248, 247, 0.07);
+  border-color: rgba(169, 192, 224, 0.55);
+  box-shadow: 0 30px 60px -28px rgba(0, 0, 0, 0.75);
+}
+.featured .featured-card-media { border-bottom-color: rgba(248, 248, 247, 0.1); background: rgba(248, 248, 247, 0.06); }
+.featured .featured-card-more { color: rgba(248, 248, 247, 0.72); }
+.featured .chip { color: rgba(248, 248, 247, 0.78); border-color: rgba(248, 248, 247, 0.26); }
+/* the ghost "All case studies" button, recoloured for ink */
+.featured .featured-head-cta { color: var(--bone); border-color: rgba(248, 248, 247, 0.4); }
+.featured .featured-head-cta:hover { background: var(--bone); color: var(--ink); border-color: var(--bone); --mk: var(--ink); }
+
 .featured-card {
   display: flex;
   flex-direction: column;
@@ -403,7 +460,7 @@ footer { --mk: var(--accent-lift); }
   background: var(--paper);
   overflow: hidden;
   color: var(--ink);
-  box-shadow: 0 10px 24px -20px rgba(17, 17, 16, 0.18);
+  box-shadow: 0 10px 24px -20px rgba(27, 34, 51, 0.18);
   transition:
     transform 280ms cubic-bezier(0.2, 0.7, 0.2, 1),
     box-shadow 280ms cubic-bezier(0.2, 0.7, 0.2, 1),
@@ -413,8 +470,8 @@ footer { --mk: var(--accent-lift); }
 .featured-card:hover,
 .featured-card:focus-visible {
   transform: translateY(-6px);
-  border-color: rgba(225, 59, 20, 0.4);
-  box-shadow: 0 30px 60px -30px rgba(17, 17, 16, 0.32);
+  border-color: rgba(61, 90, 128, 0.4);
+  box-shadow: 0 30px 60px -30px rgba(27, 34, 51, 0.32);
 }
 
 .featured-card-media {
@@ -536,7 +593,7 @@ footer { --mk: var(--accent-lift); }
   border-top: 1px solid var(--rule);
   color: var(--ink);
   overflow: hidden;
-  transition: padding-left 260ms cubic-bezier(0.2, 0.8, 0.2, 1), background 180ms ease;
+  transition: background 180ms ease;
 }
 
 .proj-row[data-first="true"] { border-top: none; }
@@ -544,7 +601,16 @@ footer { --mk: var(--accent-lift); }
 .proj-row:hover,
 .proj-row:focus-visible {
   background: var(--bone-2);
-  padding-left: 32px;
+}
+
+/* The hover nudge moves the content rather than widening the padding — changing
+   padding shrank every column by 8px and re-wrapped the title and blurb mid-hover. */
+.proj-row > :not(.proj-row-bar) {
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.proj-row:hover > :not(.proj-row-bar),
+.proj-row:focus-visible > :not(.proj-row-bar) {
+  transform: translateX(8px);
 }
 
 .proj-row-bar {
@@ -575,8 +641,8 @@ footer { --mk: var(--accent-lift); }
 }
 
 .proj-row:hover .proj-row-thumb {
-  border-color: rgba(225, 59, 20, 0.34);
-  box-shadow: 0 16px 32px -22px rgba(17, 17, 16, 0.34);
+  border-color: rgba(61, 90, 128, 0.34);
+  box-shadow: 0 16px 32px -22px rgba(27, 34, 51, 0.34);
 }
 
 .proj-row-thumb img { transition: transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1); }
@@ -636,8 +702,8 @@ footer { --mk: var(--accent-lift); }
 }
 
 .proj-row-year {
-  background: rgba(17, 17, 16, 0.04);
-  border-color: rgba(17, 17, 16, 0.12);
+  background: rgba(27, 34, 51, 0.04);
+  border-color: rgba(27, 34, 51, 0.12);
 }
 
 .proj-row-btn {
@@ -682,7 +748,7 @@ footer { --mk: var(--accent-lift); }
     row-gap: 14px;
     padding: 24px 16px 28px;
   }
-  .proj-row:hover { padding-left: 16px; }
+  .proj-row:hover > :not(.proj-row-bar) { transform: none; }
   .proj-row-thumb { aspect-ratio: 16 / 10; }
 }
 
@@ -701,7 +767,7 @@ footer { --mk: var(--accent-lift); }
   background-image: repeating-linear-gradient(
     135deg,
     transparent 0 9px,
-    rgba(17, 17, 16, 0.06) 9px 10px
+    rgba(27, 34, 51, 0.06) 9px 10px
   );
 }
 .ph-label {
@@ -727,26 +793,397 @@ footer { --mk: var(--accent-lift); }
   width: 320px;
   height: 320px;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(225, 59, 20, 0.18), transparent 70%);
+  background: radial-gradient(closest-side, rgba(61, 90, 128, 0.18), transparent 70%);
   transform: translate(-50%, -50%);
   transition: opacity 200ms ease;
 }
 
-/* ---- top bar ---- */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
+/* ---- nav: a floating dock ---- */
+/* Sits above each page's masthead in that masthead's colour, so headers start below the floating nav. */
+.dock-spacer { height: var(--dock-space); } /* nav is ~70px tall + 14px from the top, plus breathing room */
+
+/* Page mastheads (case studies, a case study, contact, skills) share the homepage
+   hero's blue wash, running top to bottom, over the page's own tint
+   (set as background-color). The dot field stays on the homepage only. The
+   masthead reaches up under the nav spacer so the wash starts at the very top
+   of the page instead of meeting a flat band at a seam. */
+.hero-wash {
+  margin-top: calc(-1 * var(--dock-space));
+  padding-top: var(--dock-space);
+  background-image:
+    linear-gradient(to bottom, var(--wash-0) 0%, var(--wash-1) 45%, transparent 100%);
+  /* a soft hairline, not an ink rule: the change of surface already marks the edge */
   border-bottom: 1px solid var(--rule);
-  backdrop-filter: saturate(180%) blur(8px);
-  transition: background 300ms ease, top 280ms ease;
+}
+.dock {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  z-index: 50;
+  transform: translateX(-50%);
+  /* as wide as the main content area (.container) */
+  width: min(1440px, calc(100vw - 32px));
+  transition: transform 280ms ease, opacity 200ms ease;
+  animation: dockIn 700ms cubic-bezier(.2, .8, .2, 1) 50ms backwards;
+}
+.dock-away { transform: translate(-50%, calc(-100% - 30px)); opacity: 0; pointer-events: none; }
+@keyframes dockIn { from { opacity: 0; transform: translate(-50%, -22px); } }
+.dock-in {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px 12px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  background: var(--paper); /* solid at every size: nothing shows through */
+  box-shadow: 0 12px 30px -16px rgba(27, 34, 51, 0.35), 0 0 0 1px var(--rule);
+}
+/* who | tabs ...... search field ...... icons: the two auto margins split the free space around the field */
+.dock-sep { flex: none; width: 1px; height: 28px; margin: 0 6px 0 2px; background: var(--rule); }
+.dock-tabs { flex: none; display: flex; align-items: center; gap: 2px; }
+.dock-me, .dock-actions { flex: none; } /* only the search field gives way when space is tight */
+.dock-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+
+/* Avatar + name: opens "Meet Josh" */
+.dock-me {
+  position: relative;
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 16px 0 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 150ms;
+}
+/* The whole button lights up, name included, in the same pill the tabs use, so
+   it reads as one control rather than an avatar with a caption beside it. */
+.dock-me:hover,
+.dock-me:focus-visible { background: rgba(27, 34, 51, 0.06); }
+.dock-me:hover .dock-who small,
+.dock-me:focus-visible .dock-who small { color: var(--ink-2); }
+.dock-me img {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 350ms cubic-bezier(.3, 1.6, .5, 1), box-shadow 200ms;
+}
+.dock-me:hover img,
+.dock-me:focus-visible img { transform: rotate(-14deg) scale(1.14); box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--accent); }
+.dock-me:focus-visible { outline: none; }
+.dock-who { display: flex; flex-direction: column; gap: 2px; line-height: 1.1; }
+.dock-who b { font-size: 16px; font-weight: 600; letter-spacing: -0.015em; }
+.dock-who small { font-size: 13px; font-weight: 500; color: var(--sub); }
+.dock-me::after {
+  content: "Meet Josh (and the dogs)";
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 4px;
+  padding: 5px 9px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bone);
+  background: var(--ink);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 150ms, transform 150ms;
+}
+.dock-me:hover::after,
+.dock-me:focus-visible::after { opacity: 1; transform: none; }
+
+/* Tabs: icon + label. Each icon does its own little move on hover, and the
+   current page sits in a brand-blue pill (a soft blue one in dark mode). */
+.dock-tab {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* icon sits close to its label */
+  height: 42px;
+  padding: 0 16px 0 14px;
+  border-radius: 999px;
+  font-size: 15.5px;
+  font-weight: 500;
+  color: var(--ink-2);
+  transition: background 150ms, color 150ms;
+}
+.dock-tab:hover { color: var(--ink); background: rgba(27, 34, 51, 0.06); }
+.dock-tab.on { background: var(--accent); color: var(--bone); }
+.dock-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.dock-tab .nav-icon { color: var(--accent); overflow: visible; transition: color 150ms, transform 300ms cubic-bezier(.3, 1.6, .5, 1); }
+.dock-tab.on .nav-icon { color: var(--bone); }
+.dock-tab.on .nav-icon-cut { stroke: var(--accent); }
+.dock-tab .nav-icon * { transform-box: fill-box; transition: transform 300ms cubic-bezier(.3, 1.6, .5, 1); }
+
+/* home: hops, and the door swings open */
+.dock-tab[data-icon="home"]:hover .nav-icon { transform: translateY(-3px); }
+.dock-tab[data-icon="home"] .nav-icon-cut { transform-origin: left center; }
+.dock-tab[data-icon="home"]:hover .nav-icon-cut { transform: scaleX(0.35); }
+/* case studies: the pages flap open */
+.dock-tab[data-icon="work"] .nav-icon path:nth-child(1) { transform-origin: right center; }
+.dock-tab[data-icon="work"] .nav-icon path:nth-child(2) { transform-origin: left center; }
+.dock-tab[data-icon="work"]:hover .nav-icon path:nth-child(1) { transform: rotate(-12deg) translateY(-1px); }
+.dock-tab[data-icon="work"]:hover .nav-icon path:nth-child(2) { transform: rotate(12deg) translateY(-1px); }
+/* skills: the bars climb, one after another */
+.dock-tab[data-icon="skills"] .nav-icon rect { transform-origin: bottom center; }
+.dock-tab[data-icon="skills"]:hover .nav-icon rect { animation: navBars 600ms cubic-bezier(.3, 1.4, .5, 1) both; }
+.dock-tab[data-icon="skills"]:hover .nav-icon rect:nth-child(2) { animation-delay: 80ms; }
+.dock-tab[data-icon="skills"]:hover .nav-icon rect:nth-child(3) { animation-delay: 160ms; }
+@keyframes navBars { 0% { transform: scaleY(1); } 35% { transform: scaleY(0.35); } 100% { transform: scaleY(1); } }
+/* contact: the envelope wiggles */
+.dock-tab[data-icon="contact"]:hover .nav-icon { animation: navWiggle 520ms ease-in-out; }
+@keyframes navWiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 50% { transform: rotate(9deg); } 75% { transform: rotate(-5deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-tab .nav-icon, .dock-tab .nav-icon * { transition: color 150ms; animation: none !important; transform: none !important; }
 }
 
-.topbar-hamburger { display: none; }
+/* the search field (a button that opens the palette) */
+.dock-srch {
+  flex: 0 1 720px;
+  min-width: 170px;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 42px; /* same height as the tabs and icon buttons */
+  padding: 0 15px;
+  border: 0;
+  border-radius: 999px;
+  background: #EEF1F5;
+  box-shadow: inset 0 0 0 1px rgba(27, 34, 51, 0.07);
+  font: inherit;
+  color: #7C8598;
+  text-align: left;
+  cursor: text;
+  transition: background 150ms, box-shadow 150ms;
+}
+.dock-srch:hover { background: #E8ECF2; box-shadow: inset 0 0 0 1px rgba(27, 34, 51, 0.14); }
+.dock-srch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dock-srch svg { flex: none; width: 18px; height: 18px; }
+.dock-ph { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 15px; }
 
-@media (min-width: 641px) {
-  .topbar-mobile-menu    { display: none !important; }
-  .topbar-mobile-backdrop { display: none !important; }
+/* plain icons on the right */
+.dock-ib {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: var(--ink);
+  transition: background 150ms, transform 150ms;
+}
+.dock-ib:hover { background: rgba(27, 34, 51, 0.06); }
+.dock-ib:active { transform: scale(0.94); }
+.dock-ib:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.dock-ib::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  padding: 5px 9px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bone);
+  background: var(--ink);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, -4px);
+  pointer-events: none;
+  transition: opacity 150ms, transform 150ms;
+}
+.dock-ib:hover::after,
+.dock-ib:focus-visible::after { opacity: 1; transform: translate(-50%, 0); }
+
+/* Narrower desktops: the bar's full contents need ~1040px, so it compacts in steps rather than
+   overflow: first the search field becomes a round icon button, then the subtitle goes and the
+   tabs tighten. Below 900px the menu button takes over. */
+@media (max-width: 1100px) {
+  .dock-srch { flex: none; width: 42px; min-width: 0; padding: 0; justify-content: center; cursor: pointer; }
+  .dock-ph { display: none; }
+  .dock-actions { margin-left: 4px; } /* the search icon joins the other icons on the right */
+}
+@media (max-width: 1000px) {
+  .dock-who small { display: none; }
+  .dock-tab { padding: 0 12px 0 10px; }
+}
+
+/* Small screens: the bar keeps just you + a menu button; everything else lives in a slide-out panel.
+   Solid, so content doesn't show through. */
+.dock-burger, .drawer, .drawer-scrim { display: none; }
+@media (max-width: 900px) {
+  .dock-tabs, .dock-actions, .dock-srch, .dock-sep { display: none; }
+  .dock-in { justify-content: space-between; }
+  .dock-me::after { display: none; }
+
+  .dock-burger {
+    display: grid; place-content: center; gap: 5px; width: 44px; height: 44px; padding: 0;
+    border: 0; border-radius: 50%; background: transparent; color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--rule); cursor: pointer;
+  }
+  .dock-burger span { display: block; width: 18px; height: 2px; border-radius: 2px; background: currentColor; transition: transform 220ms cubic-bezier(.2, .8, .2, 1), opacity 180ms; }
+  .dock-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .dock-burger.open span:nth-child(2) { opacity: 0; }
+  .dock-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .dock-burger:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .drawer-scrim {
+    display: block; position: fixed; inset: 0; z-index: 60; background: rgba(18, 24, 38, 0.45);
+    opacity: 0; pointer-events: none; transition: opacity 300ms ease;
+  }
+  .drawer-scrim.open { opacity: 1; pointer-events: auto; }
+  .drawer {
+    display: flex; flex-direction: column; position: fixed; top: 0; right: 0; z-index: 61;
+    width: min(340px, 86vw); height: 100dvh; overflow-y: auto;
+    padding: 16px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+    background: #fff; box-shadow: -16px 0 48px rgba(18, 24, 38, 0.18);
+    transform: translateX(100%); transition: transform 340ms cubic-bezier(.2, .8, .2, 1);
+    --nav-surface: #fff;
+  }
+  .drawer.open { transform: none; }
+
+  .drawer-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding-bottom: 18px; border-bottom: 1px solid var(--rule); }
+  .drawer-me { display: flex; align-items: center; gap: 12px; padding: 4px; border: 0; border-radius: 14px; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+  .drawer-me img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; flex: none; }
+  .drawer-me b { display: block; font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+  .drawer-me small { display: block; margin-top: 2px; font-size: 13px; color: var(--sub); }
+  .drawer-me em { display: block; margin-top: 6px; font-style: normal; font-size: 12.5px; font-weight: 600; color: var(--accent); }
+  .drawer-x { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: #F1F3F6; color: var(--ink); font-size: 22px; line-height: 1; cursor: pointer; }
+
+  .drawer-links { display: flex; flex-direction: column; gap: 4px; padding: 18px 0; }
+  .drawer-link { display: flex; align-items: center; gap: 12px; padding: 14px 14px; border-radius: 12px; font-size: 20px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); }
+  .drawer-link .nav-icon { width: 22px; height: 22px; }
+  .drawer-link.on { background: var(--ink); color: var(--bone); }
+  .drawer-link.on .nav-icon { color: var(--accent-lift); }
+  .drawer-link.on .nav-icon-cut { stroke: var(--ink); }
+  .drawer.open .drawer-link { animation: drawerItem 420ms cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(120ms + var(--i, 0) * 50ms); }
+  @keyframes drawerItem { from { opacity: 0; transform: translateX(24px); } }
+
+  .drawer-acts { display: flex; flex-direction: column; gap: 10px; padding-top: 18px; border-top: 1px solid var(--rule); }
+  .drawer-acts .btn { justify-content: center; }
+  .drawer-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .drawer-row > :nth-child(3) { grid-column: 1 / -1; } /* the dark-mode switch takes the full row */
+  .drawer-ib { display: flex; align-items: center; justify-content: center; gap: 8px; height: 46px; border: 0; border-radius: 999px; background: transparent; box-shadow: inset 0 0 0 1px var(--rule); color: var(--ink); font: 600 14px var(--font-inter), sans-serif; cursor: pointer; }
+  .drawer-note { margin: auto 0 0; padding-top: 24px; font: 11px/1.5 var(--font-jetbrains-mono), monospace; letter-spacing: 0.04em; color: var(--sub); }
+}
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+  .drawer, .drawer-scrim { transition: none; }
+  .drawer.open .drawer-link { animation: none; }
+}
+
+/* ---- "Meet Josh" ---- */
+.meet { position: fixed; inset: 0; z-index: 500; display: grid; place-items: center; overflow: auto; }
+.meet-scrim { position: fixed; inset: 0; background: rgba(18, 24, 38, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; transition: opacity 350ms; }
+.meet.open .meet-scrim { opacity: 1; }
+.meet-in { position: relative; display: grid; grid-template-columns: 480px minmax(0, 440px); gap: 48px; align-items: center; width: min(1000px, 100%); padding: 32px 24px; }
+.meet-photos { position: relative; height: 500px; }
+.pol {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: 0;
+  width: var(--w, 210px);
+  padding: 12px 12px 0;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 0 30px 60px -26px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(27, 34, 51, 0.06);
+  transform: translate(-50%, -50%) translate(var(--x, 0px), var(--y, 0px)) rotate(var(--r, 0deg));
+  transition: transform 550ms cubic-bezier(.3, 1.35, .5, 1), width 450ms cubic-bezier(.3, 1.2, .5, 1), box-shadow 300ms;
+}
+.pol:hover { transform: translate(-50%, -50%) translate(var(--x, 0px), calc(var(--y, 0px) - 10px)) rotate(calc(var(--r, 0deg) * .5)); }
+.pol img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 2px; }
+.pol figcaption { padding: 10px 4px 14px; font: 600 22px/1.1 var(--font-caveat), cursive; color: #2C3446; text-align: center; }
+.pol .tape { position: absolute; top: -12px; left: 50%; width: 86px; height: 26px; transform: translateX(-50%) rotate(-4deg); background: rgba(236, 228, 203, 0.82); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12); }
+.pol.dog .tape { transform: translateX(-50%) rotate(5deg); }
+.pol .boop { position: absolute; right: -14px; top: 28%; padding: 6px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; color: #fff; background: var(--accent); opacity: 0; transform: scale(.4) rotate(8deg); transition: opacity 200ms, transform 300ms cubic-bezier(.3, 1.8, .5, 1); pointer-events: none; }
+.pol.boop-on .boop { opacity: 1; transform: scale(1) rotate(8deg); }
+.sticker { position: absolute; z-index: 5; padding: 7px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 700; pointer-events: none; box-shadow: 0 12px 24px -14px rgba(0, 0, 0, 0.6); opacity: 0; }
+.sticker.s1 { left: -6px; top: 30px; background: var(--accent); color: #fff; --rot: -8deg; }
+.sticker.s2 { right: -10px; top: 84px; background: #fff; color: var(--ink); --rot: 7deg; }
+.sticker.s3 { left: 24px; bottom: 30px; background: #ECE4CB; color: var(--ink); --rot: -4deg; }
+.meet.open .sticker { animation: stickIn 500ms cubic-bezier(.3, 1.7, .5, 1) forwards, stickBob 3.4s ease-in-out infinite alternate; }
+.meet.open .sticker.s1 { animation-delay: 850ms, 1350ms; }
+.meet.open .sticker.s2 { animation-delay: 1000ms, 1500ms; }
+.meet.open .sticker.s3 { animation-delay: 1150ms, 1650ms; }
+@keyframes stickIn { from { opacity: 0; transform: scale(.3) rotate(var(--rot)); } to { opacity: 1; transform: scale(1) rotate(var(--rot)); } }
+@keyframes stickBob { from { opacity: 1; transform: translateY(0) rotate(var(--rot)); } to { opacity: 1; transform: translateY(-7px) rotate(calc(var(--rot) * -.5)); } }
+.meet-card { position: relative; padding: 34px 34px 30px; border-radius: 22px; background: #fff; color: var(--ink); box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.6); opacity: 0; transform: translateX(30px); }
+.meet.open .meet-card { animation: meetCardIn 600ms cubic-bezier(.2, .8, .2, 1) 450ms forwards; }
+@keyframes meetCardIn { to { opacity: 1; transform: none; } }
+.meet-card > * { opacity: 0; }
+.meet.open .meet-card > * { animation: meetItemIn 500ms cubic-bezier(.2, .8, .2, 1) forwards; animation-delay: calc(var(--d, 0) * 70ms + 600ms); }
+@keyframes meetItemIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.meet-card .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.meet-card h2 { margin: 6px 0 0; font-size: 44px; line-height: 1; letter-spacing: -0.04em; font-weight: 800; }
+.meet-card p { margin: 16px 0 0; font-size: 16px; line-height: 1.6; color: #2C3446; }
+.meet-card .facts { display: grid; grid-template-columns: auto 1fr; gap: 8px 18px; margin: 20px 0 0; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 14px; }
+.meet-card .facts dt { color: var(--sub); font-weight: 500; }
+.meet-card .facts dd { margin: 0; font-weight: 600; }
+.meet-card .crew { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+.meet-card .crew button { display: flex; align-items: center; gap: 10px; padding: 10px; border: 0; border-radius: 12px; background: #F3F5F8; font: inherit; color: inherit; text-align: left; cursor: pointer; transition: background 250ms, box-shadow 250ms; }
+.meet-card .crew button.lit { background: #E6EDF7; box-shadow: inset 0 0 0 1px rgba(61, 90, 128, 0.35); }
+.meet-card .crew img { flex: none; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.meet-card .crew b { display: block; font-size: 14px; }
+.meet-card .crew span span { display: block; margin-top: 1px; font-size: 12px; line-height: 1.35; color: var(--sub); }
+.meet-card .acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.meet-x { position: absolute; top: 14px; right: 14px; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%; background: #F1F3F6; color: var(--ink); font-size: 20px; line-height: 1; cursor: pointer; transition: background 150ms, transform 200ms; }
+.meet-x:hover { background: #E3E7EE; transform: rotate(90deg); }
+@media (max-height: 780px) and (min-width: 961px) {
+  .meet-card { padding: 24px 28px 22px; }
+  .meet-card h2 { font-size: 36px; }
+  .meet-card p { margin-top: 10px; font-size: 15px; }
+  .meet-card .facts { margin-top: 14px; padding-top: 12px; }
+  .meet-card .acts { margin-top: 16px; }
+  .meet-photos { height: 440px; }
+}
+@media (max-width: 960px) {
+  .meet { place-items: start center; }
+  .meet-in { grid-template-columns: 1fr; gap: 8px; }
+  .meet-photos { height: 420px; transform: scale(.82); margin: -20px 0; }
+}
+@media (max-width: 520px) {
+  .meet-photos { transform: scale(.66); margin: -70px -40px; }
+  .meet-card { padding: 26px 22px 22px; }
+  .meet-card h2 { font-size: 34px; }
+  .meet-card .crew { grid-template-columns: 1fr; }
+}
+
+/* ---- ⌘K search ---- */
+.pal-scrim { position: fixed; inset: 0; z-index: 400; background: rgba(27, 34, 51, 0.28); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); opacity: 0; pointer-events: none; transition: opacity 180ms; }
+.pal-scrim.open { opacity: 1; pointer-events: auto; }
+.pal { position: fixed; left: 50%; top: 13vh; z-index: 401; width: min(640px, 92vw); overflow: hidden; border-radius: 16px; background: #fff; box-shadow: 0 40px 90px -30px rgba(27, 34, 51, 0.6), 0 0 0 1px rgba(27, 34, 51, 0.1); transform: translate(-50%, -8px) scale(.985); opacity: 0; transition: opacity 180ms, transform 220ms cubic-bezier(.2, .8, .2, 1); }
+.pal.open { opacity: 1; transform: translate(-50%, 0); }
+.pal[hidden] { display: none; }
+.pal-in { display: flex; align-items: center; gap: 12px; padding: 0 18px; border-bottom: 1px solid var(--rule); color: var(--sub); }
+.pal-in input { flex: 1; padding: 18px 0; border: 0; outline: 0; font: 16px var(--font-inter), sans-serif; color: var(--ink); background: none; }
+.pal-in kbd { padding: 3px 7px; border-radius: 6px; font: 600 11px var(--font-inter), sans-serif; background: var(--bone-2); color: var(--sub); }
+.pal-list { max-height: min(440px, 60vh); overflow: auto; padding: 8px; }
+.pal-list h6 { margin: 10px 12px 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sub); }
+.pal-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; font-size: 14px; color: #2C3446; cursor: pointer; }
+.pal-row img { flex: none; width: 48px; height: 30px; border-radius: 5px; object-fit: cover; object-position: left top; box-shadow: 0 0 0 1px var(--rule); }
+.pal-row .ic { flex: none; display: grid; place-items: center; width: 48px; height: 30px; color: var(--sub); }
+.pal-txt { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pal-row b { font-weight: 600; color: var(--ink); }
+.pal-row em { margin-left: auto; flex: none; font-style: normal; font-size: 12px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+.pal-row.sel { background: #EDF0F5; }
+.pal-empty { padding: 22px 14px; font-size: 14px; color: var(--sub); }
+@media (max-width: 560px) { .pal-row em { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .dock { animation: none; }
+  .pol, .meet-card, .meet-card > *, .sticker { transition: none !important; animation: none !important; opacity: 1 !important; }
+  .meet-card { transform: none; }
 }
 
 /* ---- link underline animation ---- */
@@ -842,10 +1279,6 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
 }
 .cursor-blink { animation: cursorBlink 1s step-end infinite; }
 
-@keyframes notedStamp {
-  from { opacity: 0; transform: scale(0.6) rotate(-22deg); }
-  to   { opacity: 1; transform: scale(1) rotate(-14deg); }
-}
 
 .scroll-reveal {
   --reveal-delay: 0ms;
@@ -864,23 +1297,6 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
   opacity: 1;
   transform: translateY(0);
   filter: blur(0);
-}
-
-.polaroid-draw {
-  animation: polaroidDraw 900ms cubic-bezier(.4, 0, .2, 1) forwards;
-}
-
-@keyframes polaroidDraw {
-  to { stroke-dashoffset: 0; }
-}
-
-.polaroid-photo {
-  animation: polaroidPhoto 1000ms cubic-bezier(.2, 0, .2, 1) both;
-}
-
-@keyframes polaroidPhoto {
-  from { opacity: 0; filter: blur(6px) saturate(0.15); transform: scale(1.05); }
-  to   { opacity: 1; filter: blur(0) saturate(1); transform: scale(1); }
 }
 
 .contact-hero-art,
@@ -1092,14 +1508,6 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
   .avail-card { border-left: none !important; border-top: 1px solid var(--rule-strong) !important; padding-top: 20px !important; padding-bottom: 20px !important; }
   .avail-card:first-child { border-top: none !important; }
 
-  /* TopBar: switch to hamburger on mobile, but keep the name visible —
-     the header is the only place it appears above the fold. */
-  .topbar-nav       { display: none !important; }
-  .topbar-linkedin  { display: none !important; }
-  .topbar-hamburger { display: flex !important; }
-  .topbar-logo-text { gap: 4px !important; }
-  .topbar-logo-name { font-size: 14px !important; }
-  .topbar-logo-role { font-size: 10px !important; }
 
 
 }
@@ -1131,9 +1539,7 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
   .contact-draw-stroke,
   .contact-draw-fade,
   .hero-draw-stroke,
-  .hero-draw-fade,
-  .polaroid-draw,
-  .polaroid-photo {
+  .hero-draw-fade {
     animation: none !important;
   }
 
@@ -1151,16 +1557,6 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
   .sol-card { transition: background 220ms ease, border-color 220ms ease !important; }
   .sol-card:hover { transform: rotate(var(--sol-tilt, 0deg)) !important; }
 
-  .polaroid-draw {
-    stroke-dashoffset: 0 !important;
-  }
-
-  .polaroid-photo {
-    opacity: 1 !important;
-    filter: none !important;
-    transform: scale(1) !important;
-  }
-
   .contact-draw-stroke,
   .hero-draw-stroke {
     stroke-dashoffset: 0 !important;
@@ -1171,3 +1567,59 @@ html.motion-ready [data-reveal-state="visible"] > [data-reveal] > .container {
     opacity: 1 !important;
   }
 }
+
+/* ---- "How I show up": the heading rises, then the cards rise in, one by one ---- */
+.vals:not(.seen) .vals-h, .deal:not(.seen) { opacity: 0; }
+.vals.seen .vals-h { animation: valsHead 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+.deal { display: grid; } /* the card fills the grid cell, like before */
+.deal.seen {
+  animation: deal 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: calc(0.15s + var(--i, 0) * 90ms);
+}
+/* one column: each card rises as you reach it, no stagger */
+@media (max-width: 640px) { .deal.seen { animation-delay: 0.05s; } }
+@keyframes valsHead { from { opacity: 0; transform: translateY(24px); } }
+@keyframes deal { from { opacity: 0; transform: translateY(32px); } }
+@media (prefers-reduced-motion: reduce) {
+  .vals.seen .vals-h, .deal.seen { animation: none; }
+}
+
+/* ---- dark mode: surfaces that were written as literal whites and greys ----
+   The palette swap at the top handles anything on variables; these are the
+   places that hard-code a light colour. */
+html[data-theme="dark"] .dock-in { box-shadow: 0 12px 30px -16px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--rule); }
+html[data-theme="dark"] .dock-me:hover,
+html[data-theme="dark"] .dock-me:focus-visible,
+html[data-theme="dark"] .dock-tab:hover,
+html[data-theme="dark"] .dock-ib:hover { background: rgba(231, 234, 240, 0.07); }
+html[data-theme="dark"] .dock-me:hover img,
+html[data-theme="dark"] .dock-me:focus-visible img { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent); }
+html[data-theme="dark"] .dock-srch { background: var(--bone); color: var(--sub); box-shadow: inset 0 0 0 1px var(--rule); }
+html[data-theme="dark"] .dock-srch:hover { background: var(--bone-3); box-shadow: inset 0 0 0 1px var(--rule-strong); }
+html[data-theme="dark"] .drawer { background: var(--paper); --nav-surface: var(--paper); }
+html[data-theme="dark"] .drawer-x,
+html[data-theme="dark"] .meet-x { background: var(--bone-3); }
+html[data-theme="dark"] .meet-x:hover { background: rgba(231, 234, 240, 0.16); }
+html[data-theme="dark"] .meet-card { background: var(--paper); }
+html[data-theme="dark"] .meet-card p { color: var(--ink-2); }
+html[data-theme="dark"] .meet-card .crew button { background: var(--bone-3); }
+html[data-theme="dark"] .meet-card .crew button.lit { background: rgba(169, 192, 224, 0.14); box-shadow: inset 0 0 0 1px rgba(169, 192, 224, 0.4); }
+html[data-theme="dark"] .sticker.s2 { background: var(--paper); }
+html[data-theme="dark"] .sticker.s3 { color: #1B2233; }
+html[data-theme="dark"] .pal { background: var(--paper); box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.8), 0 0 0 1px var(--rule); }
+html[data-theme="dark"] .pal-scrim { background: rgba(0, 0, 0, 0.5); }
+html[data-theme="dark"] .pal-row { color: var(--ink-2); }
+html[data-theme="dark"] .pal-row.sel { background: var(--bone-3); }
+html[data-theme="dark"] .work-filter-inner { background: rgba(22, 27, 37, 0.92); border-color: var(--rule); }
+html[data-theme="dark"] .work-filter-chip { background: rgba(231, 234, 240, 0.04); border-color: var(--rule); }
+html[data-theme="dark"] .work-filter-chip[data-active="true"] { background: var(--ink); border-color: var(--ink); color: var(--bone); }
+html[data-theme="dark"] .proj-row-year { background: rgba(231, 234, 240, 0.05); border-color: var(--rule); }
+/* Hero illustrations are drawn as white cards with ink linework; inverting them
+   (and turning the hue back) gives dark cards with light linework in the same
+   blue. Screenshots and photos are left alone. */
+html[data-theme="dark"] :is(.hero-line-art, .contact-hero-art, .problem-art) { filter: invert(0.92) hue-rotate(180deg); }
+
+/* Theme toggle in the top bar: the sun shows in dark mode, the moon in light. */
+.theme-ic-sun { display: none; }
+html[data-theme="dark"] .theme-ic-sun { display: block; }
+html[data-theme="dark"] .theme-ic-moon { display: none; }

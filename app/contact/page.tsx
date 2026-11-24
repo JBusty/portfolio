@@ -15,7 +15,7 @@ const CONTACT_FAQ = [
   },
   {
     q: 'What are you looking for next?',
-    a: 'Staff-level product design where the scope spans strategy, systems, and execution. Security and fintech are where I\'m strongest, but the common thread is complex products with technical users. Remote only.',
+    a: 'Staff-level product design where the scope spans strategy, systems, and execution. Security and fintech are where I\'m strongest, but the common thread is complex products with technical users. Remote Roles.',
   },
   {
     q: 'How do you like to collaborate?',
@@ -34,7 +34,7 @@ const CONTACT_FAQ = [
 export default function ContactPage() {
   return (
     <main id="main-content" tabIndex={-1} className="page-enter">
-      <section style={{ borderBottom: '1px solid var(--ink)', background: 'var(--hero-contact)' }}>
+      <section className="hero-wash" style={{ backgroundColor: 'var(--hero-contact)' }}>
         <div className="container r-hero-split sp-ctct-hero" style={{ padding: '64px 32px', gap: 40 }}>
           <div>
             <h1
@@ -82,12 +82,12 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section style={{ background: 'var(--bone)', borderTop: '1px solid var(--ink)' }}>
+      <section style={{ background: 'var(--bone)', borderTop: '1px solid var(--edge)' }}>
         <div className="container sp-normal" style={{ padding: '112px 32px 128px' }}>
           <div className="r-grid-3" style={{ gap: 0 }}>
             {[
               { label: 'Open to roles', value: 'Senior & Staff', note: 'Complex software, workflows, and systems' },
-              { label: 'Location', value: 'Remote only', note: 'Utica, NY' },
+              { label: 'Location', value: 'Remote Roles', note: 'Utica, NY' },
               { label: 'Timezone', value: 'Eastern Time', note: 'Flexible on working with teammates in other timezones' },
             ].map((item, i) => (
               <div key={item.label} className="avail-card" style={{ padding: '4px 28px', borderLeft: i === 0 ? 'none' : '1px solid var(--rule-strong)' }}>
@@ -106,7 +106,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section style={{ borderTop: '1px solid var(--ink)', background: 'var(--paper)' }}>
+      <section style={{ borderTop: '1px solid var(--edge)', background: 'var(--paper)' }}>
         <SectionHead title={<>Common<br />Questions<span className="accent">.</span></>} />
         <div className="container sp-bot-sm" style={{ padding: '0 32px 160px' }}>
           <ContactFAQ />
@@ -147,32 +147,32 @@ function ContactHeroArt() {
             height="224"
             rx="18"
             pathLength="100"
-            fill="#F5F1E6"
-            stroke="#111110"
+            fill="#FFFFFF"
+            stroke="#1B2233"
             strokeWidth="1.5"
             className={reduceMotion ? undefined : 'contact-draw-stroke contact-draw-1'}
           />
-          <rect x="144" y="138" width="48" height="18" rx="9" fill="#111110" className={reduceMotion ? undefined : 'contact-draw-fade contact-draw-2'} />
-          <text x="168" y="151" textAnchor="middle" fill="#ECE7DC" style={{ fontFamily: 'var(--font-jetbrains-mono), monospace', fontSize: 8, letterSpacing: 1.4 }}>
+          <rect x="144" y="138" width="48" height="18" rx="9" fill="#1B2233" className={reduceMotion ? undefined : 'contact-draw-fade contact-draw-2'} />
+          <text x="168" y="151" textAnchor="middle" fill="#F8F8F7" style={{ fontFamily: 'var(--font-jetbrains-mono), monospace', fontSize: 8, letterSpacing: 1.4 }}>
             INBOX
           </text>
-          <text x="144" y="192" fill="#111110" style={{ fontFamily: 'var(--font-instrument-serif), serif', fontSize: 34, fontStyle: 'italic' }}>
+          <text x="144" y="192" fill="#1B2233" style={{ fontFamily: 'var(--font-instrument-serif), serif', fontSize: 34, fontStyle: 'italic' }}>
             say hi
           </text>
-          <line x1="144" y1="214" x2="282" y2="214" pathLength="100" stroke="rgba(17,17,16,0.28)" strokeWidth="1.5" className={reduceMotion ? undefined : 'contact-draw-stroke contact-draw-2'} />
-          <line x1="144" y1="240" x2="292" y2="240" pathLength="100" stroke="rgba(17,17,16,0.18)" strokeWidth="1.5" className={reduceMotion ? undefined : 'contact-draw-stroke contact-draw-3'} />
-          <line x1="144" y1="262" x2="274" y2="262" pathLength="100" stroke="rgba(17,17,16,0.18)" strokeWidth="1.5" className={reduceMotion ? undefined : 'contact-draw-stroke contact-draw-4'} />
-          <line x1="144" y1="284" x2="246" y2="284" pathLength="100" stroke="rgba(17,17,16,0.18)" strokeWidth="1.5" className={reduceMotion ? undefined : 'contact-draw-stroke contact-draw-5'} />
+          <line x1="144" y1="214" x2="282" y2="214" pathLength="100" stroke="rgba(27, 34, 51,0.28)" strokeWidth="1.5" className={reduceMotion ? undefined : 'contact-draw-stroke contact-draw-2'} />
+          <line x1="144" y1="240" x2="292" y2="240" pathLength="100" stroke="rgba(27, 34, 51,0.18)" strokeWidth="1.5" className={reduceMotion ? undefined : 'contact-draw-stroke contact-draw-3'} />
+          <line x1="144" y1="262" x2="274" y2="262" pathLength="100" stroke="rgba(27, 34, 51,0.18)" strokeWidth="1.5" className={reduceMotion ? undefined : 'contact-draw-stroke contact-draw-4'} />
+          <line x1="144" y1="284" x2="246" y2="284" pathLength="100" stroke="rgba(27, 34, 51,0.18)" strokeWidth="1.5" className={reduceMotion ? undefined : 'contact-draw-stroke contact-draw-5'} />
           <g transform="translate(265 290) rotate(-8)" className={reduceMotion ? undefined : 'contact-draw-fade contact-draw-5'}>
-            <rect width="36" height="36" rx="18" fill="rgba(225,59,20,0.12)" stroke="#E13B14" strokeWidth="1.5" />
-            <text x="18" y="21" textAnchor="middle" fill="#B12C0C" style={{ fontFamily: 'var(--font-jetbrains-mono), monospace', fontSize: 10, fontWeight: 700, letterSpacing: 1.2 }}>
+            <rect width="36" height="36" rx="18" fill="rgba(61, 90, 128,0.12)" stroke="#3D5A80" strokeWidth="1.5" />
+            <text x="18" y="21" textAnchor="middle" fill="#3D5A80" style={{ fontFamily: 'var(--font-jetbrains-mono), monospace', fontSize: 10, fontWeight: 700, letterSpacing: 1.2 }}>
               OK
             </text>
           </g>
           <g transform="translate(302 124)">
             <g className={reduceMotion ? undefined : 'contact-draw-fade contact-draw-4'}>
-              <circle cx="0" cy="0" r="18" fill="#E13B14" />
-              <text x="0" y="4" textAnchor="middle" fill="#ECE7DC" style={{ fontFamily: 'var(--font-jetbrains-mono), monospace', fontSize: 8, fontWeight: 700, letterSpacing: 1.3 }}>
+              <circle cx="0" cy="0" r="18" fill="#3D5A80" />
+              <text x="0" y="4" textAnchor="middle" fill="#F8F8F7" style={{ fontFamily: 'var(--font-jetbrains-mono), monospace', fontSize: 8, fontWeight: 700, letterSpacing: 1.3 }}>
                 SEND
               </text>
             </g>
@@ -185,7 +185,7 @@ function ContactHeroArt() {
           r="154"
           pathLength="100"
           fill="none"
-          stroke="rgba(17,17,16,0.18)"
+          stroke="rgba(27, 34, 51,0.18)"
           strokeWidth="1.5"
           strokeDasharray="8 10"
           className={reduceMotion ? undefined : 'contact-draw-stroke contact-draw-2'}
@@ -196,7 +196,7 @@ function ContactHeroArt() {
           r="116"
           pathLength="100"
           fill="none"
-          stroke="rgba(17,17,16,0.10)"
+          stroke="rgba(27, 34, 51,0.10)"
           strokeWidth="1.5"
           strokeDasharray="4 10"
           className={reduceMotion ? undefined : 'contact-draw-stroke contact-draw-3'}
@@ -205,15 +205,15 @@ function ContactHeroArt() {
         <g className={reduceMotion ? undefined : 'contact-draw-fade contact-draw-4'}>
           <g transform="translate(220 66)">
             <g transform="rotate(16)">
-              <path d="M 0 -14 L 34 0 L 0 14 L 8 3 L -24 0 L 8 -3 Z" fill="#111110" />
-              <path d="M 7 0 L 22 0" stroke="#ECE7DC" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M 0 -14 L 34 0 L 0 14 L 8 3 L -24 0 L 8 -3 Z" fill="#1B2233" />
+              <path d="M 7 0 L 22 0" stroke="#F8F8F7" strokeWidth="1.5" strokeLinecap="round" />
             </g>
           </g>
         </g>
 
         <g className={reduceMotion ? undefined : 'contact-draw-fade contact-draw-5'}>
-          <circle cx="220" cy="104" r="8" fill="#E13B14" />
-          <circle cx="220" cy="104" r="18" fill="none" stroke="rgba(225,59,20,0.3)" strokeWidth="1.5" />
+          <circle cx="220" cy="104" r="8" fill="#3D5A80" />
+          <circle cx="220" cy="104" r="18" fill="none" stroke="rgba(61, 90, 128,0.3)" strokeWidth="1.5" />
         </g>
 
         <g transform="translate(94 316)" className={reduceMotion ? undefined : 'contact-draw-fade contact-draw-5'}>
@@ -221,13 +221,13 @@ function ContactHeroArt() {
             d="M 0 16 C 34 6 60 6 96 16"
             pathLength="100"
             fill="none"
-            stroke="rgba(17,17,16,0.18)"
+            stroke="rgba(27, 34, 51,0.18)"
             strokeWidth="1.5"
             strokeLinecap="round"
             className={reduceMotion ? undefined : 'contact-draw-stroke contact-draw-5'}
           />
-          <circle cx="12" cy="16" r="4" fill="#111110" />
-          <circle cx="84" cy="16" r="4" fill="#111110" />
+          <circle cx="12" cy="16" r="4" fill="#1B2233" />
+          <circle cx="84" cy="16" r="4" fill="#1B2233" />
         </g>
       </svg>
     </div>
@@ -238,13 +238,13 @@ function ContactFAQ() {
   const [openIdx, setOpenIdx] = useState(0);
   const baseId = useId();
   return (
-    <div style={{ borderTop: '1px solid var(--ink)' }}>
+    <div style={{ borderTop: '1px solid var(--edge)' }}>
       {CONTACT_FAQ.map((it, i) => {
         const isOpen = i === openIdx;
         const triggerId = `${baseId}-cfaq-${i}-trigger`;
         const panelId = `${baseId}-cfaq-${i}-panel`;
         return (
-          <div key={it.q} style={{ borderBottom: '1px solid var(--rule)', background: isOpen ? 'rgba(255,255,255,0.35)' : 'transparent', transition: 'background 220ms', margin: '0 -16px 0 0', padding: '0 16px 0 0' }}>
+          <div key={it.q} style={{ borderBottom: '1px solid var(--rule)', background: isOpen ? 'var(--open-row)' : 'transparent', transition: 'background 220ms', margin: '0 -16px 0 0', padding: '0 16px 0 0' }}>
             <button
               type="button"
               id={triggerId}

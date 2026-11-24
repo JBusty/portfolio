@@ -60,7 +60,6 @@ export default function DeepDiveCover() {
 
 function Row({ deck, n }: { deck: Deck; n: number }) {
   const remaining = deck.link ? 0 : countPlaceholders(deck);
-  const backup = deck.appendix?.length ?? 0;
 
   return (
     <>
@@ -88,7 +87,7 @@ function Row({ deck, n }: { deck: Deck; n: number }) {
         {deck.link ? (
           <span>{deck.link.label} ↗</span>
         ) : (
-          <span>{deck.slides.length} slides{backup > 0 && ` + ${backup} backup`}</span>
+          <span>{deck.slides.length} slides</span>
         )}
         {remaining > 0 && <span className={c.todo}>{remaining} to fill</span>}
       </span>

@@ -27,8 +27,8 @@ export default async function Image({
 
   if (!project) {
     return new ImageResponse(
-      <div style={{ width: '100%', height: '100%', background: '#EBDAC1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontSize: 48, color: '#111110' }}>Joshua Bussey</span>
+      <div style={{ width: '100%', height: '100%', background: '#EDF0F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontSize: 48, color: '#1B2233' }}>Joshua Bussey</span>
       </div>,
       { ...size },
     );
@@ -61,7 +61,7 @@ export default async function Image({
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          background: '#111110',
+          background: '#1B2233',
           position: 'relative',
         }}
       >
@@ -75,7 +75,7 @@ export default async function Image({
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(to bottom, rgba(17,17,16,0.15) 0%, rgba(17,17,16,0.1) 40%, rgba(17,17,16,0.82) 80%, rgba(17,17,16,0.95) 100%)',
+            background: 'linear-gradient(to bottom, rgba(27, 34, 51,0.15) 0%, rgba(27, 34, 51,0.1) 40%, rgba(27, 34, 51,0.82) 80%, rgba(27, 34, 51,0.95) 100%)',
             display: 'flex',
           }}
         />
@@ -90,8 +90,8 @@ export default async function Image({
             gap: 12,
           }}
         >
-          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#E13B14' }} />
-          <span style={{ fontSize: 16, color: 'rgba(236,231,220,0.7)', letterSpacing: 2, fontFamily: 'monospace', textTransform: 'uppercase' }}>
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#3D5A80' }} />
+          <span style={{ fontSize: 16, color: 'rgba(248, 248, 247,0.7)', letterSpacing: 2, fontFamily: 'monospace', textTransform: 'uppercase' }}>
             joshuabussey.com
           </span>
         </div>
@@ -109,19 +109,19 @@ export default async function Image({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <span style={{ fontSize: 15, color: 'rgba(236,231,220,0.6)', letterSpacing: 1, fontFamily: 'monospace', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: 15, color: 'rgba(248, 248, 247,0.6)', letterSpacing: 1, fontFamily: 'monospace', textTransform: 'uppercase' }}>
               {project.company}
             </span>
             {project.metric && (
               <>
-                <span style={{ color: 'rgba(236,231,220,0.3)', fontSize: 14 }}>·</span>
-                <span style={{ fontSize: 15, color: '#E13B14', letterSpacing: 0.5, fontFamily: 'monospace' }}>
+                <span style={{ color: 'rgba(248, 248, 247,0.3)', fontSize: 14 }}>·</span>
+                <span style={{ fontSize: 15, color: '#3D5A80', letterSpacing: 0.5, fontFamily: 'monospace' }}>
                   {project.metric}
                 </span>
               </>
             )}
           </div>
-          <div style={{ fontSize: 56, fontWeight: 700, color: '#ECE7DC', letterSpacing: '-2px', lineHeight: 1.05, fontFamily: 'sans-serif' }}>
+          <div style={{ fontSize: 56, fontWeight: 700, color: '#F8F8F7', letterSpacing: '-2px', lineHeight: 1.05, fontFamily: 'sans-serif' }}>
             {project.title}
           </div>
         </div>

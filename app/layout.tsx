@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono, Instrument_Serif } from 'next/font/google';
+import { Inter, JetBrains_Mono, Instrument_Serif, Caveat } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SiteNav, SiteFooter } from '@/components/SiteChrome';
 import SecretPassage from '@/components/SecretPassage';
@@ -24,6 +24,14 @@ const instrumentSerif = Instrument_Serif({
   subsets: ['latin'],
   weight: ['400'],
   style: ['normal', 'italic'],
+});
+
+// Handwritten captions on the polaroids in Meet Josh. Not needed for first paint.
+const caveat = Caveat({
+  variable: '--font-caveat',
+  subsets: ['latin'],
+  weight: ['600'],
+  preload: false,
 });
 
 const description = 'Product designer with 12+ years untangling complex enterprise software. Security, AI product surfaces, 0→1 work, and shipping things that actually work.';
@@ -52,11 +60,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
+    // suppressHydrationWarning: the theme script below sets data-theme on <html> before React hydrates
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable}`}
+      suppressHydrationWarning
+      className={`${inter.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} ${caveat.variable}`}
     >
       <body>
+        {/* Applies the saved light/dark choice before first paint, so a dark-mode
+            visitor never sees a flash of the light page. Light is the default. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('theme')==='dark')document.documentElement.dataset.theme='dark'}catch(e){}`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

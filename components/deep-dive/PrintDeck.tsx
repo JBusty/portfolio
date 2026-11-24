@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Mark from '@/components/Mark';
 import ScaledCanvas from './ScaledCanvas';
 import SlideView from './SlideView';
-import { DEEP_DIVE_PATH, allSlides, positionLabel, stepsFor } from '@/lib/deepDive';
+import { DEEP_DIVE_PATH, positionLabel, stepsFor } from '@/lib/deepDive';
 import type { Deck, Slide } from '@/lib/deepDive/types';
 import p from './print.module.css';
 
@@ -12,22 +12,20 @@ import p from './print.module.css';
 interface Page { slide: Slide; i: number; step: number; key: string }
 
 /**
- * The whole deck as pages: the talk, then backup, every decision already
- * revealed. Print it to PDF from the browser — page size and margins are set
- * in the stylesheet, so the dialog needs no changes.
+ * The talk as pages, every decision already revealed. Backup slides stay out:
+ * they are for questions in the room, not for the PDF. Print it to PDF from
+ * the browser — page size and margins are set in the stylesheet, so the dialog
+ * needs no changes.
  */
 export default function PrintDeck({
   deck,
 }: {
   deck: Deck;
 }) {
-  const slides = allSlides(deck);
-  const backupCount = slides.length - deck.slides.length;
-
   // A live screen is a state machine, so every state gets its own page —
   // otherwise a printed deck shows only the last thing the room clicked.
   // Everything else prints once, already revealed.
-  const pages: Page[] = slides.flatMap((slide, i): Page[] =>
+  const pages: Page[] = deck.slides.flatMap((slide, i): Page[] =>
     slide.kind === 'screen'
       ? slide.states.map((state, step) => ({ slide, i, step, key: state.id }))
       : [{ slide, i, step: stepsFor(slide) - 1, key: slide.id }],
@@ -39,7 +37,7 @@ export default function PrintDeck({
         <div>
           <h1 className={p.title}>{deck.title}</h1>
           <p className={p.meta}>
-            {deck.slides.length} slides{backupCount > 0 && `, ${backupCount} backup`}. Print to PDF — one slide per page.
+            {deck.slides.length} slides. Print to PDF — one slide per page.
           </p>
         </div>
         <div className={p.actions}>
@@ -55,7 +53,7 @@ export default function PrintDeck({
 
       {pages.map(({ slide, i, step, key }) => (
         <div key={`${slide.id}-${key}`} className={p.page}>
-          <p className={p.pageLabel}>{i >= deck.slides.length ? 'Backup ' : 'Slide '}{positionLabel(deck, i)}</p>
+          <p className={p.pageLabel}>Slide {positionLabel(deck, i)}</p>
           <ScaledCanvas className={p.canvas}>
             <SlideView
               deck={deck}

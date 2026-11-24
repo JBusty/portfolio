@@ -177,22 +177,13 @@ function Chrome({
   const { onGoto } = useContext(Env);
 
   // Backup sits outside the running order, so it has no act and no place on
-  // the rail — it says what it is, and which one of how many.
+  // the rail. It is pulled up for a question, and nothing on it says it was
+  // held back: just the deck's name, like any other slide.
   if (isBackup(deck, index)) {
-    const count = deck.appendix?.length ?? 0;
     return (
-      <>
-        <div className={s.chromeTop}>
-          <span>{deck.shortTitle}</span>
-          <span>Backup</span>
-        </div>
-        <div className={s.chromeBottom} aria-hidden>
-          <span className={s.rail} />
-          <span className={s.counter}>
-            Backup {pad(index - deck.slides.length + 1)} / {pad(count)}
-          </span>
-        </div>
-      </>
+      <div className={s.chromeTop}>
+        <span>{deck.shortTitle}</span>
+      </div>
     );
   }
 
@@ -475,7 +466,7 @@ function JourneyLayout({ slide }: { slide: JourneySlide }) {
           <path
             className={s.late}
             d={`${beforePath} L ${x(steps.length - 1)} ${base} L ${x(0)} ${base} Z`}
-            fill="rgba(225, 59, 20, 0.08)"
+            fill="rgba(61, 90, 128, 0.08)"
           />
           <path className={s.draw} d={beforePath} pathLength={1} fill="none" stroke="var(--accent)" strokeWidth="5" strokeLinecap="round" />
           {hasAfter && (

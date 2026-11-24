@@ -1,25 +1,22 @@
 ﻿'use client';
 
-import { useState, useEffect, useId, useRef, type CSSProperties } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useState, useEffect, useId, useRef, type CSSProperties, type ReactNode } from 'react';
 import SectionHead from '@/components/SectionHead';
 import FeaturedWork from '@/components/FeaturedWork';
 import Mark from '@/components/Mark';
-import { STATS, VALUES, CREW, JOURNEY, FAQ, COMPANIES } from '@/lib/data';
-import styles from './page.module.css';
-
-function splitStatCharacters(value: string) {
-  return Array.from(value);
-}
+import { VALUES, JOURNEY, FAQ, COMPANIES } from '@/lib/data';
+import MachineHero from '@/components/home/MachineHero';
+import ProcessLine from '@/components/home/ProcessLine';
+import { useSeen } from '@/components/home/useSeen';
 
 // ---------- HOME ----------
 export default function Home() {
   return (
     <main id="main-content" tabIndex={-1} className="page-enter">
-      <HomeHero />
-      <HomeValues />
+      <MachineHero />
       <FeaturedWork />
+      <HomeValues />
+      <ProcessLine />
       <HomeJourney />
       <HomeFAQ />
       <HomeCompanies />
@@ -27,241 +24,15 @@ export default function Home() {
   );
 }
 
-// ---------- HERO ----------
-function HomeHero() {
-  return (
-    <section
-      style={{
-        position: 'relative',
-        borderBottom: '1px solid var(--ink)',
-        background: 'var(--hero-home)',
-        overflow: 'hidden',
-      }}
-    >
-
-      <div className={`container ${styles.heroInner}`}>
-        <div className={styles.heroGrid}>
-          <div className={styles.heroCopy}>
-            <h1 className={`tight ${styles.heroTitle}`}>
-              <span className={styles.heroLine} style={{ animationDelay: '0ms' }}>
-                Designing complex
-              </span>
-              <span className={styles.heroLine} style={{ animationDelay: '100ms' }}>
-                systems that
-                <span className={styles.heroShipWord} style={{ animationDelay: '280ms' }}>
-                  <span className={styles.heroShip}>ship</span><span className="accent">.</span>
-                </span>
-              </span>
-            </h1>
-            {/*
-              ▍ Now serving
-            */}
-            <p className={styles.heroIntro}>
-              Hi, I'm Josh, a front-end developer turned product design
-              lead with 12+ years of experience untangling enterprise
-              software. I lead 0→1 work, design systems, and the kind of
-              quiet refactors no one notices but everyone benefits from.
-            </p>
-            <div className={styles.heroActions}>
-              <Link href="/work" className="btn">
-                View case studies <Mark />
-              </Link>
-              {/* Internal link, so one dot; three is reserved for offsite. */}
-              <Link href="/work/identity-profiles" className="btn ghost">
-                Read the AI case study <Mark />
-              </Link>
-            </div>
-          </div>
-
-          <div className={styles.heroStackWrap}>
-            <PolaroidStack />
-          </div>
-        </div>
-
-        <div className={styles.heroStatStrip}>
-          {STATS.map((s, i) => (
-            <div
-              key={i}
-              className={styles.heroStatItem}
-              style={{ '--stat-delay': `${500 + i * 80}ms` } as CSSProperties}
-            >
-              <div className={`tight ${styles.heroStatNum}`} aria-label={s.n}>
-                <span className={styles.heroStatNumInner} aria-hidden="true">
-                  {splitStatCharacters(s.n).map((char, charIndex) => (
-                    <span
-                      key={`${s.n}-${charIndex}`}
-                      className={styles.heroStatChar}
-                      style={{ '--char-delay': `${charIndex * 90}ms` } as CSSProperties}
-                    >
-                      {/* Only digits get the tabular min-width \u2014 padding a comma out to
-                          0.5em is what rendered "1,000+" as "1, 000+". */}
-                      <span
-                        className={`${styles.heroStatCharFace} ${
-                          /[0-9]/.test(char) ? styles.heroStatCharFaceDigit : ''
-                        }`}
-                      >
-                        {char === ' ' ? '\u00A0' : char}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-              </div>
-              <div className={styles.heroStatLabel}>{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ---------- POLAROID STACK ----------
-function PolaroidStack() {
-  const [order, setOrder] = useState([0, 1, 2]);
-  const [shuffling, setShuffling] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const dragStart = useRef<{ x: number; y: number } | null>(null);
-
-  const slots = [
-    { x: 0, y: 0, r: -4, z: 30, shadow: '0 30px 50px -20px rgba(17,17,16,0.40)' },
-    { x: 18, y: 22, r: 3, z: 20, shadow: '0 22px 40px -22px rgba(17,17,16,0.32)' },
-    { x: -10, y: 42, r: -1, z: 10, shadow: '0 14px 28px -18px rgba(17,17,16,0.26)' },
-  ];
-
-  function shuffle() {
-    if (shuffling) return;
-    setShuffling(true);
-    setTimeout(() => {
-      setOrder(o => [o[1], o[2], o[0]]);
-      setShuffling(false);
-    }, 420);
-  }
-
-  function slotForItem(idx: number) {
-    return slots[order.indexOf(idx)];
-  }
-
-  function onPointerDown(e: React.PointerEvent) {
-    dragStart.current = { x: e.clientX, y: e.clientY };
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-  }
-
-  function onPointerUp(e: React.PointerEvent) {
-    if (!dragStart.current) return;
-    const dx = e.clientX - dragStart.current.x;
-    const dy = e.clientY - dragStart.current.y;
-    dragStart.current = null;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < 8 || (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy))) shuffle();
-  }
-
-  return (
-    <div className={styles.polaroidShell}>
-      <div
-        ref={wrapRef}
-        onPointerDown={onPointerDown}
-        onPointerUp={onPointerUp}
-        onMouseMove={e => {
-          if (!wrapRef.current) return;
-          const r = wrapRef.current.getBoundingClientRect();
-          setTilt({ x: ((e.clientY - r.top) / r.height - 0.5) * -8, y: ((e.clientX - r.left) / r.width - 0.5) * 8 });
-        }}
-        onMouseLeave={() => setTilt({ x: 0, y: 0 })}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          transformStyle: 'preserve-3d',
-          transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-          transition: 'transform 240ms ease-out',
-          touchAction: 'pan-y',
-          cursor: shuffling ? 'default' : 'grab',
-          userSelect: 'none',
-        }}
-      >
-        {CREW.map((c, i) => {
-          const slot = slotForItem(i);
-          const isTop = order[0] === i;
-          const flying = isTop && shuffling;
-          return (
-            <div
-              key={i}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: '8%',
-                width: '76%',
-                background: 'var(--bone)',
-                borderRadius: 'var(--radius)',
-                padding: '14px 14px 12px',
-                boxShadow: slot.shadow,
-                transformOrigin: 'center 70%',
-                transform: flying
-                  ? `translate(${slot.x - 90}px, ${slot.y - 80}px) rotate(-22deg)`
-                  : `translate(${slot.x}px, ${slot.y}px) rotate(${slot.r}deg)`,
-                opacity: flying ? 0 : 1,
-                transition: 'transform 420ms cubic-bezier(.2,.7,.2,1), opacity 380ms ease, box-shadow 280ms ease',
-                zIndex: slot.z,
-              }}
-            >
-              <div className="photo" style={{ aspectRatio: '4/5', borderRadius: 8 }}>
-                <Image
-                  src={c.img}
-                  alt={c.name}
-                  fill
-                  sizes="(max-width: 640px) 300px, 340px"
-                  // The front card is the hero image on first paint.
-                  preload={i === 0}
-                  className="polaroid-photo"
-                  style={{ objectFit: 'cover', borderRadius: 8, pointerEvents: 'none', animationDelay: `${500 + i * 150}ms` }}
-                />
-              </div>
-              <div style={{
-                paddingTop: 14, paddingBottom: 6,
-                display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12,
-              }}>
-                <div className="tight" style={{ fontWeight: 600, fontSize: 20, letterSpacing: '-0.02em' }}>
-                  {c.name}
-                </div>
-                <div className="mono upper" style={{ fontSize: 10, color: 'var(--sub)', letterSpacing: '0.1em' }}>
-                  {c.role}
-                </div>
-              </div>
-              <svg
-                aria-hidden="true"
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'none' }}
-              >
-                <rect
-                  x={0} y={0}
-                  width="100%" height="100%"
-                  rx={14}
-                  fill="none"
-                  stroke="var(--ink)"
-                  strokeWidth={1}
-                  pathLength={1000}
-                  strokeDasharray={1000}
-                  strokeDashoffset={1000}
-                  className="polaroid-draw"
-                  style={{ animationDelay: `${400 + i * 150}ms` }}
-                />
-              </svg>
-            </div>
-          );
-        })}
-
-      </div>
-    </div>
-  );
-}
-
 // ---------- VALUES ----------
 function HomeValues() {
+  const [ref, seen] = useSeen<HTMLElement>(0.2);
   return (
-    <section style={{ background: 'var(--ink)', color: 'var(--bone)', overflow: 'hidden' }}>
+    <section ref={ref} id="values" data-own-reveal className={`vals${seen ? ' seen' : ''}`} style={{ background: 'var(--bone)', overflow: 'hidden' }}>
       <div className="container sp-large" style={{ padding: '120px 32px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 32, flexWrap: 'wrap', marginBottom: 64 }}>
           <div>
-            <h2 className="tight" style={{
+            <h2 className="tight vals-h" style={{
               margin: 0,
               fontSize: 'clamp(36px, 5vw, 80px)',
               lineHeight: 0.96,
@@ -273,62 +44,48 @@ function HomeValues() {
           </div>
         </div>
         <div className="r-grid-values">
-          {VALUES.map((v, i) => <ValueCard key={v.title} v={v} idx={i} />)}
+          {VALUES.map((v, i) => <Rise key={v.title} i={i}><ValueCard v={v} /></Rise>)}
         </div>
       </div>
     </section>
   );
 }
 
-function ValueCard({ v, idx }: { v: typeof VALUES[number]; idx: number }) {
+// Each card triggers on its own, so on phones (one column) they rise in as you reach them.
+function Rise({ i, children }: { i: number; children: ReactNode }) {
+  const [ref, seen] = useSeen<HTMLDivElement>(0.25);
+  return (
+    <div ref={ref} className={`deal${seen ? ' seen' : ''}`} style={{ '--i': i } as CSSProperties}>
+      {children}
+    </div>
+  );
+}
+
+function ValueCard({ v }: { v: typeof VALUES[number] }) {
   const [hover, setHover] = useState(false);
-  const [noted, setNoted] = useState(false);
-  const restRot = [-1.8, 1.2, -1.0, 1.6][idx] ?? 0;
 
   return (
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onClick={() => setNoted(true)}
       style={{
         position: 'relative',
-        background: hover ? 'rgba(236,231,220,0.06)' : 'rgba(236,231,220,0.03)',
-        border: `1px solid ${hover ? 'var(--accent)' : 'rgba(236,231,220,0.18)'}`,
+        background: 'var(--paper)',
+        border: `1px solid ${hover ? 'var(--accent)' : 'var(--rule)'}`,
         borderRadius: 'var(--radius)',
         padding: '28px 28px 24px',
         minHeight: 360,
         display: 'flex',
         flexDirection: 'column',
-        cursor: noted ? 'default' : 'pointer',
-        userSelect: 'none',
-        transformOrigin: 'center bottom',
-        transform: hover && !noted
-          ? 'translateY(-8px) rotate(0deg) scale(1.01)'
-          : `translateY(0) rotate(${restRot}deg) scale(1)`,
-        transition: 'transform 340ms cubic-bezier(.2,.7,.2,1), background 220ms, border-color 220ms, box-shadow 240ms',
+        transform: hover ? 'translateY(-6px)' : 'translateY(0)',
+        transition: 'transform 340ms cubic-bezier(.2,.7,.2,1), border-color 220ms, box-shadow 240ms',
         boxShadow: hover
-          ? '0 24px 56px -28px rgba(0,0,0,0.65)'
-          : '0 10px 22px -18px rgba(0,0,0,0.5)',
+          ? '0 24px 56px -28px rgba(27, 34, 51, 0.38)'
+          : '0 10px 22px -18px rgba(27, 34, 51, 0.24)',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: 36 }}>
-        {noted ? (
-          <div style={{
-            width: 72, height: 72,
-            border: '2px dashed var(--accent)',
-            borderRadius: '50%',
-            background: 'rgba(225,59,20,0.1)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: 'var(--font-jetbrains-mono)', fontSize: 9,
-            textTransform: 'uppercase', letterSpacing: '0.14em',
-            color: 'var(--accent-lift)', textAlign: 'center', lineHeight: 1.1,
-            transform: 'rotate(-14deg)',
-            animation: 'notedStamp 320ms cubic-bezier(.2,.7,.2,1)',
-            flexShrink: 0,
-          }}>Noted ✓</div>
-        ) : (
-          <ValueGlyph kind={v.kind} hover={hover} />
-        )}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: 36, minHeight: 28 }}>
+        <ValueGlyph kind={v.kind} hover={hover} />
       </div>
 
       <h3 className="tight" style={{
@@ -337,7 +94,7 @@ function ValueCard({ v, idx }: { v: typeof VALUES[number]; idx: number }) {
         fontWeight: 700,
         letterSpacing: '-0.035em',
         lineHeight: 1,
-        color: hover ? 'var(--accent)' : 'var(--bone)',
+        color: hover ? 'var(--accent)' : 'var(--ink)',
         transition: 'color 220ms',
       }}>
         {v.title}
@@ -351,7 +108,7 @@ function ValueCard({ v, idx }: { v: typeof VALUES[number]; idx: number }) {
         }} />
       </h3>
 
-      <p style={{ margin: '20px 0 0', fontSize: 15, lineHeight: 1.55, color: 'rgba(236,231,220,0.78)', maxWidth: '32ch' }}>
+      <p style={{ margin: '20px 0 0', fontSize: 15, lineHeight: 1.55, color: 'var(--ink-2)', maxWidth: '32ch' }}>
         {v.body}
       </p>
 
@@ -359,25 +116,11 @@ function ValueCard({ v, idx }: { v: typeof VALUES[number]; idx: number }) {
         marginTop: 'auto',
         paddingTop: 28,
         fontSize: 10,
-        color: 'rgba(236,231,220,0.55)',
+        color: 'var(--sub)',
         letterSpacing: '0.14em',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
       }}>
-        <span>// {v.tag}</span>
-        {!noted && (
-          <button
-            type="button"
-            className="mono upper value-card-tap"
-            onClick={e => { e.stopPropagation(); setNoted(true); }}
-            aria-label={`Mark "${v.title}" as noted`}
-          >
-            tap
-          </button>
-        )}
+        // {v.tag}
       </div>
-
     </div>
   );
 }
@@ -485,7 +228,7 @@ function HomeJourney() {
   const current = JOURNEY[active];
 
   return (
-    <section>
+    <section id="journey">
       <SectionHead title={<>12 years,<br />one winding road<span className="accent">.</span></>} />
       <div className="container sp-bot-xl" style={{ padding: '0 32px 240px' }}>
         <div className="r-journey">
@@ -551,7 +294,7 @@ function HomeJourney() {
                     position: 'absolute', left: 5, top: 52, width: 22, height: 22, borderRadius: '50%',
                     background: isActive || isPast ? 'var(--accent)' : 'var(--bone)',
                     border: `2px solid ${isActive || isPast ? 'var(--accent)' : 'var(--rule-strong)'}`,
-                    boxShadow: isActive ? '0 0 0 7px rgba(225,59,20,0.16)' : 'none',
+                    boxShadow: isActive ? '0 0 0 7px rgba(61, 90, 128,0.16)' : 'none',
                     transition: 'all 280ms cubic-bezier(.2,.7,.2,1)',
                   }}>
                     {isActive && <span style={{ position: 'absolute', inset: 4, borderRadius: '50%', background: 'var(--bone)' }} />}
@@ -591,7 +334,7 @@ function HomeFAQ() {
   const [openIdx, setOpenIdx] = useState(0);
   const baseId = useId();
   return (
-    <section style={{ background: 'var(--bone-2)' }}>
+    <section id="faq" style={{ background: 'var(--bone-2)' }}>
       <SectionHead title={<>What it's like<br />working with me<span className="accent">.</span></>} />
       <div className="container sp-bot-sm" style={{ padding: '0 32px 160px' }}>
         <div style={{ borderTop: '1px solid var(--rule-strong)' }}>
@@ -600,7 +343,7 @@ function HomeFAQ() {
             const triggerId = `${baseId}-faq-${i}-trigger`;
             const panelId = `${baseId}-faq-${i}-panel`;
             return (
-              <div key={i} style={{ borderBottom: '1px solid var(--rule)', background: isOpen ? 'rgba(255,255,255,0.35)' : 'transparent', transition: 'background 220ms' }}>
+              <div key={i} style={{ borderBottom: '1px solid var(--rule)', background: isOpen ? 'var(--open-row)' : 'transparent', transition: 'background 220ms' }}>
                 <button
                   type="button"
                   id={triggerId}
@@ -657,7 +400,7 @@ function HomeFAQ() {
 // ---------- COMPANIES ----------
 function HomeCompanies() {
   return (
-    <section style={{ background: 'var(--paper)', borderTop: '1px solid var(--ink)' }}>
+    <section style={{ background: 'var(--paper)', borderTop: '1px solid var(--edge)' }}>
       <div className="container sp-normal" style={{ padding: '112px 32px 160px' }}>
         <div className="tight" style={{
           fontSize: 'clamp(36px, 5vw, 80px)', lineHeight: 0.96, letterSpacing: '-0.04em', fontWeight: 700,

@@ -7,7 +7,7 @@ interface SectionHeadProps {
 
 export default function SectionHead({ title, eyebrow }: SectionHeadProps) {
   return (
-    <div data-reveal style={{ borderTop: '1px solid var(--ink)' }}>
+    <div data-reveal style={{ borderTop: '1px solid var(--edge)' }}>
       <div className="container sp-sec-head" style={{ padding: '80px 32px 64px' }}>
         {eyebrow && (
           <div className="mono upper" style={{

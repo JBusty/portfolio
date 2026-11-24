@@ -11,13 +11,16 @@ interface ProjectRowProps {
   index?: number;
 }
 
-const TAG_CHIP_STYLES: CSSProperties[] = [
-  { background: 'rgba(110, 129, 97, 0.12)', borderColor: 'rgba(110, 129, 97, 0.22)', color: '#3E4A38' },
-  { background: 'rgba(179, 116, 70, 0.12)', borderColor: 'rgba(179, 116, 70, 0.22)', color: '#6B4630' },
-  { background: 'rgba(76, 112, 138, 0.12)', borderColor: 'rgba(76, 112, 138, 0.22)', color: '#36566A' },
-  { background: 'rgba(156, 101, 125, 0.12)', borderColor: 'rgba(156, 101, 125, 0.22)', color: '#674354' },
-  { background: 'rgba(162, 136, 72, 0.12)', borderColor: 'rgba(162, 136, 72, 0.22)', color: '#66552C' },
-  { background: 'rgba(94, 120, 116, 0.12)', borderColor: 'rgba(94, 120, 116, 0.22)', color: '#3D514E' },
+// Each tag gets a hue (as an "r, g, b" triple for the tint and edge) and a text
+// colour for each theme; .tag-chip in globals.css turns these into the chip.
+type ChipVars = CSSProperties & Record<'--tc' | '--tt' | '--tt-d', string>;
+const TAG_CHIP_STYLES: ChipVars[] = [
+  { '--tc': '61, 90, 128',   '--tt': '#2F4766', '--tt-d': '#A9C0E0' },
+  { '--tc': '52, 120, 118',  '--tt': '#1F5250', '--tt-d': '#8FCFCB' },
+  { '--tc': '110, 92, 160',  '--tt': '#4A3D78', '--tt-d': '#C3B6EA' },
+  { '--tc': '70, 76, 92',    '--tt': '#363C4A', '--tt-d': '#C2C8D3' },
+  { '--tc': '72, 110, 92',   '--tt': '#2E4E40', '--tt-d': '#9FCBB4' },
+  { '--tc': '60, 110, 150',  '--tt': '#24506E', '--tt-d': '#9BC7E8' },
 ];
 
 function getTagChipStyle(tag: string): CSSProperties {
@@ -58,7 +61,7 @@ export default function ProjectRow({ p, first, index = 0 }: ProjectRowProps) {
       <div className="proj-row-tags">
         <span className="chip proj-row-year">{p.year}</span>
         {p.tags.slice(0, 2).map((t) => (
-          <span key={t} className="chip" style={getTagChipStyle(t)}>
+          <span key={t} className="chip tag-chip" style={getTagChipStyle(t)}>
             {t}
           </span>
         ))}

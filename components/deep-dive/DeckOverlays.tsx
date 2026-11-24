@@ -47,7 +47,6 @@ export function Overview({
   const acts = actsFor(deck.slides);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const remaining = countPlaceholders(deck);
-  const backupCount = deck.appendix?.length ?? 0;
   const [fits, setFits] = useState<Record<number, number>>({});
 
   const onFit = useCallback((i: number, scale: number) => {
@@ -75,15 +74,14 @@ export function Overview({
     els[Math.min(els.length - 1, Math.max(0, to))]?.focus();
   }
 
-  const sections = [
-    ...acts.map((act) => ({
-      key: `act-${act.start}`,
-      title: `${act.n ? `${String(act.n).padStart(2, '0')} ` : ''}${act.title ?? 'Opening'}`,
-      start: act.start,
-      end: act.end,
-    })),
-    ...(backupCount ? [{ key: 'backup', title: 'Backup', start: deck.slides.length, end: slides.length }] : []),
-  ];
+  // The talk only. Backup slides stay off this screen, since it is often on the
+  // shared screen; they are reached by typing their number.
+  const sections = acts.map((act) => ({
+    key: `act-${act.start}`,
+    title: `${act.n ? `${String(act.n).padStart(2, '0')} ` : ''}${act.title ?? 'Opening'}`,
+    start: act.start,
+    end: act.end,
+  }));
 
   function thumb(i: number) {
     const slide = slides[i];
@@ -120,7 +118,7 @@ export function Overview({
           type="button"
           className={p.thumbButton}
           onClick={() => onPick(i)}
-          aria-label={`${i >= deck.slides.length ? 'Backup slide' : 'Slide'} ${positionLabel(deck, i)}: ${label}`}
+          aria-label={`Slide ${positionLabel(deck, i)}: ${label}`}
           aria-current={i === index ? 'true' : undefined}
         />
       </li>
@@ -134,7 +132,6 @@ export function Overview({
           <h2 className={p.overviewTitle}>{deck.title}</h2>
           <p className={p.overviewMeta}>
             {deck.slides.length} slides
-            {backupCount > 0 && `, ${backupCount} backup`}
             {remaining > 0 && <>, <strong>{remaining} placeholders to fill</strong></>}
           </p>
         </div>
@@ -155,9 +152,6 @@ export function Overview({
       {sections.map((section) => (
         <section key={section.key} className={p.act} aria-label={section.title}>
           <h3 className={p.actTitle}>{section.title}</h3>
-          {section.key === 'backup' && (
-            <p className={p.actNote}>Not in the running order. Pull one up for a question; Escape returns to the talk.</p>
-          )}
           <ol className={p.grid}>
             {Array.from({ length: section.end - section.start }, (_, offset) => thumb(section.start + offset))}
           </ol>
@@ -195,20 +189,13 @@ const SHORTCUTS: Array<{ label: string; keys: string[] }> = [
   { label: 'First or last slide', keys: ['Home', 'End'] },
   { label: 'Go to a slide', keys: ['Type its number', 'Enter'] },
   { label: 'All slides', keys: ['G'] },
-  { label: 'Return from backup', keys: ['Esc'] },
+  { label: 'Back to where you were', keys: ['Esc'] },
   { label: 'Full screen', keys: ['F'] },
   { label: 'Black screen', keys: ['B'] },
   { label: 'Shortcuts', keys: ['?'] },
 ];
 
-export function Shortcuts({
-  backupStart,
-  onClose,
-}: {
-  /** The number the deck's backup slides start at. Absent when it has none. */
-  backupStart?: number;
-  onClose: () => void;
-}) {
+export function Shortcuts({ onClose }: { onClose: () => void }) {
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -244,12 +231,6 @@ export function Shortcuts({
             </div>
           ))}
         </dl>
-        {backupStart !== undefined && (
-          <p className={p.dialogNote}>
-            Backup slides carry on from the talk’s numbers: this deck’s backup is {backupStart} onwards. A question
-            that needs one is its number and Enter, and Escape puts the talk back exactly where it was.
-          </p>
-        )}
       </div>
     </div>
   );

@@ -116,7 +116,7 @@ export const PROJECTS: Project[] = [
     // solution-4 is an annotated skeleton-loader spec; solution-2 is the actual AI feature.
     thumb: '/images/identity-profiles/solution-2.png',
     thumbPosition: 'left top',
-    accent: '#E13B14',
+    accent: '#3D5A80',
   },
   {
     slug: 'status-checks',

@@ -53,18 +53,22 @@ export function positionLabel(deck: Deck, index: number): string {
   return isBackup(deck, index) ? `B${index - deck.slides.length + 1}` : String(index + 1);
 }
 
-/** #7 for the talk, #b2 for backup — so the talk's numbers never shift when backup changes. */
-export function hashFor(deck: Deck, index: number): string {
-  return `#${positionLabel(deck, index).toLowerCase()}`;
+/**
+ * One continuous run of numbers, the same one typed to jump: #7 for the talk,
+ * and backup carries on after it (#23), so the address bar never says a slide
+ * was held back. #b1 still resolves, for links made before.
+ */
+export function hashFor(_deck: Deck, index: number): string {
+  return `#${index + 1}`;
 }
 
 export function indexFromHash(deck: Deck, hash: string): number | null {
   const match = /^#(b?)(\d+)$/i.exec(hash);
   if (!match) return null;
   const n = Number.parseInt(match[2], 10);
-  const backupCount = deck.appendix?.length ?? 0;
-  if (match[1]) return n >= 1 && n <= backupCount ? deck.slides.length + n - 1 : null;
-  return n >= 1 && n <= deck.slides.length ? n - 1 : null;
+  const total = allSlides(deck).length;
+  if (match[1]) return n >= 1 && n <= total - deck.slides.length ? deck.slides.length + n - 1 : null;
+  return n >= 1 && n <= total ? n - 1 : null;
 }
 
 export function indexOfSlide(deck: Deck, id: string): number {

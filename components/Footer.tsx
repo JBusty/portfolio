@@ -16,9 +16,9 @@ function BackToTop() {
         alignItems: 'center',
         gap: 7,
         background: 'transparent',
-        border: `1px solid ${hover ? 'rgba(236,231,220,0.5)' : 'rgba(236,231,220,0.2)'}`,
+        border: `1px solid ${hover ? 'rgba(248, 248, 247,0.5)' : 'rgba(248, 248, 247,0.2)'}`,
         borderRadius: 999,
-        color: hover ? 'rgba(236,231,220,0.9)' : 'rgba(236,231,220,0.55)',
+        color: hover ? 'rgba(248, 248, 247,0.9)' : 'rgba(248, 248, 247,0.55)',
         fontFamily: 'var(--font-jetbrains-mono)',
         fontSize: 11,
         letterSpacing: '0.05em',
@@ -37,6 +37,7 @@ function BackToTop() {
 const siteLinks = [
   { href: '/', label: 'Homepage' },
   { href: '/work', label: 'The work' },
+  { href: '/skills', label: 'Skills' },
   { href: '/contact', label: "Let's talk" },
 ];
 
@@ -47,7 +48,7 @@ const elsewhereLinks = [
 
 export default function Footer() {
   return (
-    <footer style={{ borderTop: '1px solid var(--ink)', background: 'var(--ink)', color: 'var(--bone)' }}>
+    <footer className="on-dark" style={{ borderTop: '1px solid var(--edge)', background: 'var(--ink)', color: 'var(--bone)' }}>
       <div className="container sp-footer" style={{ padding: '160px 32px 80px' }}>
         <div className="r-footer" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr', gap: 40 }}>
           {/* CTA */}
@@ -65,15 +66,15 @@ export default function Footer() {
             </h2>
             <div style={{ marginTop: 28, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               {/* Sits on its own accent fill, where an accent dot would disappear. */}
-              <a href="mailto:jbusseywork@gmail.com" className="btn" style={{ background: 'var(--accent-ink)', borderColor: 'var(--accent-ink)' }}>
-                jbusseywork@gmail.com <Mark dir="out" color="var(--bone)" />
+              <a href="mailto:jbusseywork@gmail.com" className="btn" style={{ background: 'var(--accent-lift)', borderColor: 'var(--accent-lift)', color: 'var(--ink)' }}>
+                jbusseywork@gmail.com <Mark dir="out" color="var(--ink)" />
               </a>
               <a
                 href="https://drive.google.com/file/d/17OJanguMKHAdKGfoBDpI_eS_1_a5fZEh/view"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn ghost"
-                style={{ color: 'var(--bone)', borderColor: 'rgba(236,231,220,0.4)' }}
+                style={{ color: 'var(--bone)', borderColor: 'rgba(248, 248, 247,0.4)' }}
               >
                 Resume / CV <Mark dir="out" />
               </a>
@@ -84,7 +85,7 @@ export default function Footer() {
           <div>
             <div className="mono upper" style={{
               fontSize: 11,
-              color: 'rgba(236,231,220,0.5)',
+              color: 'rgba(248, 248, 247,0.5)',
               letterSpacing: '0.08em',
               marginBottom: 16,
             }}>
@@ -110,7 +111,7 @@ export default function Footer() {
           <div>
             <div className="mono upper" style={{
               fontSize: 11,
-              color: 'rgba(236,231,220,0.5)',
+              color: 'rgba(248, 248, 247,0.5)',
               letterSpacing: '0.08em',
               marginBottom: 16,
             }}>
@@ -139,7 +140,7 @@ export default function Footer() {
         <div style={{
           marginTop: 64,
           paddingTop: 20,
-          borderTop: '1px solid rgba(236,231,220,0.18)',
+          borderTop: '1px solid rgba(248, 248, 247,0.18)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -147,7 +148,7 @@ export default function Footer() {
           gap: 16,
           fontFamily: 'var(--font-jetbrains-mono)',
           fontSize: 11,
-          color: 'rgba(236,231,220,0.55)',
+          color: 'rgba(248, 248, 247,0.55)',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
         }}>

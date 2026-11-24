@@ -145,7 +145,7 @@
 
 .ph {
   color: var(--sub);
-  text-decoration: underline dashed rgba(225, 59, 20, 0.55);
+  text-decoration: underline dashed rgba(61, 90, 128, 0.55);
   text-underline-offset: 0.18em;
 }
 

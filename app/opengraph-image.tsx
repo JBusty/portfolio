@@ -15,20 +15,20 @@ export default function Image() {
           flexDirection: 'column',
           justifyContent: 'flex-end',
           padding: '72px 80px',
-          background: '#EBDAC1',
+          background: '#EDF0F5',
           fontFamily: 'sans-serif',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: 32 }}>
-          <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#E13B14', marginRight: 12 }} />
-          <span style={{ fontSize: 18, color: '#6F6B61', letterSpacing: 2, textTransform: 'uppercase' }}>
+          <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#3D5A80', marginRight: 12 }} />
+          <span style={{ fontSize: 18, color: '#5A6172', letterSpacing: 2, textTransform: 'uppercase' }}>
             Portfolio
           </span>
         </div>
-        <div style={{ fontSize: 80, fontWeight: 700, color: '#111110', letterSpacing: '-3px', lineHeight: 1, marginBottom: 24 }}>
+        <div style={{ fontSize: 80, fontWeight: 700, color: '#1B2233', letterSpacing: '-3px', lineHeight: 1, marginBottom: 24 }}>
           Joshua Bussey
         </div>
-        <div style={{ fontSize: 32, color: '#2A2924', fontWeight: 400 }}>
+        <div style={{ fontSize: 32, color: '#2C3446', fontWeight: 400 }}>
           Senior Product Designer · 12+ years untangling enterprise software
         </div>
       </div>

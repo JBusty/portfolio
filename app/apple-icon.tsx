@@ -16,7 +16,7 @@ export default function AppleIcon() {
           alignItems: 'center',
           justifyContent: 'center',
           // iOS masks the corners itself, so this stays square.
-          background: '#111110',
+          background: '#1B2233',
         }}
       >
         <span
@@ -24,7 +24,7 @@ export default function AppleIcon() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#F5F1E6',
+            color: '#FFFFFF',
             fontFamily: 'Arial, Helvetica, sans-serif',
             fontWeight: 900,
             fontSize: 92,

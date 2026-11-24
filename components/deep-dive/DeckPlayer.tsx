@@ -265,7 +265,7 @@ export default function DeckPlayer({
       </ScaledCanvas>
 
       <p className={p.srOnly} aria-live="polite">
-        {ready ? `${inBackup ? 'Backup slide' : 'Slide'} ${positionLabel(deck, index)}: ${slideLabel(slides[index])}` : ''}
+        {ready ? `${inBackup ? '' : `Slide ${positionLabel(deck, index)}: `}${slideLabel(slides[index])}` : ''}
       </p>
 
       {black && <div className={p.blackout} onClick={toggleBlack} />}
@@ -295,7 +295,8 @@ export default function DeckPlayer({
           <Mark dir="left" />
         </button>
         <span className={p.count}>
-          {inBackup ? `Backup ${index - talk + 1} / ${total - talk}` : `${index + 1} / ${talk}`}
+          {/* Nothing to count on a backup slide: the room never sees that it is one. */}
+          {inBackup ? '·' : `${index + 1} / ${talk}`}
         </span>
         <button
           type="button"
@@ -332,10 +333,7 @@ export default function DeckPlayer({
       )}
 
       {shortcuts && (
-        <Shortcuts
-          backupStart={deck.appendix?.length ? talk + 1 : undefined}
-          onClose={() => closeOverlay(() => setShortcuts(false))}
-        />
+        <Shortcuts onClose={() => closeOverlay(() => setShortcuts(false))} />
       )}
 
       {zoom && <ImageViewer src={zoom.src} alt={zoom.alt} onClose={() => setZoom(null)} />}

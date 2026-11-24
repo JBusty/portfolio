@@ -1,104 +1,37 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import Mark from '@/components/Mark';
+import MeetJosh from '@/components/MeetJosh';
+import SearchPalette from '@/components/SearchPalette';
+import { LINKEDIN_URL, RESUME_URL } from '@/lib/home';
 
 const navItems = [
   { href: '/', label: 'Home' },
-  { href: '/work', label: 'Case Studies' },
+  { href: '/work', label: 'Case studies' },
+  { href: '/skills', label: 'Skills' },
   { href: '/contact', label: 'Contact' },
 ];
 
-// /jobs is absent on purpose: it has no masthead for the bar to match, so it
-// falls through to the page background below.
+// The nav floats over the page. Above it sits a spacer the colour of each page's
+// masthead, so headers start below the nav. The homepage hero runs underneath
+// instead, so there's no spacer there. /jobs has no masthead, so it falls back to the page colour.
 const heroBgMap: Record<string, string> = {
-  '/':        'var(--hero-home)',
   '/work':    'var(--hero-work)',
+  '/skills':  'var(--hero-skills)',
   '/contact': 'var(--hero-contact)',
 };
-
 function getHeroBg(pathname: string) {
   if (pathname.startsWith('/work/')) return 'var(--hero-case)';
   return heroBgMap[pathname] ?? 'var(--bone)';
 }
 
-function LogoBadge() {
-  const [hover, setHover] = useState(false);
-  const [pressing, setPressing] = useState(false);
-
-  return (
-    <span
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => { setHover(false); setPressing(false); }}
-      onMouseDown={() => setPressing(true)}
-      onMouseUp={() => setPressing(false)}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        fontFamily: 'var(--font-jetbrains-mono)',
-        fontSize: 20,
-        fontWeight: 600,
-        cursor: 'pointer',
-        userSelect: 'none',
-        flexShrink: 0,
-        letterSpacing: '-0.01em',
-        transform: pressing ? 'scale(0.93)' : hover ? 'scale(1.07)' : 'scale(1)',
-        transition: `transform ${pressing ? '60ms' : '220ms'} cubic-bezier(.2,.8,.2,1)`,
-      }}
-    >
-      <span style={{
-        display: 'inline-block',
-        color: hover ? 'var(--accent)' : 'rgba(17,17,16,0.65)',
-        transform: hover ? 'translateX(-3px)' : 'translateX(0)',
-        transition: 'transform 240ms cubic-bezier(.2,.8,.2,1), color 180ms',
-      }}>&lt;</span>
-      <span style={{ color: 'var(--ink)' }}>JB</span>
-      <span style={{
-        display: 'inline-block',
-        color: hover ? 'var(--accent)' : 'rgba(17,17,16,0.65)',
-        transform: hover ? 'translateX(3px)' : 'translateX(0)',
-        transition: 'transform 240ms cubic-bezier(.2,.8,.2,1), color 180ms',
-        fontSize: 17,
-      }}>&nbsp;/&gt;</span>
-    </span>
-  );
-}
-
-function LinkedInButton() {
-  const [hover, setHover] = useState(false);
-  return (
-    <a
-      href="https://www.linkedin.com/in/joshuabussey/"
-      target="_blank"
-      rel="noopener noreferrer"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      className="btn topbar-linkedin"
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 6,
-        padding: '6px 12px',
-        background: hover ? '#0A66C2' : 'transparent',
-        borderColor: hover ? '#0A66C2' : 'var(--ink)',
-        color: hover ? '#fff' : 'var(--ink)',
-        transition: 'background 160ms, border-color 160ms, color 160ms',
-      }}
-    >
-      <LinkedInIcon />
-      <span>LinkedIn</span>
-      {/* Fills LinkedIn blue on hover, not the usual ink — so the mark picks its own colour. */}
-      <Mark dir="out" color={hover ? 'rgba(255,255,255,0.85)' : 'var(--accent)'} />
-    </a>
-  );
-}
-
 function LinkedInIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z" />
     </svg>
   );
 }
@@ -113,8 +46,8 @@ function NavIcon({ href }: { href: string }) {
   // knockouts in the solid shape instead of vanishing into it.
   const props = {
     className: 'nav-icon',
-    width: 15,
-    height: 15,
+    width: 18,
+    height: 18,
     viewBox: '0 0 24 24',
     stroke: 'currentColor',
     strokeWidth: 1.8,
@@ -122,7 +55,6 @@ function NavIcon({ href }: { href: string }) {
     strokeLinejoin: 'round' as const,
     'aria-hidden': true,
   };
-
   if (href === '/') {
     return (
       <svg {...props}>
@@ -131,20 +63,26 @@ function NavIcon({ href }: { href: string }) {
       </svg>
     );
   }
-
   if (href === '/work') {
-    // An open book: something to read, and a real object like the other two —
-    // the stacked-sheets version read as the generic "copy" glyph.
+    // An open book: something to read.
     return (
       <svg {...props}>
         <path d="M3 5h4.8c2.3 0 4.2 1.2 4.2 2.7v11.5c0-1.5-1.9-2.7-4.2-2.7H3z" />
         <path d="M21 5h-4.8c-2.3 0-4.2 1.2-4.2 2.7v11.5c0-1.5 1.9-2.7 4.2-2.7H21z" />
-        {/* Sits exactly on the two page edges, so it only shows once filled. */}
         <path className="nav-icon-cut" d="M12 7.7v11.5" />
       </svg>
     );
   }
-
+  if (href === '/skills') {
+    // Three rising bars: a skills meter.
+    return (
+      <svg {...props}>
+        <rect x="3.5" y="13" width="4.5" height="7.5" rx="1.2" />
+        <rect x="9.75" y="8.5" width="4.5" height="12" rx="1.2" />
+        <rect x="16" y="3.5" width="4.5" height="17" rx="1.2" />
+      </svg>
+    );
+  }
   return (
     <svg {...props}>
       <rect x="3" y="5.5" width="18" height="13" rx="2" />
@@ -153,268 +91,236 @@ function NavIcon({ href }: { href: string }) {
   );
 }
 
-function HamburgerIcon({ open }: { open: boolean }) {
+/**
+ * Light/dark switch. The theme lives on <html data-theme>, set before paint by
+ * the script in app/layout.tsx; this flips it and remembers the choice. Which
+ * icon shows is left to CSS, so the server render never disagrees with it.
+ */
+function readTheme() {
+  try { return localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'; } catch { return 'light'; }
+}
+
+function useTheme() {
+  const [dark, setDark] = useState(false);
+  useEffect(() => { setDark(readTheme() === 'dark'); }, []);
+  // Keep the saved theme on <html>: React owns that element, and when the root
+  // layout re-renders (Fast Refresh, for one) it drops the attribute the
+  // pre-paint script added. Watch for that and put it back.
+  useEffect(() => {
+    const root = document.documentElement;
+    const sync = () => {
+      const want = readTheme() === 'dark' ? 'dark' : undefined;
+      if (root.dataset.theme !== want) {
+        if (want) root.dataset.theme = want;
+        else delete root.dataset.theme;
+      }
+    };
+    sync();
+    const mo = new MutationObserver(sync);
+    mo.observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => mo.disconnect();
+  }, []);
+  const toggle = () => {
+    const next = readTheme() === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem('theme', next); } catch {}
+    if (next === 'dark') document.documentElement.dataset.theme = 'dark';
+    else delete document.documentElement.dataset.theme;
+    setDark(next === 'dark');
+  };
+  return { dark, toggle };
+}
+
+function ThemeIcon() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: 22 }}>
-      <span style={{
-        display: 'block', height: 2, background: 'var(--ink)', borderRadius: 2,
-        transform: open ? 'translateY(7px) rotate(45deg)' : 'none',
-        transition: 'transform 220ms cubic-bezier(.2,.8,.2,1)',
-      }} />
-      <span style={{
-        display: 'block', height: 2, background: 'var(--ink)', borderRadius: 2,
-        opacity: open ? 0 : 1,
-        transition: 'opacity 180ms',
-      }} />
-      <span style={{
-        display: 'block', height: 2, background: 'var(--ink)', borderRadius: 2,
-        transform: open ? 'translateY(-7px) rotate(-45deg)' : 'none',
-        transition: 'transform 220ms cubic-bezier(.2,.8,.2,1)',
-      }} />
-    </div>
+    <>
+      <svg className="theme-ic-moon" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
+      </svg>
+      <svg className="theme-ic-sun" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" />
+      </svg>
+    </>
   );
 }
 
 export default function TopBar() {
   const pathname = usePathname();
+  const theme = useTheme();
   const [visible, setVisible] = useState(true);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [meetOpen, setMeetOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);   // phones: the slide-out menu
+  const [mod, setMod] = useState('⌘');
+  const avatarRef = useRef<HTMLImageElement>(null);
   const lastY = useRef(0);
+  const dockRef = useRef<HTMLElement>(null);
+  const burgerRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLElement>(null);
 
+  // Menu: closes on navigation and Escape, locks page scroll while open, and
+  // moves focus in (and back to the button when it closes).
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
+  useEffect(() => {
+    if (!menuOpen) return;
+    document.documentElement.style.overflow = 'hidden';
+    drawerRef.current?.querySelector<HTMLElement>('.drawer-x')?.focus({ preventScroll: true });
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenuOpen(false); };
+    window.addEventListener('keydown', onKey);
+    const burger = burgerRef.current;
+    return () => {
+      document.documentElement.style.overflow = '';
+      window.removeEventListener('keydown', onKey);
+      if (burger && document.activeElement && drawerRef.current?.contains(document.activeElement)) burger.focus({ preventScroll: true });
+    };
+  }, [menuOpen]);
+  // Close it if the screen grows past the phone layout.
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 900px)');
+    const onChange = () => { if (!mq.matches) setMenuOpen(false); };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  // Hides scrolling down, comes back scrolling up; always shown near the top.
   useEffect(() => {
     function onScroll() {
       const y = window.scrollY;
-      // Anything within the bar's own height counts as "at the top".
-      if (y < 100) { setVisible(true); }
-      else if (y > lastY.current) { setVisible(false); }
-      else { setVisible(true); }
+      if (y < 100) setVisible(true);
+      else if (y > lastY.current) setVisible(false);
+      else setVisible(true);
       lastY.current = y;
     }
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close on route change or Escape
-  useEffect(() => { setMenuOpen(false); }, [pathname]);
-
-  // Always arrive on a new page with the bar showing. Next.js moves focus to the
+  // Always arrive on a new page with the nav showing. Next.js moves focus to the
   // new <main> after navigation, which nudges the page down slightly; without this
-  // the bar reads that as a downward scroll and hides itself on arrival.
+  // the nav reads that as a downward scroll and hides itself on arrival.
+  useEffect(() => { setVisible(true); lastY.current = 0; }, [pathname]);
+
+  // ⌘K / Ctrl+K opens search from anywhere.
   useEffect(() => {
-    setVisible(true);
-    lastY.current = 0;
-  }, [pathname]);
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') setMenuOpen(false); }
+    if (!/Mac|iPhone|iPad/.test(navigator.platform)) setMod('Ctrl ');
+    function onKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setSearchOpen(o => !o); }
+    }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  // Prevent body scroll while menu is open
-  useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [menuOpen]);
+  const isHome = pathname === '/';
+  const shown = visible || meetOpen || searchOpen || menuOpen;
 
-  const bg = getHeroBg(pathname);
+  // Tell sticky things (the pinned process line) how much room the nav takes right now.
+  useEffect(() => {
+    const set = () => {
+      const d = dockRef.current;   // layout box, not the on-screen one, which is mid-slide when this runs
+      const b = d ? d.offsetTop + d.offsetHeight : 0;
+      document.documentElement.style.setProperty('--dock-offset', shown ? `${b}px` : '0px');
+    };
+    set();
+    window.addEventListener('resize', set);
+    return () => window.removeEventListener('resize', set);
+  }, [shown]);
 
   return (
     <>
-      <header
-        className="topbar"
-        // --nav-surface is what the filled icons knock their details out in.
-        style={{ background: bg, '--nav-surface': bg, top: menuOpen ? 0 : (visible ? 0 : -80) } as CSSProperties}
-      >
-        <div className="container" style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 24,
-          padding: '14px 32px',
-        }}>
-          {/* Logo */}
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <LogoBadge />
-            <div className="topbar-logo-text" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <span className="topbar-logo-name" style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em', whiteSpace: 'nowrap', lineHeight: 1 }}>
-                Joshua Bussey
-              </span>
-              <span className="mono upper topbar-logo-role" style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', whiteSpace: 'nowrap', color: 'var(--sub)', lineHeight: 1 }}>
-                Product Designer
-              </span>
-            </div>
-          </Link>
-
-          <span className="grow" />
-
-          {/* Desktop nav */}
-          <nav className="topbar-nav" style={{ display: 'flex', gap: 6 }}>
+      <div className="dock-spacer" aria-hidden="true" style={{ height: isHome ? 0 : undefined, background: getHeroBg(pathname) }} />
+      <header ref={dockRef} className={`dock${shown ? '' : ' dock-away'}`}>
+        <nav aria-label="Main" className="dock-in" style={{ '--nav-surface': 'var(--paper)' } as CSSProperties}>
+          <button type="button" className="dock-me" onClick={() => setMeetOpen(true)} aria-haspopup="dialog" aria-label="Josh Bussey, Senior Product Designer. Meet Josh">
+            <Image ref={avatarRef} src="/images/crew/josh.jpg" alt="" width={84} height={84} preload />
+            <span className="dock-who"><b>Josh Bussey</b><small>Senior Product Designer</small></span>
+          </button>
+          <span className="dock-sep" aria-hidden="true" />
+          <div className="dock-tabs">
             {navItems.map(item => {
-              const isActive = item.href === '/'
-                ? pathname === '/'
-                : pathname.startsWith(item.href);
+              const active = item.href === '/' ? isHome : pathname.startsWith(item.href);
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`mono upper nav-link${isActive ? ' nav-link-active' : ''}`}
-                  style={{
-                    padding: '6px 12px',
-                    fontSize: 12,
-                    letterSpacing: '0.06em',
-                    borderRadius: 999,
-                    color: isActive ? 'var(--bone)' : 'var(--ink)',
-                    background: isActive ? 'var(--ink)' : 'transparent',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 5,
-                  }}
-                >
+                <Link key={item.href} href={item.href} className={`dock-tab${active ? ' on' : ''}`} data-icon={item.href.slice(1) || 'home'} aria-current={active ? 'page' : undefined}>
                   <NavIcon href={item.href} />
                   {item.label}
                 </Link>
               );
             })}
-          </nav>
-
-          {/* Desktop CTA */}
-          <LinkedInButton />
-
-          {/* Hamburger */}
-          <button
-            className="topbar-hamburger"
-            onClick={() => setMenuOpen(o => !o)}
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 6,
-              borderRadius: 6,
-              lineHeight: 0,
-            }}
-          >
-            <HamburgerIcon open={menuOpen} />
+          </div>
+          {/* looks like a field, opens the ⌘K palette */}
+          <button type="button" className="dock-srch" onClick={() => setSearchOpen(true)} aria-label={`Search case studies, systems, or skills (${mod.trim()}+K)`}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+            <span className="dock-ph">Search case studies, systems, or skills…</span>
           </button>
-        </div>
-      </header>
-
-      {/* Backdrop */}
-      <div
-        className="topbar-mobile-backdrop"
-        onClick={() => setMenuOpen(false)}
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 49,
-          background: 'rgba(17,17,16,0.45)',
-          opacity: menuOpen ? 1 : 0,
-          pointerEvents: menuOpen ? 'auto' : 'none',
-          transition: 'opacity 300ms ease',
-        }}
-      />
-
-      {/* Slide-in panel */}
-      <nav
-        className="topbar-mobile-menu"
-        style={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          width: 'min(300px, 82vw)',
-          height: '100dvh',
-          zIndex: 51,
-          background: bg,
-          '--nav-surface': bg,
-          boxShadow: '-12px 0 40px rgba(17,17,16,0.14)',
-          display: 'flex',
-          flexDirection: 'column',
-          padding: '20px 20px 32px',
-          overflowY: 'auto',
-          transform: menuOpen ? 'translateX(0)' : 'translateX(100%)',
-          transition: 'transform 340ms cubic-bezier(.2,.8,.2,1)',
-        } as CSSProperties}
-      >
-        {/* Panel header row */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.02em', lineHeight: 1 }}>
-              Joshua Bussey
-            </span>
-            <span className="mono upper" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--sub)', lineHeight: 1 }}>
-              Product Designer
-            </span>
+          <div className="dock-actions">
+            <button type="button" className="dock-ib" onClick={theme.toggle} aria-pressed={theme.dark} aria-label="Dark mode" data-tip={theme.dark ? 'Light mode' : 'Dark mode'}>
+              <ThemeIcon />
+            </button>
+            <a className="dock-ib" href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in a new tab)" data-tip="LinkedIn">
+              <LinkedInIcon />
+            </a>
+            <a className="dock-ib" href={RESUME_URL} target="_blank" rel="noopener noreferrer" aria-label="Résumé (opens in a new tab)" data-tip="Résumé">
+              <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor" /><path d="M12 6.5v8M8.5 11.5 12 15l3.5-3.5M7.5 17.5h9" fill="none" style={{ stroke: 'var(--paper)' }} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </a>
           </div>
           <button
-            onClick={() => setMenuOpen(false)}
-            aria-label="Close menu"
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 6, borderRadius: 6, lineHeight: 0 }}
+            ref={burgerRef}
+            type="button"
+            className={`dock-burger${menuOpen ? ' open' : ''}`}
+            onClick={() => setMenuOpen(o => !o)}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           >
-            <HamburgerIcon open={true} />
+            <span /><span /><span />
           </button>
-        </div>
+        </nav>
+      </header>
 
-        {/* Nav links */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {navItems.map(item => {
-            const isActive = item.href === '/'
-              ? pathname === '/'
-              : pathname.startsWith(item.href);
+      {/* Phones: the menu slides in from the right */}
+      <div className={`drawer-scrim${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(false)} aria-hidden="true" />
+      <nav ref={drawerRef} id="mobile-menu" className={`drawer${menuOpen ? ' open' : ''}`} aria-label="Menu" inert={!menuOpen}>
+        <div className="drawer-head">
+          <button type="button" className="drawer-me" onClick={() => { setMenuOpen(false); setMeetOpen(true); }}>
+            <Image src="/images/crew/josh.jpg" alt="" width={96} height={96} />
+            <span><b>Josh Bussey</b><small>Senior Product Designer</small><em>Meet Josh (and the dogs) →</em></span>
+          </button>
+          <button type="button" className="drawer-x" onClick={() => setMenuOpen(false)} aria-label="Close menu">&times;</button>
+        </div>
+        <div className="drawer-links">
+          {navItems.map((item, i) => {
+            const active = item.href === '/' ? isHome : pathname.startsWith(item.href);
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`mono upper nav-link${isActive ? ' nav-link-active' : ''}`}
-                style={{
-                  padding: '13px 16px',
-                  fontSize: 13,
-                  letterSpacing: '0.06em',
-                  borderRadius: 10,
-                  color: isActive ? 'var(--bone)' : 'var(--ink)',
-                  background: isActive ? 'var(--ink)' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                }}
-              >
+              <Link key={item.href} href={item.href} className={`drawer-link${active ? ' on' : ''}`} aria-current={active ? 'page' : undefined} style={{ '--i': i } as CSSProperties}>
                 <NavIcon href={item.href} />
                 {item.label}
               </Link>
             );
           })}
         </div>
-
-        {/* LinkedIn at bottom */}
-        <div style={{ marginTop: 'auto', paddingTop: 24, borderTop: '1px solid var(--rule)' }}>
-          <LinkedInButton />
-          <div
-            className="mono"
-            style={{
-              marginTop: 16,
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: 8,
-              fontSize: 11,
-              lineHeight: 1.5,
-              color: 'var(--sub)',
-              letterSpacing: '0.04em',
-            }}
-          >
-            <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink)', marginTop: 1, flexShrink: 0 }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="5" y="8" width="14" height="11" rx="3" />
-                <path d="M12 4v4" />
-                <path d="M9 4h6" />
-                <circle cx="10" cy="13" r="1" fill="currentColor" stroke="none" />
-                <circle cx="14" cy="13" r="1" fill="currentColor" stroke="none" />
-                <path d="M9 16h6" />
-                <path d="M5 12H3" />
-                <path d="M21 12h-2" />
-              </svg>
-            </span>
-            No robots were harmed building this portfolio.
+        <div className="drawer-acts">
+          <a className="btn" href={RESUME_URL} target="_blank" rel="noopener noreferrer">
+            Résumé
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z" /><path d="M14 3v5h5M12 11v6M9 14l3 3 3-3" /></svg>
+          </a>
+          <div className="drawer-row">
+            <button type="button" className="drawer-ib" onClick={() => { setMenuOpen(false); setSearchOpen(true); }}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+              Search
+            </button>
+            <a className="drawer-ib" href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer">
+              <LinkedInIcon />
+              LinkedIn
+            </a>
+            <button type="button" className="drawer-ib" onClick={theme.toggle} aria-pressed={theme.dark}>
+              <ThemeIcon />
+              Dark mode
+            </button>
           </div>
         </div>
+        <p className="drawer-note">No robots were harmed building this portfolio.</p>
       </nav>
+      <MeetJosh open={meetOpen} onClose={() => setMeetOpen(false)} avatarRef={avatarRef} />
+      <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }
