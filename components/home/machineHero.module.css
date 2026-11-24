@@ -11,12 +11,21 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  /* an even dot field over a linear wash running top to bottom */
-  background:
-    radial-gradient(circle at 12px 12px, var(--dot, rgba(27, 34, 51, 0.15)) 1.15px, transparent 1.75px) 0 0 / 24px 24px,
-    linear-gradient(to bottom, var(--wash-0) 0%, var(--wash-1) 45%, transparent 100%);
+  /* a linear wash running top to bottom */
+  background: linear-gradient(to bottom, var(--wash-0) 0%, var(--wash-1) 45%, transparent 100%);
   /* starts with the headline, so the whole hero arrives together */
   animation: fade 0.9s ease backwards;
+}
+/* dots around the machine only, fading out before they reach the headline. The machine
+   sits at the right edge of the 1440px content column; --mw (its width) is set by MachineHero.tsx. */
+.bg::after {
+  --at: calc(50% + min(50%, 720px) - 32px - var(--mw, 536px) / 2) 56%;
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 12px 12px, var(--dot, rgba(27, 34, 51, 0.15)) 1.15px, transparent 1.75px) 0 0 / 24px 24px;
+  -webkit-mask-image: radial-gradient(ellipse 660px 70% at var(--at), #000 35%, transparent 100%);
+          mask-image: radial-gradient(ellipse 660px 70% at var(--at), #000 35%, transparent 100%);
 }
 .inner {
   position: relative;
@@ -106,6 +115,7 @@
 @media (max-width: 1199px) {
   .inner { grid-template-columns: minmax(0, 1fr); }
   .col { display: none; }
+  .bg::after { display: none; } /* no machine, so no dots: just the wash */
 }
 /* 1001–1199px: the headline runs wide on one line here, so let the intro follow it */
 @media (min-width: 1001px) and (max-width: 1199px) { .lede { max-width: 68ch; } }

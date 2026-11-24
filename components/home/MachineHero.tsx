@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { type CSSProperties, Fragment, type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import Link from 'next/link';
 import Mark from '@/components/Mark';
@@ -402,8 +402,8 @@ export default function MachineHero() {
   };
 
   return (
-    <section ref={heroRef} className={s.hero} aria-label="Introduction">
-      {/* dots over a linear wash in the upper-left corner; pure CSS so it is there on first paint */}
+    <section ref={heroRef} className={s.hero} aria-label="Introduction" style={{ '--mw': `${BOUNDS.w * k}px` } as CSSProperties}>
+      {/* a wash, with dots around the machine (centred using --mw); pure CSS so it is there on first paint */}
       <div className={s.bg} aria-hidden="true" />
       <div className={s.inner}>
         <div className={s.copy}>
