@@ -25,7 +25,9 @@ const VERB = ['Discovering', 'Designing', 'Building', 'Validating', 'Shipping'];
 const STEP = 1500;
 const LEAD = 900;
 // Bounds of everything that's drawn, in machine coordinates.
-const BOUNDS = { x: 46, y: -135, w: 670, h: 640 };
+const BOUNDS = { x: 46, y: -135, w: 638, h: 640 };
+// Never draw it bigger than this: at full size it outweighs the copy beside it.
+const MAX_K = 0.84;
 
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(' ');
 
@@ -150,7 +152,7 @@ function Squash() {
   );
 }
 // Dr. Squash stands on the floor just past the tray, facing it (drawn mirrored).
-const SQUASH_FEET = [682, 468] as const;
+const SQUASH_FEET = [650, 468] as const;
 const SQUASH_SCALE = 1;
 
 /** What the status screen shows before the first pull. */
@@ -232,7 +234,8 @@ export default function MachineHero() {
       // few px spare on top. Page width without the scrollbar, since that's what the grid gets.
       const pw = document.documentElement.clientWidth;
       const need = 8.25 * Math.min(76, Math.max(46, vw * 0.052)) + 8;
-      setK(Math.min(1, Math.max(0.75, (Math.min(pw, 1440) - 64 - 70 - need) / BOUNDS.w)));
+      const gap = parseFloat(getComputedStyle(col.parentElement!).columnGap) || 0;
+      setK(Math.min(MAX_K, Math.max(0.72, (Math.min(pw, 1440) - 64 - gap - need) / BOUNDS.w)));
     };
     fit();
     const ro = new ResizeObserver(fit);
@@ -282,9 +285,9 @@ export default function MachineHero() {
     el.dataset.landed = '1';
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     el.animate([
-      { transform: 'translate(-92px, -20px) scale(.3)', opacity: 0 },
-      { transform: 'translate(-78px, -12px) scale(.45) rotate(14deg)', opacity: 1, offset: 0.2 },
-      { transform: 'translate(-34px, 8px) scale(.8) rotate(10deg)', offset: 0.55 },
+      { transform: 'translate(-80px, -20px) scale(.3)', opacity: 0 },
+      { transform: 'translate(-68px, -12px) scale(.45) rotate(14deg)', opacity: 1, offset: 0.2 },
+      { transform: 'translate(-30px, 8px) scale(.8) rotate(10deg)', offset: 0.55 },
       { transform: 'translate(3px, 1px) scale(1) rotate(-2deg)', offset: 0.85 },
       { transform: 'translate(0, 0)' },
     ], { duration: 950, easing: 'cubic-bezier(.45,0,.3,1)' });
@@ -371,12 +374,12 @@ export default function MachineHero() {
                     legs that stand on the same floor line as the machine's feet (y 468). The ramp's top end
                     tucks under the port hood. */}
                 <g stroke="rgba(27,34,51,.3)" strokeWidth="1.4">
-                  <rect x="508" y="448" width="8" height="20" rx="2" fill="url(#bmFoot)" />
-                  <rect x="616" y="448" width="8" height="20" rx="2" fill="url(#bmFoot)" />
+                  <rect x="502" y="448" width="8" height="20" rx="2" fill="url(#bmFoot)" />
+                  <rect x="590" y="448" width="8" height="20" rx="2" fill="url(#bmFoot)" />
                 </g>
-                <path d="M466 402 L494 440 H630 V434 Q630 431 633 431 H637 Q640 431 640 434 V447 Q640 451 636 451 H492 Q488 451 486 448 L460 414 Z" fill="url(#bmShell)" stroke="rgba(27,34,51,.32)" strokeWidth="1.4" strokeLinejoin="round" />
-                <path d="M497 443.5 H628" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" opacity=".9" />
-                <text x="567" y="486" textAnchor="middle" fontSize="11" fontWeight="500" fill="#5A6172">Features out</text>
+                <path d="M466 402 L490 440 H602 V434 Q602 431 605 431 H609 Q612 431 612 434 V447 Q612 451 608 451 H488 Q484 451 482 448 L460 414 Z" fill="url(#bmShell)" stroke="rgba(27,34,51,.32)" strokeWidth="1.4" strokeLinejoin="round" />
+                <path d="M493 443.5 H600" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" opacity=".9" />
+                <text x="546" y="486" textAnchor="middle" fontSize="11" fontWeight="500" fill="#5A6172">Features out</text>
                 {/* intake chute */}
                 <path d="M290 14 H370 L352 78 H308 Z" fill="url(#bmShell)" stroke="rgba(27,34,51,.32)" strokeWidth="1.4" strokeLinejoin="round" />
                 <rect x="280" y="6" width="100" height="12" rx="6" fill="#fff" stroke="rgba(27,34,51,.32)" strokeWidth="1.4" />
@@ -489,18 +492,18 @@ export default function MachineHero() {
                       className={s.card}
                       tabIndex={back === 0 ? 0 : -1}
                       aria-hidden={back === 0 ? undefined : true}
-                      style={back ? { transform: `translate(${back * 7}px, ${-back * 7}px)`, opacity: back < 3 ? 0.6 - (back - 1) * 0.25 : 0, zIndex: -back } : undefined}
+                      style={back ? { transform: `translate(${back * 4}px, ${-back * 7}px)`, opacity: back < 3 ? 0.6 - (back - 1) * 0.25 : 0, zIndex: -back } : undefined}
                     >
                       <b>{c.f.name}</b>
                       <span>{c.f.outcome}</span>
-                      <small>{c.f.company} · Read the case study →</small>
+                      <small>{c.f.company} · Read the case study →</small>
                     </Link>
                   );
                 })}
               </div>
 
               {/* Dr. Squash: black poodle with a clipboard, checking each feature off as it lands */}
-              <svg className={s.squash} viewBox="640 318 120 160" aria-hidden="true">
+              <svg className={s.squash} viewBox="608 318 120 160" aria-hidden="true">
                 <g className={s.nod}>
                   <g transform={`translate(${SQUASH_FEET[0]} ${SQUASH_FEET[1]}) scale(${-SQUASH_SCALE} ${SQUASH_SCALE})`}>
                     <Squash />
