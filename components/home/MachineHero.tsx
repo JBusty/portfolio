@@ -113,7 +113,7 @@ function Poodle({ c, eyewear, front }: { c: Coat; eyewear: ReactNode; front?: Re
   );
 }
 
-/** Dr. Noodles: cream doodle with lab goggles pushed up on his forehead. His arms are drawn by the hero, on the lever. */
+/** Dr. Noodles: cream doodle with lab goggles pushed up on her forehead. Her arms are drawn by the hero: one on the lever, one on her hip. */
 function Noodles() {
   return (
     <Poodle
@@ -151,9 +151,80 @@ function Squash() {
     />
   );
 }
+/**
+ * Josh: stands on the roof beside the intake, an idea held up over it and a coffee in the other hand
+ * (shaved head, beard, grey pullover, after his photo) in a lab coat like the dogs'. Origin at his feet, facing the viewer.
+ */
+const SKIN = '#E7B793', SKIN_D = '#D19D77', HAIR = '#2A2220', PLACKET = '#5A6172';
+const SWEATER = '#B3B9C4', JEANS = '#3D4F6E', JEANS_D = '#33435F';
+function Josh() {
+  return (
+    <>
+      {/* legs + shoes */}
+      <rect x="-13" y="-42" width="11" height="40" rx="5" fill={JEANS_D} {...OL} />
+      <rect x="2" y="-42" width="11" height="40" rx="5" fill={JEANS} {...OL} />
+      <ellipse cx="-9" cy="-2" rx="9.5" ry="4.2" fill="#1B2233" {...OL} />
+      <ellipse cx="9" cy="-2" rx="9.5" ry="4.2" fill="#1B2233" {...OL} />
+      {/* raised arm (behind the body): holds the idea up over the intake, and tosses it in on a pull.
+          The toss rotates about the shoulder (-15, -78): each arm part sits in a group with its origin there. */}
+      <g transform="translate(-15 -78)"><g className={s.toss}><g transform="translate(15 78)">
+        <path className={s.sleeve} style={{ stroke: '#EEF1F5' }} d="M-15 -78 Q-34 -76 -42 -92" fill="none" />
+      </g></g></g>
+      {/* lab coat, open over a heather pullover (charcoal stand collar and snap placket showing) */}
+      <path d="M-20 -82 Q0 -88 20 -82 L25 -26 Q0 -20 -25 -26 Z" fill="#fff" {...OL} />
+      <path d="M-8.5 -85 L0 -58 L8.5 -85 Z" fill={SWEATER} />
+      <rect x="-2.4" y="-79" width="4.8" height="17" rx="1" fill={PLACKET} />
+      <path d="M-8.5 -85 Q-7 -79 -2.4 -77.5 L2.4 -77.5 Q7 -79 8.5 -85 Q0 -81 -8.5 -85 Z" fill={PLACKET} {...OL} />
+      <path d="M-8.5 -85 L-12 -74 L-4 -68 M8.5 -85 L12 -74 L4 -68 M-8.5 -85 L0 -58 L8.5 -85 M0 -58 V-22" fill="none" {...OL} />
+      <circle cx="2.6" cy="-47" r="1.4" fill="rgba(27,34,51,.55)" /><circle cx="2.6" cy="-36" r="1.4" fill="rgba(27,34,51,.55)" />
+      <rect x="8" y="-72" width="10" height="7.5" rx="1.4" fill="#fff" {...OL} />
+      <path d="M11 -75.5 V-69.5" stroke="#3D5A80" strokeWidth="2.2" strokeLinecap="round" />
+      <rect x="-18" y="-70" width="10" height="6.5" rx="1.2" fill="#3D5A80" />
+      <path d="M-20 -40 h9 M11 -40 h9" stroke="rgba(27,34,51,.4)" strokeWidth="1.2" strokeLinecap="round" />
+      {/* other arm: coffee (raised a little on hover, like a cheers) */}
+      <path className={s.sleeve} d="M16 -78 Q26 -66 22 -54" fill="none" />
+      <g className={s.jMug}>
+        <rect x="18" y="-63" width="12" height="13" rx="2.5" fill="#3D5A80" {...OL} />
+        <path d="M30 -60 q5 0 5 4 q0 4 -5 4" fill="none" {...OL} />
+        <circle cx="21" cy="-53" r="5.6" fill={SKIN} {...OL} />
+      </g>
+      {/* head: shaved, trimmed full beard, big grin */}
+      <rect x="-5" y="-89" width="10" height="9" fill={SKIN_D} {...OL} />
+      <circle cx="-16" cy="-103" r="4.2" fill={SKIN_D} {...OL} />
+      <circle cx="16" cy="-103" r="4.2" fill={SKIN_D} {...OL} />
+      <ellipse cx="0" cy="-106" rx="16" ry="20" fill={SKIN} {...OL} />
+      <path d="M-9.5 -121 Q-4 -125.5 2 -125" fill="none" stroke="rgba(255,255,255,.6)" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M-15.6 -106 C-16.5 -90 -9 -82 0 -82 C9 -82 16.5 -90 15.6 -106 L13.6 -106 C13 -99 8 -97.5 0 -97.5 C-8 -97.5 -13 -99 -13.6 -106 Z" fill={HAIR} {...OL} />
+      <path d="M-6.5 -94 Q0 -86.5 6.5 -94 Z" fill="#fff" stroke="rgba(27,34,51,.5)" strokeWidth="1" strokeLinejoin="round" />
+      <ellipse cx="0" cy="-101" rx="3" ry="2.3" fill={SKIN_D} />
+      <g className={s.eyes}>
+        <circle cx="-6.5" cy="-107.5" r="2.2" fill="#1B2233" /><circle cx="6" cy="-107.5" r="2.2" fill="#1B2233" />
+        <circle cx="-5.8" cy="-108.3" r=".75" fill="#fff" /><circle cx="6.7" cy="-108.3" r=".75" fill="#fff" />
+      </g>
+      <path className={s.jBrows} d="M-11.5 -112.5 q4.5 -3 9 -.6 M2 -113 q4.5 -2.6 9 .6" fill="none" stroke={HAIR} strokeWidth="2.8" strokeLinecap="round" />
+      {/* the hand up top, and the idea in it (released mid-toss: the hero's flying token takes over) */}
+      <g transform="translate(-15 -78)"><g className={s.toss}><g transform="translate(15 78)">
+        <circle cx="-43" cy="-94" r="5.8" fill={SKIN} {...OL} />
+        <g className={s.jIdea}>
+          <circle cx="-45" cy="-109" r="10.5" fill="#fff" stroke="rgba(61,90,128,.55)" strokeWidth="1.5" />
+          <g transform="translate(-52.2 -116.2) scale(.6)">
+            <path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" fill="none" stroke="#3D5A80" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+          </g>
+        </g>
+      </g></g></g>
+    </>
+  );
+}
+const JOSH_FEET = [404, 76] as const;
+const JOSH_SCALE = 1.04;
+
 // Dr. Squash stands on the floor just past the tray, facing it (drawn mirrored).
 const SQUASH_FEET = [650, 468] as const;
 const SQUASH_SCALE = 1;
+/** What Dr. Squash says when you pet him, in turn. */
+const SQUASH_SAYS = ['Woof.', 'LGTM', 'Ship it', 'Approved ✓', 'Needs more treats', 'Woof woof.'];
+/** What Josh says when you click him, in turn. */
+const JOSH_SAYS = ['Hi, I’m Josh.', 'Let’s do this!', 'Got a gnarly problem?', 'Let’s build something.'];
 
 /** What the status screen shows before the first pull. */
 const REST = MACHINE_FEATURES[0];
@@ -169,6 +240,28 @@ export default function MachineHero() {
   const runningRef = useRef(false);
   const nextRef = useRef(1);   // the first pull builds the second feature: the first is already on screen at rest
   const cardId = useRef(0);
+
+  // Pet Dr. Squash: he hops, squints happily, wags hard and gives his review.
+  const [pet, setPet] = useState(0);
+  const [petting, setPetting] = useState(false);
+  const petT = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const petSquash = useCallback(() => {
+    setPet(n => n + 1);
+    setPetting(true);
+    clearTimeout(petT.current);
+    petT.current = setTimeout(() => setPetting(false), 1600);
+  }, []);
+  // Poke Josh: he hops and says something.
+  const [poke, setPoke] = useState(0);
+  const [talking, setTalking] = useState(false);
+  const talkT = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const pokeJosh = useCallback(() => {
+    setPoke(n => n + 1);
+    setTalking(true);
+    clearTimeout(talkT.current);
+    talkT.current = setTimeout(() => setTalking(false), 1600);
+  }, []);
+  useEffect(() => () => { clearTimeout(petT.current); clearTimeout(talkT.current); }, []);
 
   const [k, setK] = useState(1);
   const [running, setRunning] = useState(false);
@@ -261,12 +354,17 @@ export default function MachineHero() {
           lx *= DOG_SCALE; ly *= DOG_SCALE;
           return [DOG_FEET[0] + lx * Math.cos(phi) - ly * Math.sin(phi), DOG_FEET[1] + lx * Math.sin(phi) + ly * Math.cos(phi)];
         };
-        ([[sh(-3, -66), [-3, 3]], [sh(15, -64), [3, -2]]] as const).forEach(([p0, off], i) => {
-          const p = [knob[0] + off[0], knob[1] + off[1]], mid = [(p0[0] + p[0]) / 2, (p0[1] + p[1]) / 2 + 6];
-          sleeveRefs.current[i]?.setAttribute('d', `M${p0[0].toFixed(1)} ${p0[1].toFixed(1)} Q${mid[0].toFixed(1)} ${mid[1].toFixed(1)} ${p[0].toFixed(1)} ${p[1].toFixed(1)}`);
-          pawRefs.current[i]?.setAttribute('cx', p[0].toFixed(1));
-          pawRefs.current[i]?.setAttribute('cy', p[1].toFixed(1));
-        });
+        const f1 = (n: number) => n.toFixed(1);
+        // far arm: hand on hip, elbow out behind her (drawn behind the coat, so the elbow and paw peek out)
+        const hs = sh(-10, -67), he = sh(-38, -60), hp = sh(-23, -50);
+        sleeveRefs.current[0]?.setAttribute('d', `M${f1(hs[0])} ${f1(hs[1])} L${f1(he[0])} ${f1(he[1])} L${f1(hp[0])} ${f1(hp[1])}`);
+        pawRefs.current[0]?.setAttribute('cx', f1(hp[0]));
+        pawRefs.current[0]?.setAttribute('cy', f1(hp[1]));
+        // near arm: on the knob
+        const p0 = sh(15, -64), p = [knob[0] + 3, knob[1] - 2], mid = [(p0[0] + p[0]) / 2, (p0[1] + p[1]) / 2 + 6];
+        sleeveRefs.current[1]?.setAttribute('d', `M${f1(p0[0])} ${f1(p0[1])} Q${f1(mid[0])} ${f1(mid[1])} ${f1(p[0])} ${f1(p[1])}`);
+        pawRefs.current[1]?.setAttribute('cx', f1(p[0]));
+        pawRefs.current[1]?.setAttribute('cy', f1(p[1]));
       }
       if (visible) raf = requestAnimationFrame(aim);
     };
@@ -462,7 +560,7 @@ export default function MachineHero() {
                 <svg className={s.sayTail} viewBox="0 0 22 20" width="22" height="20"><path d="M5 0 Q7 10 0 19 Q13 13 18 0" /></svg>
               </div>
 
-              {/* Dr. Noodles: cream doodle, lab coat, goggles, both paws on the lever */}
+              {/* Dr. Noodles: cream doodle, lab coat, goggles, one paw on the lever and one on her hip */}
               <svg className={s.dog} style={{ left: DOG_BOX_X }} viewBox={`${DOG_BOX_X} -130 240 220`} aria-hidden="true">
                 <g className={s.pop} {...dogProps}>
                   <path ref={el => { sleeveRefs.current[0] = el; }} className={s.sleeve} fill="none" />
@@ -474,6 +572,23 @@ export default function MachineHero() {
                   <circle ref={el => { pawRefs.current[1] = el; }} r="7" fill={CREAM} {...OL} />
                 </g>
               </svg>
+
+              {/* Josh, on the roof by the intake */}
+              <svg className={cx(s.josh, talking && s.jTalking)} style={{ left: JOSH_FEET[0] - 80, top: JOSH_FEET[1] - 160 }} viewBox={`${JOSH_FEET[0] - 80} ${JOSH_FEET[1] - 160} 120 168`} aria-hidden="true">
+                <g key={poke} className={cx(s.pet, poke > 0 && s.hop)} onClick={pokeJosh}>
+                  <g transform={`translate(${JOSH_FEET[0]} ${JOSH_FEET[1]}) scale(${JOSH_SCALE})`}>
+                    <Josh />
+                  </g>
+                </g>
+              </svg>
+              {talking && (
+                <div className={s.sqSay} style={{ left: JOSH_FEET[0] - 6, top: JOSH_FEET[1] - 150 }} aria-hidden="true">
+                  <div key={poke} className={cx(s.sqBubble, s.jsBubble)}>
+                    {JOSH_SAYS[(poke - 1) % JOSH_SAYS.length]}
+                    <svg className={cx(s.sqTail, s.jsTail)} viewBox="0 0 22 20" width="22" height="20"><path d="M5 0 Q7 10 0 19 Q13 13 18 0" /></svg>
+                  </div>
+                </div>
+              )}
 
               <div className={s.steam} style={{ left: STACK.x + STACK.w / 2, top: STACK.top - 6 }} aria-hidden="true"><i /><i /><i /><i /><i /></div>
               {drops > 0 && (
@@ -503,10 +618,21 @@ export default function MachineHero() {
               </div>
 
               {/* Dr. Squash: black poodle with a clipboard, checking each feature off as it lands */}
-              <svg className={s.squash} viewBox="608 318 120 160" aria-hidden="true">
+              {/* his review, when you pet him: anchored by its tail just above his head */}
+              {petting && (
+                <div className={s.sqSay} style={{ left: SQUASH_FEET[0] + 14, top: SQUASH_FEET[1] - 132 }} aria-hidden="true">
+                  <div key={pet} className={s.sqBubble}>
+                    {SQUASH_SAYS[(pet - 1) % SQUASH_SAYS.length]}
+                    <svg className={s.sqTail} viewBox="0 0 22 20" width="22" height="20"><path d="M5 0 Q7 10 0 19 Q13 13 18 0" /></svg>
+                  </div>
+                </div>
+              )}
+              <svg className={cx(s.squash, petting && s.petting)} viewBox="608 318 120 160" aria-hidden="true">
                 <g className={s.nod}>
-                  <g transform={`translate(${SQUASH_FEET[0]} ${SQUASH_FEET[1]}) scale(${-SQUASH_SCALE} ${SQUASH_SCALE})`}>
-                    <Squash />
+                  <g key={pet} className={cx(s.pet, pet > 0 && s.hop)} onClick={petSquash}>
+                    <g transform={`translate(${SQUASH_FEET[0]} ${SQUASH_FEET[1]}) scale(${-SQUASH_SCALE} ${SQUASH_SCALE})`}>
+                      <Squash />
+                    </g>
                   </g>
                 </g>
               </svg>
