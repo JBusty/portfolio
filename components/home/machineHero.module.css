@@ -137,9 +137,13 @@
 .g2 { animation: spin 1.6s linear infinite reverse paused; }
 .g3 { animation: spin 1.1s linear infinite paused; }
 .run .g1, .run .g2, .run .g3 { animation-play-state: running; }
+/* while Josh loads the inputs, the lever's down but the machine holds still */
+.loading .g1, .loading .g2, .loading .g3 { animation-play-state: paused; }
+.run.loading .steam i, .run.loading .screen::after, .run.loading .bar i { animation: none; }
+.run.loading .screen::after { opacity: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.needle { transform-box: view-box; transform-origin: 364px 386px; transition: transform 0.9s cubic-bezier(0.3, 1.3, 0.5, 1); }
+.needle { transform-box: view-box; transform-origin: 364px 378px; transition: transform 0.9s cubic-bezier(0.3, 1.3, 0.5, 1); }
 .arc { transition: stroke-dashoffset 0.9s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
 /* status screen: centred in the case (74–426), same edges as the gear window and gauge below it */
@@ -179,10 +183,6 @@
 .run .bar i { background-image: repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.28) 0 6px, transparent 6px 12px); animation: stripes 0.7s linear infinite; }
 @keyframes stripes { to { background-position: 16.97px 0; } }
 
-.lights { position: absolute; left: 74px; top: 284px; display: flex; gap: 7px; padding: 5px 8px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1px rgba(27, 34, 51, 0.14); }
-.lights i { width: 9px; height: 9px; border-radius: 50%; background: #E6E8EC; box-shadow: inset 0 0 0 1px rgba(27, 34, 51, 0.2); transition: background 0.25s, box-shadow 0.25s; }
-.lights i.on { background: #3D5A80; box-shadow: 0 0 0 3px rgba(61, 90, 128, 0.18); }
-.lights i.ok { background: #2F7D5B; }
 
 /* the lever, on the roof; its position comes from LEVER_PIVOT in MachineHero.tsx */
 .lever { position: absolute; width: 96px; height: 170px; border: 0; background: none; cursor: pointer; padding: 0; z-index: 3; }

@@ -22,8 +22,10 @@ import s from './machineHero.module.css';
  */
 
 const VERB = ['Discovering', 'Designing', 'Building', 'Validating', 'Shipping'];
-const STEP = 1500;
-const LEAD = 900;
+// A pull loads the inputs first (LEAD: Josh throws them in while the machine waits), then runs
+// the five steps, STEP apart. The card lands at LEAD + 5 × STEP.
+const LEAD = 3000;
+const STEP = 1100;
 // Bounds of everything that's drawn, in machine coordinates.
 const BOUNDS = { x: 46, y: -135, w: 638, h: 640 };
 // Never draw it bigger than this: at full size it outweighs the copy beside it.
@@ -43,9 +45,9 @@ function gearPath(r: number, teeth: number) {
   return d + 'Z';
 }
 const GEARS = [
-  { x: 132, y: 364, r: 34, t: 12, c: 'g1' },
-  { x: 190, y: 382, r: 22, t: 9, c: 'g2' },
-  { x: 232, y: 352, r: 16, t: 8, c: 'g3' },
+  { x: 132, y: 356, r: 34, t: 12, c: 'g1' },
+  { x: 190, y: 374, r: 22, t: 9, c: 'g2' },
+  { x: 232, y: 344, r: 16, t: 8, c: 'g3' },
 ].map(g => ({ ...g, d: gearPath(g.r, g.t) }));
 
 /** A scalloped ellipse: curly doodle fur. */
@@ -221,9 +223,9 @@ const INPUT_ICONS: Record<(typeof MACHINE_INPUTS)[number]['icon'], ReactNode> = 
   horn: <><path d="M3.5 10.5v3a1 1 0 0 0 1 1H7l7.5 4.5v-14L7 9.5H4.5a1 1 0 0 0-1 1z" /><path d="M18 9a4 4 0 0 1 0 6" /></>,
   list: <path d="M4 6h.01M4 12h.01M4 18h.01M8.5 6h11.5M8.5 12h11.5M8.5 18h11.5" />,
 };
-// A pull sets Josh feeding the intake: four throws while it discovers and designs, then he stops,
-// so the second half of the run is the screen's and the shipped card's. The first leaves with the pull.
-const THROWS = 4, THROW_FROM = 0, THROW_EVERY = 1100;
+// The inputs: three throws, the first leaving with the pull, all in the hopper by the time the
+// steps start (LEAD), so the screen never competes with them.
+const THROWS = 3, THROW_FROM = 0, THROW_EVERY = 800;
 const TOSS_ARM: Keyframe[] = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(22deg)', offset: 0.35 }, { transform: 'rotate(-26deg)', offset: 0.6 }, { transform: 'rotate(0deg)' }];
 
 const JOSH_FEET = [404, 76] as const;
@@ -303,6 +305,7 @@ export default function MachineHero() {
   }, []);
   const cool = useCallback(() => { clearTimeout(coolT.current); coolT.current = window.setTimeout(() => setHot(false), 180); }, []);
   const [stage, setStage] = useState(-1);
+  const [loading, setLoading] = useState(false); // taking the inputs in: lever down, machine still
   const [feat, setFeat] = useState<MachineFeature | null>(null);
   // At rest the screen shows a real result (the last build) instead of an empty machine.
   // The lever and the first pull are untouched.
@@ -318,7 +321,9 @@ export default function MachineHero() {
     const f = MACHINE_FEATURES[nextRef.current++ % MACHINE_FEATURES.length];
     setFeat(f); setStage(-1); setLogs([]);
     const later = (ms: number, fn: () => void) => timers.current.push(window.setTimeout(fn, ms));
-    for (let i = 0; i < 5; i++) later(LEAD + i * STEP, () => { setStage(i); setLogs([f.log[i]]); });
+    setLoading(true);
+    // the inputs are in: the first step starts in the same render the loading ends
+    for (let i = 0; i < 5; i++) later(LEAD + i * STEP, () => { setLoading(false); setStage(i); setLogs([f.log[i]]); });
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       for (let j = 0; j < THROWS; j++) later(THROW_FROM + j * THROW_EVERY, () => {
         const it = MACHINE_INPUTS[inputRef.current++ % MACHINE_INPUTS.length];
@@ -329,7 +334,7 @@ export default function MachineHero() {
     later(LEAD + 5 * STEP, () => {
       setStage(5);
       setTray(t => [...t, { id: ++cardId.current, f }].slice(-4));
-      // machine off: lights, chips, bar and gauge all go back to idle
+      // machine off: chips, bar and gauge all go back to idle
       later(1400, () => { runningRef.current = false; setRunning(false); setStage(-1); setJunk([]); });
     });
   }, []);
@@ -414,7 +419,7 @@ export default function MachineHero() {
 
   const shipped = stage === 5;
   const p = running ? (stage < 0 ? 0 : shipped ? 1 : (stage + 0.5) / 5) : 0;
-  const status = !running ? (used ? 'Ready' : 'Last build') : stage < 0 ? 'Starting…' : shipped ? 'Shipped ✓' : `${VERB[stage]}…`;
+  const status = !running ? (used ? 'Ready' : 'Last build') : loading ? 'Loading inputs…' : stage < 0 ? 'Starting…' : shipped ? 'Shipped ✓' : `${VERB[stage]}…`;
   const name = running && feat ? feat.name : used ? 'Pull the lever for another' : `${REST.name} · ${REST.company}`;
   const dogProps = {
     onPointerEnter: heat,
@@ -469,7 +474,7 @@ export default function MachineHero() {
         <div ref={colRef} className={s.col}>
           <div className={s.box} style={{ width: BOUNDS.w * k, height: BOUNDS.h * k }}>
             <div
-              className={cx(s.bm, running && s.run, used && s.used, hot && !running && s.hot, shipped && s.shipped)}
+              className={cx(s.bm, running && s.run, loading && s.loading, used && s.used, hot && !running && s.hot, shipped && s.shipped)}
               style={{ transform: `scale(${k})`, left: -BOUNDS.x * k, top: -BOUNDS.y * k }}
             >
               <div className={s.floor} aria-hidden="true" />
@@ -509,8 +514,8 @@ export default function MachineHero() {
                 </g>
                 <path d="M60.3 99.7l3.4-3.4M436.3 99.7l3.4-3.4M60.3 427.7l3.4-3.4M436.3 427.7l3.4-3.4" stroke="rgba(27,34,51,.35)" strokeWidth="1.1" strokeLinecap="round" />
                 {/* gear window */}
-                <rect x="74" y="312" width="198" height="104" rx="12" fill="url(#bmWell)" stroke="rgba(27,34,51,.3)" strokeWidth="1.4" />
-                <rect x="75.5" y="313.5" width="195" height="101" rx="11" fill="none" stroke="rgba(27,34,51,.06)" strokeWidth="3" />
+                <rect x="74" y="296" width="198" height="120" rx="12" fill="url(#bmWell)" stroke="rgba(27,34,51,.3)" strokeWidth="1.4" />
+                <rect x="75.5" y="297.5" width="195" height="117" rx="11" fill="none" stroke="rgba(27,34,51,.06)" strokeWidth="3" />
                 {GEARS.map(g => (
                   <g key={g.c} transform={`translate(${g.x} ${g.y})`}>
                     <g className={`${s.gear} ${s[g.c]}`}>
@@ -520,18 +525,19 @@ export default function MachineHero() {
                   </g>
                 ))}
                 {/* gauge */}
-                <rect x="302" y="312" width="124" height="104" rx="12" fill="url(#bmWell)" stroke="rgba(27,34,51,.3)" strokeWidth="1.4" />
-                <path d="M324 386 A40 40 0 0 1 404 386" fill="none" stroke="#DCE2EA" strokeWidth="7" strokeLinecap="round" />
-                <path className={s.arc} d="M324 386 A40 40 0 0 1 404 386" fill="none" stroke="#3D5A80" strokeWidth="7" strokeLinecap="round" pathLength={100} strokeDasharray="100" style={{ strokeDashoffset: 100 - p * 100 }} />
-                <path d="M316 386h-4M364 338v-4M412 386h4M330 352l-3-3M398 352l3-3" stroke="rgba(27,34,51,.35)" strokeWidth="1.2" strokeLinecap="round" />
-                <line className={s.needle} x1="364" y1="386" x2="364" y2="354" stroke="#1B2233" strokeWidth="2.4" strokeLinecap="round" style={{ transform: `rotate(${-90 + p * 180}deg)` }} />
-                <circle cx="364" cy="386" r="5" fill="#1B2233" />
-                <text x="364" y="407" textAnchor="middle" fontSize="9" fontWeight="600" letterSpacing="1.2" fill="#5A6172">PROGRESS</text>
+                <rect x="302" y="296" width="124" height="120" rx="12" fill="url(#bmWell)" stroke="rgba(27,34,51,.3)" strokeWidth="1.4" />
+                <path d="M324 378 A40 40 0 0 1 404 378" fill="none" stroke="#DCE2EA" strokeWidth="7" strokeLinecap="round" />
+                <path className={s.arc} d="M324 378 A40 40 0 0 1 404 378" fill="none" stroke="#3D5A80" strokeWidth="7" strokeLinecap="round" pathLength={100} strokeDasharray="100" style={{ strokeDashoffset: 100 - p * 100 }} />
+                <path d="M316 378h-4M364 330v-4M412 378h4M330 344l-3-3M398 344l3-3" stroke="rgba(27,34,51,.35)" strokeWidth="1.2" strokeLinecap="round" />
+                <line className={s.needle} x1="364" y1="378" x2="364" y2="346" stroke="#1B2233" strokeWidth="2.4" strokeLinecap="round" style={{ transform: `rotate(${-90 + p * 180}deg)` }} />
+                <circle cx="364" cy="378" r="5" fill="#1B2233" />
+                <text x="364" y="400" textAnchor="middle" fontSize="9" fontWeight="600" letterSpacing="1.2" fill="#5A6172">PROGRESS</text>
                 {/* out port: a slim hood on the case's side, with the slot the cards come out of */}
                 <path d="M452 340 H468 Q478 340 478 350 V410 Q478 418 470 418 H452 Z" fill="url(#bmShell)" stroke="rgba(27,34,51,.32)" strokeWidth="1.4" />
                 <rect x="468" y="350" width="6" height="56" rx="3" fill="#2C3446" />
-                {/* maker's mark: small and quiet, stamped on the case, right-aligned to the screen edge */}
-                <text x="426" y="297" textAnchor="end" fontSize="8.5" fontWeight="700" letterSpacing="1.4" fill="#9AA1AE">
+                {/* maker's mark: small and quiet, stamped up the case's lower-left edge, starting level with the
+                    bottom of the gear window (reads bottom to top) */}
+                <text transform="translate(63.5 416) rotate(-90)" textAnchor="start" fontSize="8.5" fontWeight="700" letterSpacing="1.4" fill="#9AA1AE">
                   BUSSEY-MATIC 3000
                 </text>
               </svg>
@@ -546,9 +552,6 @@ export default function MachineHero() {
                 </div>
                 <div className={s.log}>{logs.map((l, i) => <div key={`${l}-${i}`}>{l}</div>)}</div>
                 <div className={s.bar}><i style={{ width: `${(used ? p : 1) * 100}%` }} /></div>
-              </div>
-              <div className={s.lights} aria-hidden="true">
-                {MACHINE_STAGES.map((c, j) => <i key={c} className={cx(running && j === stage && s.on, running && (j < stage || shipped) && s.ok)} />)}
               </div>
 
               <button
