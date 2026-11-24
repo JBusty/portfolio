@@ -32,6 +32,19 @@ export const MACHINE_FEATURES: MachineFeature[] = [
 
 export const MACHINE_STAGES = ['Discover', 'Design', 'Build', 'Validate', 'Ship'] as const;
 
+/** What Josh keeps tossing into the intake while the machine runs, in turn (icon names map to glyphs in MachineHero). */
+export const MACHINE_INPUTS = [
+  { label: 'Ambiguity', icon: 'ask' },
+  { label: 'Slack: “quick q?”', icon: 'chat' },
+  { label: 'PRD v7 (final)', icon: 'doc' },
+  { label: 'Eng sync', icon: 'cal' },
+  { label: 'Design system', icon: 'grid' },
+  { label: 'User interviews', icon: 'people' },
+  { label: 'Edge cases', icon: 'warn' },
+  { label: 'Exec feedback', icon: 'horn' },
+  { label: 'Jira backlog', icon: 'list' },
+] as const;
+
 export interface ProcessStep {
   title: string;
   line: string;

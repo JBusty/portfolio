@@ -4,7 +4,7 @@ import { type CSSProperties, Fragment, type ReactNode, useCallback, useEffect, u
 import { flushSync } from 'react-dom';
 import Link from 'next/link';
 import Mark from '@/components/Mark';
-import { MACHINE_FEATURES, MACHINE_STAGES, HERO_COMPANIES, type MachineFeature } from '@/lib/home';
+import { MACHINE_FEATURES, MACHINE_STAGES, MACHINE_INPUTS, HERO_COMPANIES, type MachineFeature } from '@/lib/home';
 import s from './machineHero.module.css';
 
 /*
@@ -215,6 +215,23 @@ function Josh() {
     </>
   );
 }
+/** Glyphs for the things Josh tosses in (24-unit, stroked). */
+const INPUT_ICONS: Record<(typeof MACHINE_INPUTS)[number]['icon'], ReactNode> = {
+  ask: <><circle cx="12" cy="12" r="9.5" /><path d="M9.2 9.2a2.9 2.9 0 0 1 5.6 1c0 2-2.8 2.6-2.8 4M12 17.6h.01" /></>,
+  chat: <path d="M20.5 14.5a2 2 0 0 1-2 2H8l-4.5 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z" />,
+  doc: <><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8z" /><path d="M14 2.5V8h5.5M8.5 13h7M8.5 17h7" /></>,
+  cal: <><rect x="3.5" y="4.5" width="17" height="16" rx="2" /><path d="M16 2.5v4M8 2.5v4M3.5 10h17" /></>,
+  grid: <><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" /><rect x="13.5" y="3.5" width="7" height="7" rx="1.5" /><rect x="3.5" y="13.5" width="7" height="7" rx="1.5" /><rect x="13.5" y="13.5" width="7" height="7" rx="1.5" /></>,
+  people: <><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20v-1a5 5 0 0 1 5-5h3a5 5 0 0 1 5 5v1M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14.2a5 5 0 0 1 3 4.8v1" /></>,
+  warn: <><path d="M10.3 3.9 2.4 17.5a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9.5v4M12 17h.01" /></>,
+  horn: <><path d="M3.5 10.5v3a1 1 0 0 0 1 1H7l7.5 4.5v-14L7 9.5H4.5a1 1 0 0 0-1 1z" /><path d="M18 9a4 4 0 0 1 0 6" /></>,
+  list: <path d="M4 6h.01M4 12h.01M4 18h.01M8.5 6h11.5M8.5 12h11.5M8.5 18h11.5" />,
+};
+// After the idea, Josh keeps feeding the intake through the run: one toss every THROW_EVERY ms,
+// the last one landing well before the feature ships.
+const THROWS = 5, THROW_FROM = 1200, THROW_EVERY = 1350;
+const TOSS_ARM: Keyframe[] = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(22deg)', offset: 0.35 }, { transform: 'rotate(-26deg)', offset: 0.6 }, { transform: 'rotate(0deg)' }];
+
 const JOSH_FEET = [404, 76] as const;
 const JOSH_SCALE = 1.04;
 
@@ -240,6 +257,9 @@ export default function MachineHero() {
   const runningRef = useRef(false);
   const nextRef = useRef(1);   // the first pull builds the second feature: the first is already on screen at rest
   const cardId = useRef(0);
+  const joshRef = useRef<SVGSVGElement>(null);
+  const inputRef = useRef(0); // the next thing Josh throws in, carried across runs
+  const junkId = useRef(0);
 
   // Pet Dr. Squash: he hops, squints happily, wags hard and gives his review.
   const [pet, setPet] = useState(0);
@@ -295,6 +315,7 @@ export default function MachineHero() {
   const [logs, setLogs] = useState<string[]>(REST.log.slice(-1)); // the last build's final step, as the screen reads after a run
   const [tray, setTray] = useState<{ id: number; f: MachineFeature }[]>([]);
   const [drops, setDrops] = useState(0);
+  const [junk, setJunk] = useState<{ id: number; label: string; icon: (typeof MACHINE_INPUTS)[number]['icon']; tilt: number }[]>([]);
 
   const run = useCallback(() => {
     if (runningRef.current) return;
@@ -305,11 +326,18 @@ export default function MachineHero() {
     setFeat(f); setStage(-1); setLogs([]); setDrops(d => d + 1);
     const later = (ms: number, fn: () => void) => timers.current.push(window.setTimeout(fn, ms));
     for (let i = 0; i < 5; i++) later(LEAD + i * STEP, () => { setStage(i); setLogs([f.log[i]]); });
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      for (let j = 0; j < THROWS; j++) later(THROW_FROM + j * THROW_EVERY, () => {
+        const it = MACHINE_INPUTS[inputRef.current++ % MACHINE_INPUTS.length];
+        setJunk(js => [...js, { id: ++junkId.current, label: it.label, icon: it.icon, tilt: j % 2 ? -1 : 1 }]);
+        joshRef.current?.querySelectorAll(`.${s.toss}`).forEach(arm => arm.animate(TOSS_ARM, { duration: 720, easing: 'cubic-bezier(0.4, 0, 0.3, 1)' }));
+      });
+    }
     later(LEAD + 5 * STEP, () => {
       setStage(5);
       setTray(t => [...t, { id: ++cardId.current, f }].slice(-4));
       // machine off: lights, chips, bar and gauge all go back to idle
-      later(1400, () => { runningRef.current = false; setRunning(false); setStage(-1); });
+      later(1400, () => { runningRef.current = false; setRunning(false); setStage(-1); setJunk([]); });
     });
   }, []);
 
@@ -477,11 +505,9 @@ export default function MachineHero() {
                 </g>
                 <path d="M466 402 L490 440 H602 V434 Q602 431 605 431 H609 Q612 431 612 434 V447 Q612 451 608 451 H488 Q484 451 482 448 L460 414 Z" fill="url(#bmShell)" stroke="rgba(27,34,51,.32)" strokeWidth="1.4" strokeLinejoin="round" />
                 <path d="M493 443.5 H600" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" opacity=".9" />
-                <text x="546" y="486" textAnchor="middle" fontSize="11" fontWeight="500" fill="#5A6172">Features out</text>
                 {/* intake chute */}
                 <path d="M290 14 H370 L352 78 H308 Z" fill="url(#bmShell)" stroke="rgba(27,34,51,.32)" strokeWidth="1.4" strokeLinejoin="round" />
                 <rect x="280" y="6" width="100" height="12" rx="6" fill="#fff" stroke="rgba(27,34,51,.32)" strokeWidth="1.4" />
-                <text x="330" y="-6" textAnchor="middle" fontSize="11" fontWeight="500" fill="#5A6172">Ideas in</text>
                 {/* shell */}
                 <rect x="40" y="76" width="420" height="372" rx="26" fill="url(#bmShell)" stroke="rgba(27,34,51,.32)" strokeWidth="1.4" />
                 <rect x="47" y="83" width="406" height="358" rx="20" fill="none" stroke="#fff" strokeWidth="1.5" opacity=".9" />
@@ -574,7 +600,7 @@ export default function MachineHero() {
               </svg>
 
               {/* Josh, on the roof by the intake */}
-              <svg className={cx(s.josh, talking && s.jTalking)} style={{ left: JOSH_FEET[0] - 80, top: JOSH_FEET[1] - 160 }} viewBox={`${JOSH_FEET[0] - 80} ${JOSH_FEET[1] - 160} 120 168`} aria-hidden="true">
+              <svg ref={joshRef} className={cx(s.josh, talking && s.jTalking)} style={{ left: JOSH_FEET[0] - 80, top: JOSH_FEET[1] - 160 }} viewBox={`${JOSH_FEET[0] - 80} ${JOSH_FEET[1] - 160} 120 168`} aria-hidden="true">
                 <g key={poke} className={cx(s.pet, poke > 0 && s.hop)} onClick={pokeJosh}>
                   <g transform={`translate(${JOSH_FEET[0]} ${JOSH_FEET[1]}) scale(${JOSH_SCALE})`}>
                     <Josh />
@@ -596,6 +622,22 @@ export default function MachineHero() {
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#3D5A80" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" /></svg>
                 </div>
               )}
+              {/* everything else Josh feeds it while it runs */}
+              {junk.map(j => (
+                <div key={j.id} className={s.junk} style={{ '--tilt': j.tilt } as CSSProperties} aria-hidden="true">
+                  <span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#3D5A80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{INPUT_ICONS[j.icon]}</svg>
+                    {j.label}
+                  </span>
+                </div>
+              ))}
+              {/* the intake again, over the flying things, so they drop into it rather than across its front */}
+              <svg className={s.chuteFront} viewBox="0 0 600 540" aria-hidden="true">
+                <path d="M290 14 H370 L352 78 H308 Z" fill="url(#bmShell)" stroke="rgba(27,34,51,.32)" strokeWidth="1.4" strokeLinejoin="round" />
+                <rect x="280" y="6" width="100" height="12" rx="6" fill="#fff" stroke="rgba(27,34,51,.32)" strokeWidth="1.4" />
+                {/* stamped on the hopper's face, like the maker's mark on the case */}
+                <text x="330" y="52" textAnchor="middle" fontSize="7.5" fontWeight="700" letterSpacing="1.2" fill="#9AA1AE">IDEAS IN</text>
+              </svg>
               <div className={s.tray}>
                 {tray.map((c, i) => {
                   const back = tray.length - 1 - i;
@@ -605,13 +647,14 @@ export default function MachineHero() {
                       ref={back === 0 ? slideIn : undefined}
                       href={`/work/${c.f.slug}`}
                       className={s.card}
+                      aria-label={`${c.f.name}: ${c.f.outcome}. Read the ${c.f.company} case study`}
                       tabIndex={back === 0 ? 0 : -1}
                       aria-hidden={back === 0 ? undefined : true}
                       style={back ? { transform: `translate(${back * 4}px, ${-back * 7}px)`, opacity: back < 3 ? 0.6 - (back - 1) * 0.25 : 0, zIndex: -back } : undefined}
                     >
+                      <i className={s.stamp} aria-hidden="true">✓ Shipped</i>
                       <b>{c.f.name}</b>
                       <span>{c.f.outcome}</span>
-                      <small>{c.f.company} · Read the case study →</small>
                     </Link>
                   );
                 })}
