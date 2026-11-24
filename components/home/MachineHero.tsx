@@ -222,7 +222,7 @@ const JOSH_SCALE = 1.04;
 const SQUASH_FEET = [650, 468] as const;
 const SQUASH_SCALE = 1;
 /** What Dr. Squash says when you pet him, in turn. */
-const SQUASH_SAYS = ['Woof.', 'LGTM', 'Ship it', 'Approved ✓', 'Needs more treats', 'Woof woof.'];
+const SQUASH_SAYS = ['LGTM.', 'Ship it', 'Woof', 'Approved ✓', 'Needs more treats', 'Woof woof.'];
 /** What Josh says when you click him, in turn. */
 const JOSH_SAYS = ['Hi, I’m Josh.', 'Let’s do this!', 'Got a gnarly problem?', 'Let’s build something.'];
 
