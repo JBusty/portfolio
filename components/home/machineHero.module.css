@@ -254,12 +254,12 @@
    idea (~350, -29), arcs up, and shrinks away down the intake. --tilt (±1) alternates the spin. */
 .junk {
   position: absolute; left: 350px; top: -29px; width: 0; height: 0; z-index: 2; opacity: 0;
-  animation: junkIn 1.25s cubic-bezier(0.3, 0, 0.6, 1) 0.42s forwards; /* released ~60% into the 720ms arm swing */
+  animation: junkIn 1.2s cubic-bezier(0.3, 0, 0.6, 1) 0.4s forwards; /* released ~60% into the 680ms arm swing */
 }
 .junk > span {
   /* held by its right end, clear of Josh's face; it centres on the intake as it flies */
   position: absolute; left: 0; top: 0; translate: -100% -50%;
-  animation: junkCentre 0.55s ease-out 0.42s forwards;
+  animation: junkCentre 0.5s ease-out 0.4s forwards;
   display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px 5px 7px; border-radius: 999px;
   background: #fff; border: 1.3px solid rgba(61, 90, 128, 0.45); box-shadow: 0 6px 14px -8px rgba(27, 34, 51, 0.5);
   font: 600 12.5px/1 var(--font-inter), sans-serif; letter-spacing: -0.01em; color: #1B2233; white-space: nowrap;

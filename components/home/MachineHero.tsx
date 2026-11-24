@@ -24,7 +24,7 @@ import s from './machineHero.module.css';
 const VERB = ['Discovering', 'Designing', 'Building', 'Validating', 'Shipping'];
 // A pull loads the inputs first (LEAD: Josh throws them in while the machine waits), then runs
 // the five steps, STEP apart. The card lands at LEAD + 5 × STEP.
-const LEAD = 3000;
+const LEAD = 2800;
 const STEP = 1100;
 // Bounds of everything that's drawn, in machine coordinates.
 const BOUNDS = { x: 46, y: -135, w: 638, h: 640 };
@@ -223,9 +223,12 @@ const INPUT_ICONS: Record<(typeof MACHINE_INPUTS)[number]['icon'], ReactNode> = 
   horn: <><path d="M3.5 10.5v3a1 1 0 0 0 1 1H7l7.5 4.5v-14L7 9.5H4.5a1 1 0 0 0-1 1z" /><path d="M18 9a4 4 0 0 1 0 6" /></>,
   list: <path d="M4 6h.01M4 12h.01M4 18h.01M8.5 6h11.5M8.5 12h11.5M8.5 18h11.5" />,
 };
-// The inputs: three throws, the first leaving with the pull, all in the hopper by the time the
-// steps start (LEAD), so the screen never competes with them.
-const THROWS = 3, THROW_FROM = 0, THROW_EVERY = 800;
+// The inputs: three throws in quick succession (each leaves before the last has landed), the first
+// with the pull, all in the hopper by the time the steps start (LEAD), so the screen never competes with them.
+const THROWS = 3, THROW_FROM = 0, THROW_EVERY = 600;
+// One thunk when the feature ships: the machine and everything on it dips and settles. Added on top of
+// each layer's own transform; the floor shadow, Dr. Squash and the tray stay put.
+const THUNK: Keyframe[] = [[0, 0], [0, 2.2], [-0.8, -0.7], [0.6, 0.4], [0, 0]].map(([x, y]) => ({ transform: `translate(${x}px, ${y}px)` }));
 const TOSS_ARM: Keyframe[] = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(22deg)', offset: 0.35 }, { transform: 'rotate(-26deg)', offset: 0.6 }, { transform: 'rotate(0deg)' }];
 
 const JOSH_FEET = [404, 76] as const;
@@ -254,6 +257,7 @@ export default function MachineHero() {
   const nextRef = useRef(1);   // the first pull builds the second feature: the first is already on screen at rest
   const cardId = useRef(0);
   const joshRef = useRef<SVGSVGElement>(null);
+  const bmRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef(0); // the next thing Josh throws in, carried across runs
   const junkId = useRef(0);
 
@@ -328,7 +332,7 @@ export default function MachineHero() {
       for (let j = 0; j < THROWS; j++) later(THROW_FROM + j * THROW_EVERY, () => {
         const it = MACHINE_INPUTS[inputRef.current++ % MACHINE_INPUTS.length];
         setJunk(js => [...js, { id: ++junkId.current, label: it.label, icon: it.icon, tilt: j % 2 ? -1 : 1 }]);
-        joshRef.current?.querySelectorAll(`.${s.toss}`).forEach(arm => arm.animate(TOSS_ARM, { duration: 720, easing: 'cubic-bezier(0.4, 0, 0.3, 1)' }));
+        joshRef.current?.querySelectorAll(`.${s.toss}`).forEach(arm => arm.animate(TOSS_ARM, { duration: 680, easing: 'cubic-bezier(0.4, 0, 0.3, 1)' }));
       });
     }
     later(LEAD + 5 * STEP, () => {
@@ -340,6 +344,13 @@ export default function MachineHero() {
   }, []);
 
   useEffect(() => () => { timers.current.forEach(clearTimeout); clearTimeout(coolT.current); }, []);
+
+  // the thunk as the feature ships (the screen and the characters ride along, so nothing comes apart)
+  useEffect(() => {
+    if (stage !== 5 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    bmRef.current?.querySelectorAll(`:scope > :is(.${s.body}, .${s.screen}, .${s.lever}, .${s.dog}, .${s.josh}, .${s.chuteFront}, .${s.say})`)
+      .forEach(el => el.animate(THUNK, { duration: 380, easing: 'ease-out', composite: 'add' }));
+  }, [stage]);
 
   // Fixed size: full size on wide screens, one smaller step on small laptops/tablets.
   // Only once it's stacked (≤1000px) does it shrink to fit, because a phone can't hold it.
@@ -474,6 +485,7 @@ export default function MachineHero() {
         <div ref={colRef} className={s.col}>
           <div className={s.box} style={{ width: BOUNDS.w * k, height: BOUNDS.h * k }}>
             <div
+              ref={bmRef}
               className={cx(s.bm, running && s.run, loading && s.loading, used && s.used, hot && !running && s.hot, shipped && s.shipped)}
               style={{ transform: `scale(${k})`, left: -BOUNDS.x * k, top: -BOUNDS.y * k }}
             >
@@ -535,9 +547,8 @@ export default function MachineHero() {
                 {/* out port: a slim hood on the case's side, with the slot the cards come out of */}
                 <path d="M452 340 H468 Q478 340 478 350 V410 Q478 418 470 418 H452 Z" fill="url(#bmShell)" stroke="rgba(27,34,51,.32)" strokeWidth="1.4" />
                 <rect x="468" y="350" width="6" height="56" rx="3" fill="#2C3446" />
-                {/* maker's mark: small and quiet, stamped up the case's lower-left edge, starting level with the
-                    bottom of the gear window (reads bottom to top) */}
-                <text transform="translate(63.5 416) rotate(-90)" textAnchor="start" fontSize="8.5" fontWeight="700" letterSpacing="1.4" fill="#9AA1AE">
+                {/* maker's mark: small and quiet, stamped centred along the bottom of the case, under the windows */}
+                <text x="250" y="431.5" textAnchor="middle" fontSize="8.5" fontWeight="700" letterSpacing="1.4" fill="#9AA1AE">
                   BUSSEY-MATIC 3000
                 </text>
               </svg>
