@@ -635,8 +635,6 @@ export default function MachineHero() {
               <svg className={s.chuteFront} viewBox="0 0 600 540" aria-hidden="true">
                 <path d="M290 14 H370 L352 78 H308 Z" fill="url(#bmShell)" stroke="rgba(27,34,51,.32)" strokeWidth="1.4" strokeLinejoin="round" />
                 <rect x="280" y="6" width="100" height="12" rx="6" fill="#fff" stroke="rgba(27,34,51,.32)" strokeWidth="1.4" />
-                {/* stamped on the hopper's face, like the maker's mark on the case */}
-                <text x="330" y="52" textAnchor="middle" fontSize="7.5" fontWeight="700" letterSpacing="1.2" fill="#9AA1AE">IDEAS IN</text>
               </svg>
               <div className={s.tray}>
                 {tray.map((c, i) => {
