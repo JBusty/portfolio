@@ -11,7 +11,7 @@ import s from './machineHero.module.css';
  * The homepage hero: copy on the left, the Bussey-Matic 3000 on the right.
  *
  * Nothing runs until someone pulls the lever (Dr. Noodles gives it a nudge now
- * and then so it reads as touchable). A pull drops an idea in the top, walks the
+ * and then so it reads as touchable). A pull sets Josh tossing work in the top, walks the
  * status screen through Discover → Ship for a real project, then slides that
  * project's card down the out-chute onto the tray, linked to its case study.
  *
@@ -202,7 +202,7 @@ function Josh() {
         <circle cx="-5.8" cy="-108.3" r=".75" fill="#fff" /><circle cx="6.7" cy="-108.3" r=".75" fill="#fff" />
       </g>
       <path className={s.jBrows} d="M-11.5 -112.5 q4.5 -3 9 -.6 M2 -113 q4.5 -2.6 9 .6" fill="none" stroke={HAIR} strokeWidth="2.8" strokeLinecap="round" />
-      {/* the hand up top, and the idea in it (released mid-toss: the hero's flying token takes over) */}
+      {/* the hand up top, and the idea in it (it goes when the first throw leaves his hand) */}
       <g transform="translate(-15 -78)"><g className={s.toss}><g transform="translate(15 78)">
         <circle cx="-43" cy="-94" r="5.8" fill={SKIN} {...OL} />
         <g className={s.jIdea}>
@@ -227,9 +227,9 @@ const INPUT_ICONS: Record<(typeof MACHINE_INPUTS)[number]['icon'], ReactNode> = 
   horn: <><path d="M3.5 10.5v3a1 1 0 0 0 1 1H7l7.5 4.5v-14L7 9.5H4.5a1 1 0 0 0-1 1z" /><path d="M18 9a4 4 0 0 1 0 6" /></>,
   list: <path d="M4 6h.01M4 12h.01M4 18h.01M8.5 6h11.5M8.5 12h11.5M8.5 18h11.5" />,
 };
-// After the idea, Josh feeds the intake a few more things while it discovers and designs, then stops,
-// so the second half of the run is the screen's and the shipped card's.
-const THROWS = 3, THROW_FROM = 1000, THROW_EVERY = 1100;
+// A pull sets Josh feeding the intake: four throws while it discovers and designs, then he stops,
+// so the second half of the run is the screen's and the shipped card's. The first leaves with the pull.
+const THROWS = 4, THROW_FROM = 0, THROW_EVERY = 1100;
 const TOSS_ARM: Keyframe[] = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(22deg)', offset: 0.35 }, { transform: 'rotate(-26deg)', offset: 0.6 }, { transform: 'rotate(0deg)' }];
 
 const JOSH_FEET = [404, 76] as const;
@@ -314,7 +314,6 @@ export default function MachineHero() {
   // The lever and the first pull are untouched.
   const [logs, setLogs] = useState<string[]>(REST.log.slice(-1)); // the last build's final step, as the screen reads after a run
   const [tray, setTray] = useState<{ id: number; f: MachineFeature }[]>([]);
-  const [drops, setDrops] = useState(0);
   const [junk, setJunk] = useState<{ id: number; label: string; icon: (typeof MACHINE_INPUTS)[number]['icon']; tilt: number }[]>([]);
 
   const run = useCallback(() => {
@@ -323,7 +322,7 @@ export default function MachineHero() {
     clearTimeout(coolT.current);
     setRunning(true); setUsed(true); setHot(false);
     const f = MACHINE_FEATURES[nextRef.current++ % MACHINE_FEATURES.length];
-    setFeat(f); setStage(-1); setLogs([]); setDrops(d => d + 1);
+    setFeat(f); setStage(-1); setLogs([]);
     const later = (ms: number, fn: () => void) => timers.current.push(window.setTimeout(fn, ms));
     for (let i = 0; i < 5; i++) later(LEAD + i * STEP, () => { setStage(i); setLogs([f.log[i]]); });
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -617,11 +616,6 @@ export default function MachineHero() {
               )}
 
               <div className={s.steam} style={{ left: STACK.x + STACK.w / 2, top: STACK.top - 6 }} aria-hidden="true"><i /><i /><i /><i /><i /></div>
-              {drops > 0 && (
-                <div key={drops} className={s.token} aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#3D5A80" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" /></svg>
-                </div>
-              )}
               {/* everything else Josh feeds it while it runs */}
               {junk.map(j => (
                 <div key={j.id} className={s.junk} style={{ '--tilt': j.tilt } as CSSProperties} aria-hidden="true">
