@@ -297,16 +297,14 @@
 .card span { display: block; margin-top: 3px; font: 600 10.5px/1.3 var(--font-inter), sans-serif; color: #3D5A80; }
 .card:hover b { text-decoration: underline; text-underline-offset: 2px; }
 
-/* Josh on the roof, holding an idea; on a pull he starts throwing work into the intake (see .junk).
+/* Josh on the roof, a hand up over the intake; on a pull he starts throwing work into it (see .junk).
    Click and he hops and says hi (same bubble as Squash's, growing right). */
 .josh { position: absolute; width: 120px; height: 168px; overflow: visible; pointer-events: none; z-index: 1; animation: rise 0.6s ease 1.3s backwards; }
-.jIdea { transition: opacity 0.3s; }
-/* hover: brows up and a little cheers with the coffee. Deliberately nothing on the idea: a glow there
-   would read as "click to start", and the lever is the one way to start the machine. */
+/* hover: brows up and a little cheers with the coffee. Nothing that reads as "click to start":
+   the lever is the one way to start the machine. */
 .jBrows, .jMug { transition: transform 0.25s cubic-bezier(0.3, 1.5, 0.5, 1); transform-box: fill-box; transform-origin: 30% 100%; }
 .pet:hover .jBrows { transform: translateY(-2px); }
 .pet:hover .jMug { transform: translate(1px, -5px) rotate(-8deg); }
-.run .jIdea { opacity: 0; transition: opacity 0s 0.42s; } /* gone from his hand as the first throw leaves it */
 .jTalking .eyes { animation: none; transform: scaleY(0.25); transition: transform 0.12s; }
 .sqBubble.jsBubble { left: 0; right: auto; rotate: -3deg; transform-origin: 10% 100%; }
 .sqTail.jsTail { left: 10px; right: auto; transform: none; }

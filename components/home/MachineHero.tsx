@@ -152,7 +152,7 @@ function Squash() {
   );
 }
 /**
- * Josh: stands on the roof beside the intake, an idea held up over it and a coffee in the other hand
+ * Josh: stands on the roof beside the intake, one hand raised over it (a wave at rest, the throwing hand on a pull) and a coffee in the other
  * (shaved head, beard, grey pullover, after his photo) in a lab coat like the dogs'. Origin at his feet, facing the viewer.
  */
 const SKIN = '#E7B793', SKIN_D = '#D19D77', HAIR = '#2A2220', PLACKET = '#5A6172';
@@ -165,7 +165,7 @@ function Josh() {
       <rect x="2" y="-42" width="11" height="40" rx="5" fill={JEANS} {...OL} />
       <ellipse cx="-9" cy="-2" rx="9.5" ry="4.2" fill="#1B2233" {...OL} />
       <ellipse cx="9" cy="-2" rx="9.5" ry="4.2" fill="#1B2233" {...OL} />
-      {/* raised arm (behind the body): holds the idea up over the intake, and tosses it in on a pull.
+      {/* raised arm (behind the body): up over the intake, and throws on a pull.
           The toss rotates about the shoulder (-15, -78): each arm part sits in a group with its origin there. */}
       <g transform="translate(-15 -78)"><g className={s.toss}><g transform="translate(15 78)">
         <path className={s.sleeve} style={{ stroke: '#EEF1F5' }} d="M-15 -78 Q-34 -76 -42 -92" fill="none" />
@@ -202,15 +202,9 @@ function Josh() {
         <circle cx="-5.8" cy="-108.3" r=".75" fill="#fff" /><circle cx="6.7" cy="-108.3" r=".75" fill="#fff" />
       </g>
       <path className={s.jBrows} d="M-11.5 -112.5 q4.5 -3 9 -.6 M2 -113 q4.5 -2.6 9 .6" fill="none" stroke={HAIR} strokeWidth="2.8" strokeLinecap="round" />
-      {/* the hand up top, and the idea in it (it goes when the first throw leaves his hand) */}
+      {/* the hand up top: the thrown chips leave from here */}
       <g transform="translate(-15 -78)"><g className={s.toss}><g transform="translate(15 78)">
         <circle cx="-43" cy="-94" r="5.8" fill={SKIN} {...OL} />
-        <g className={s.jIdea}>
-          <circle cx="-45" cy="-109" r="10.5" fill="#fff" stroke="rgba(61,90,128,.55)" strokeWidth="1.5" />
-          <g transform="translate(-52.2 -116.2) scale(.6)">
-            <path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" fill="none" stroke="#3D5A80" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-          </g>
-        </g>
       </g></g></g>
     </>
   );
