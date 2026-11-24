@@ -199,7 +199,7 @@ export default function MachineHero() {
   const [feat, setFeat] = useState<MachineFeature | null>(null);
   // At rest the screen shows a real result (the last build) instead of an empty machine.
   // The lever and the first pull are untouched.
-  const [logs, setLogs] = useState<string[]>([REST.outcome, 'Pull the lever to build another.']);
+  const [logs, setLogs] = useState<string[]>(REST.log.slice(-1)); // the last build's final step, as the screen reads after a run
   const [tray, setTray] = useState<{ id: number; f: MachineFeature }[]>([]);
   const [drops, setDrops] = useState(0);
 
@@ -211,7 +211,7 @@ export default function MachineHero() {
     const f = MACHINE_FEATURES[nextRef.current++ % MACHINE_FEATURES.length];
     setFeat(f); setStage(-1); setLogs([]); setDrops(d => d + 1);
     const later = (ms: number, fn: () => void) => timers.current.push(window.setTimeout(fn, ms));
-    for (let i = 0; i < 5; i++) later(LEAD + i * STEP, () => { setStage(i); setLogs(l => [...l, f.log[i]].slice(-2)); });
+    for (let i = 0; i < 5; i++) later(LEAD + i * STEP, () => { setStage(i); setLogs([f.log[i]]); });
     later(LEAD + 5 * STEP, () => {
       setStage(5);
       setTray(t => [...t, { id: ++cardId.current, f }].slice(-4));
