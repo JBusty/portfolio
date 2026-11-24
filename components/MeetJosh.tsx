@@ -25,7 +25,7 @@ const [JOSH, SQUASH, NOODLES] = CREW;
 const PHOTOS = [
   { who: 'squash', img: SQUASH.img, alt: 'Squash, a curly doodle, nose-first into the camera', caption: `${SQUASH.name} · ${SQUASH.role}`, boop: 'boop.', pos: 'center' },
   { who: 'noodles', img: NOODLES.img, alt: 'Noodles, a cream doodle in a birthday bandana', caption: `${NOODLES.name} · ${NOODLES.role}`, boop: 'woof.', pos: 'center 30%' },
-  { who: 'josh', img: JOSH.img, alt: 'Josh on a winter hike, smiling', caption: 'That’s me (and a passenger)', boop: 'hi!', pos: '40% 20%' },
+  { who: 'josh', img: JOSH.img, alt: 'Josh on a winter hike, smiling', caption: 'That’s me', boop: 'hi!', pos: '40% 20%' },
 ];
 const ME = 2;
 
