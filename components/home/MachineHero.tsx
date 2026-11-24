@@ -227,9 +227,9 @@ const INPUT_ICONS: Record<(typeof MACHINE_INPUTS)[number]['icon'], ReactNode> = 
   horn: <><path d="M3.5 10.5v3a1 1 0 0 0 1 1H7l7.5 4.5v-14L7 9.5H4.5a1 1 0 0 0-1 1z" /><path d="M18 9a4 4 0 0 1 0 6" /></>,
   list: <path d="M4 6h.01M4 12h.01M4 18h.01M8.5 6h11.5M8.5 12h11.5M8.5 18h11.5" />,
 };
-// After the idea, Josh keeps feeding the intake through the run: one toss every THROW_EVERY ms,
-// the last one landing well before the feature ships.
-const THROWS = 5, THROW_FROM = 1200, THROW_EVERY = 1350;
+// After the idea, Josh feeds the intake a few more things while it discovers and designs, then stops,
+// so the second half of the run is the screen's and the shipped card's.
+const THROWS = 3, THROW_FROM = 1000, THROW_EVERY = 1100;
 const TOSS_ARM: Keyframe[] = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(22deg)', offset: 0.35 }, { transform: 'rotate(-26deg)', offset: 0.6 }, { transform: 'rotate(0deg)' }];
 
 const JOSH_FEET = [404, 76] as const;
