@@ -183,10 +183,12 @@ export default function TopBar() {
   }, []);
 
   // Hides scrolling down, comes back scrolling up; always shown near the top.
+  // A jump of more than half a screen in one go isn't someone scrolling: it's a link to
+  // an anchor (/skills#engineering) or a programmatic scroll, so show the nav on arrival.
   useEffect(() => {
     function onScroll() {
       const y = window.scrollY;
-      if (y < 100) setVisible(true);
+      if (y < 100 || Math.abs(y - lastY.current) > window.innerHeight / 2) setVisible(true);
       else if (y > lastY.current) setVisible(false);
       else setVisible(true);
       lastY.current = y;
