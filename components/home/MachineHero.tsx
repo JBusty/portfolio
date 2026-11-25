@@ -4,7 +4,7 @@ import { type CSSProperties, Fragment, type ReactNode, useCallback, useEffect, u
 import { flushSync } from 'react-dom';
 import Link from 'next/link';
 import Mark from '@/components/Mark';
-import { MACHINE_FEATURES, MACHINE_STAGES, MACHINE_INPUTS, HERO_COMPANIES, type MachineFeature } from '@/lib/home';
+import { MACHINE_FEATURES, MACHINE_STAGES, MACHINE_INPUTS, HERO_SKILLS, type MachineFeature } from '@/lib/home';
 import s from './machineHero.module.css';
 
 /*
@@ -478,9 +478,9 @@ export default function MachineHero() {
             <Link href="/work" className="btn">View case studies <Mark /></Link>
             <Link href="/work/identity-profiles" className="btn ghost">Read the AI case study <Mark /></Link>
           </div>
-          <p className={s.cos}>
-            <span>Shipped at</span>
-            {HERO_COMPANIES.map((c, i) => <Fragment key={c}>{i > 0 && <i aria-hidden="true">·</i>}<b>{c}</b></Fragment>)}
+          <p className={s.bring}>
+            <span>What I bring</span>
+            {HERO_SKILLS.map((g, i) => <Fragment key={g.id}>{i > 0 && <i aria-hidden="true">·</i>}<Link href={`/skills#${g.id}`}>{g.label}</Link></Fragment>)}
           </p>
         </div>
 

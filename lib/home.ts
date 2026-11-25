@@ -92,5 +92,9 @@ export const RESULT_PRODUCTS: { short: string; name: string }[] = [
 ];
 export const RESULT_INDUSTRIES = ['Security', 'Banking', 'Healthcare', 'Benefits', 'Food service'];
 
-/** The quiet "Shipped at" line under the hero buttons: the most recognizable names from COMPANIES. */
-export const HERO_COMPANIES = ['Zscaler', 'Red Canary', 'Edenred', 'CIT Bank'];
+/** The quiet "What I bring" line under the hero buttons: the three skill groups, each linking to its card on /skills (ids from lib/skills.ts). */
+export const HERO_SKILLS = [
+  { id: 'product', label: 'Product & platform' },
+  { id: 'ai', label: 'AI-augmented design' },
+  { id: 'engineering', label: 'Engineering fluency' },
+];

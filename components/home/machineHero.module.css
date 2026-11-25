@@ -85,17 +85,18 @@
   margin-top: 30px;
   animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.65s backwards;
 }
-/* a quiet line of names under the buttons: proof without pulling the lever */
-.cos {
+/* a quiet line under the buttons: the three skill groups, each a way into its proof on /skills */
+.bring {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; margin: 28px 0 0;
   font-size: 14px; color: var(--sub, #5A6172);
   animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.8s backwards;
 }
-.cos span { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
-.cos b { font-weight: 600; color: var(--ink-2, #2C3446); }
-.cos i { font-style: normal; color: var(--rule-strong, rgba(27, 34, 51, 0.3)); }
+.bring span { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+.bring a { font-weight: 600; color: var(--ink-2, #2C3446); text-decoration: none; }
+.bring a:hover { color: var(--accent, #3D5A80); text-decoration: underline; text-underline-offset: 3px; }
+.bring i { font-style: normal; color: var(--rule-strong, rgba(27, 34, 51, 0.3)); }
 /* phones: the names wrap, so drop the dots rather than strand one at the start of a line */
-@media (max-width: 600px) { .cos { column-gap: 14px; } .cos i { display: none; } }
+@media (max-width: 600px) { .bring { column-gap: 14px; } .bring i { display: none; } }
 .col {
   position: relative;
   display: flex;
@@ -350,7 +351,7 @@
 
 
 @media (prefers-reduced-motion: reduce) {
-  .bg, .word, .shipLine path, .lede, .acts, .cos, .col, .pop, .say, .tail, .eyes, .ring, .run .steam i, .squash, .josh, .hop, .run .toss, .shipped .nod, .shipped .clip, .run .screen::after, .run .hd span::before, .run .bar i { animation: none !important; }
+  .bg, .word, .shipLine path, .lede, .acts, .bring, .col, .pop, .say, .tail, .eyes, .ring, .run .steam i, .squash, .josh, .hop, .run .toss, .shipped .nod, .shipped .clip, .run .screen::after, .run .hd span::before, .run .bar i { animation: none !important; }
   .bm:not(.used):not(.run):not(.hot) .arm { animation: none; }
 }
 
