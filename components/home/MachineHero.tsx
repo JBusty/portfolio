@@ -414,7 +414,8 @@ export default function MachineHero() {
     return () => { cancelAnimationFrame(raf); io.disconnect(); };
   }, []);
 
-  // A new card slides out of the chute's mouth, down the slide and onto the tray.
+  // A new card slides out of the chute's mouth, down the slide and onto the tray at 80%,
+  // then springs up to full size once it has landed.
   const slideIn = useCallback((el: HTMLAnchorElement | null) => {
     if (!el || el.dataset.landed) return;
     el.dataset.landed = '1';
@@ -426,6 +427,7 @@ export default function MachineHero() {
       { transform: 'translate(3px, 1px) scale(1) rotate(-2deg)', offset: 0.85 },
       { transform: 'translate(0, 0)' },
     ], { duration: 950, easing: 'cubic-bezier(.45,0,.3,1)' });
+    el.animate([{ scale: 0.8 }, { scale: 1 }], { duration: 500, delay: 900, easing: 'cubic-bezier(.3,1.6,.5,1)', fill: 'backwards' });
   }, []);
 
   const shipped = stage === 5;
@@ -589,7 +591,7 @@ export default function MachineHero() {
               </button>
               {/* Dr. Noodles says it: a comic speech bubble, tail curling down to his head */}
               <div className={s.say} style={{ left: DOG_FEET[0] + 30 }} aria-hidden="true">
-                Pull to build a feature
+                Pull to ship an outcome
                 <svg className={s.sayTail} viewBox="0 0 22 20" width="22" height="20"><path d="M5 0 Q7 10 0 19 Q13 13 18 0" /></svg>
               </div>
 
