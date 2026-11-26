@@ -108,10 +108,29 @@ export default function MeetJosh({ open, onClose, avatarRef }: { open: boolean; 
     window.setTimeout(finish, 540);
   }, [avatarRef, finish, fromAvatar, order]);
 
+  // The browser's Back button closes it too: opening adds a history entry (same URL) that Back pops.
+  // Closing any other way removes that entry again, so Back afterwards still leaves the page as before.
+  // The listener stays put for as long as it's open and reads the latest close() from a ref: Back makes
+  // Next re-render the top bar (new onClose → new close), and a listener swapped out mid-dispatch never fires.
+  const pushed = useRef(false);
+  const closeLatest = useRef(close);
+  useEffect(() => { closeLatest.current = close; }, [close]);
+  useEffect(() => {
+    if (!mounted) return;
+    if (!pushed.current) { window.history.pushState({ meetJosh: true }, ''); pushed.current = true; }
+    const onPop = () => { if (pushed.current) { pushed.current = false; closeLatest.current(); } };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [mounted]);
+  const dismiss = useCallback(() => {
+    if (pushed.current) { pushed.current = false; window.history.back(); }
+    close();
+  }, [close]);
+
   useEffect(() => {
     if (!mounted) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close();
+      if (e.key === 'Escape') dismiss();
       if (e.key === 'Tab' && cardRef.current) {   // keep focus inside the dialog
         const f = [...(cardRef.current.parentElement?.querySelectorAll<HTMLElement>('button, a[href]') ?? [])];
         if (!f.length) return;
@@ -122,7 +141,7 @@ export default function MeetJosh({ open, onClose, avatarRef }: { open: boolean; 
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [mounted, close]);
+  }, [mounted, dismiss]);
 
   function front(i: number) {
     if (order[0] === i) { setBoop(-1); requestAnimationFrame(() => setBoop(i)); return; }
@@ -135,9 +154,9 @@ export default function MeetJosh({ open, onClose, avatarRef }: { open: boolean; 
 
   return (
     <div className={`meet${shown ? ' open' : ''}`} role="dialog" aria-modal="true" aria-labelledby="meet-title">
-      <div className="meet-scrim" onClick={close} />
+      <div className="meet-scrim" onClick={dismiss} />
       {/* clicking anywhere that isn't a photo or the card closes it, same as the scrim */}
-      <div className="meet-in" onClick={e => { if (e.target === e.currentTarget || e.target === photosRef.current) close(); }}>
+      <div className="meet-in" onClick={e => { if (e.target === e.currentTarget || e.target === photosRef.current) dismiss(); }}>
         <div className="meet-photos" ref={photosRef}>
           {PHOTOS.map((ph, i) => {
             const s = SLOTS[order.indexOf(i)];
@@ -161,7 +180,7 @@ export default function MeetJosh({ open, onClose, avatarRef }: { open: boolean; 
           <span className="sticker s3">systems nerd</span>
         </div>
         <div className="meet-card" ref={cardRef}>
-          <button ref={closeRef} className="meet-x" type="button" onClick={close} aria-label="Close">&times;</button>
+          <button ref={closeRef} className="meet-x" type="button" onClick={dismiss} aria-label="Close">&times;</button>
           <div className="eyebrow" style={{ '--d': 0 } as CSSProperties}>Hi, I&apos;m</div>
           <h2 id="meet-title" style={{ '--d': 1 } as CSSProperties}>Josh Bussey.</h2>
           <p style={{ '--d': 2 } as CSSProperties}>
@@ -186,7 +205,7 @@ export default function MeetJosh({ open, onClose, avatarRef }: { open: boolean; 
             ))}
           </div>
           <div className="acts" style={{ '--d': 6 } as CSSProperties}>
-            <Link href="/contact" className="btn" onClick={close}>Say hi <Mark /></Link>
+            <Link href="/contact" replace className="btn" onClick={() => { pushed.current = false; close(); }}>Say hi <Mark /></Link>
             <a href={RESUME_URL} target="_blank" rel="noopener noreferrer" className="btn ghost">Résumé <Mark dir="out" /></a>
           </div>
         </div>
