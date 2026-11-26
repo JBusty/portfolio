@@ -7,6 +7,7 @@ import Mark from '@/components/Mark';
 import { VALUES, JOURNEY, FAQ, COMPANIES } from '@/lib/data';
 import MachineHero from '@/components/home/MachineHero';
 import ProcessLine from '@/components/home/ProcessLine';
+import Results from '@/components/home/Results';
 import { useSeen } from '@/components/home/useSeen';
 
 // ---------- HOME ----------
@@ -230,6 +231,7 @@ function HomeJourney() {
   return (
     <section id="journey">
       <SectionHead title={<>12 years,<br />one winding road<span className="accent">.</span></>} />
+      <Results />
       <div className="container sp-bot-xl" style={{ padding: '0 32px 240px' }}>
         <div className="r-journey">
           {/* Sticky scrubber */}

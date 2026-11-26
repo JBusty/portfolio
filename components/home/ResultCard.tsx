@@ -3,16 +3,16 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import type { Stat } from '@/lib/data';
 import { RESULT_PRODUCTS, RESULT_INDUSTRIES } from '@/lib/home';
-import s from './processLine.module.css';
+import s from './results.module.css';
 
 /*
- * One of the four Results cards under the process line: a small picture of the
- * number, then the number itself, which counts up the first time the section is seen.
- * Entrance animations are keyed off the section's `.seen`; hover effects use
+ * One of the four career-number cards at the top of the journey section: a small picture of
+ * the number, then the number itself, which counts up the first time the cards are seen.
+ * Entrance animations are keyed off the grid's `.seen`; hover effects use
  * separate properties (translate/scale/opacity), so leaving a card never replays them.
  */
 
-const ENTER_MS = 1050;   // when the cards' visuals start, after the panel has come in
+const ENTER_MS = 350;    // when the cards' visuals start, once the first card has risen
 const STAGGER_MS = 90;
 
 export default function ResultCard({ stat, i, seen }: { stat: Stat; i: number; seen: boolean }) {

@@ -85,68 +85,14 @@
 .broken .crack path { animation: crack 0.35s ease-out forwards; }
 @keyframes crack { to { stroke-dashoffset: 0; } }
 
-/* ---------- Results: four cards under the line, in the panel's material ---------- */
-.results { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
-.rc {
-  position: relative; display: flex; flex-direction: column; min-height: 212px; padding: 22px 24px; border-radius: 20px; overflow: hidden;
-  background: linear-gradient(180deg, #1B2335 0%, #171E2E 100%); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
-  transition: translate 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s, background 0.3s;
-}
-.rc::before { /* a rule that draws across the top on hover, like a lit station */
-  content: ''; position: absolute; left: 24px; right: 24px; top: 0; height: 2px; border-radius: 0 0 2px 2px; background: var(--lift);
-  transform: scaleX(0); transform-origin: left; transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.rc:hover { translate: 0 -4px; background: linear-gradient(180deg, #1F283C 0%, #19202F 100%); box-shadow: inset 0 0 0 1px rgba(169, 192, 224, 0.24), 0 26px 44px -26px rgba(0, 0, 0, 0.9); }
-.rc:hover::before { transform: scaleX(1); }
-.vis { height: 56px; display: flex; align-items: flex-end; }
-.num { margin-top: auto; padding-top: 20px; font-size: 46px; line-height: 1; font-weight: 800; letter-spacing: -0.045em; color: #fff; font-variant-numeric: tabular-nums; }
-.lbl { margin-top: 8px; max-width: 26ch; font-size: 14px; line-height: 1.45; color: var(--text-2); }
-.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-
-/* years: a bar per year, rising to a marker for today */
-.ticks { display: flex; align-items: flex-end; gap: 4px; }
-.ticks i { width: 9px; height: var(--h); border-radius: 2px; background: var(--lift); opacity: var(--o); transform-origin: bottom;
-  transition: translate 0.3s cubic-bezier(0.3, 1.5, 0.5, 1), opacity 0.3s; transition-delay: calc(var(--j) * 28ms); }
-.ticks .today { width: 3px; height: 54px; margin-left: 3px; opacity: 1; background: #fff; }
-.rc:hover .ticks i { translate: 0 -4px; opacity: 1; }
-
-/* people: a crowd that lights up */
-.dots { display: grid; grid-template-columns: repeat(16, 6px); gap: 4px; }
-.dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--lift); opacity: var(--o);
-  transition: opacity 0.35s, scale 0.35s; transition-delay: calc(var(--r) * 320ms); }
-.rc:hover .dots i { opacity: 1; scale: 1.15; }
-
-/* products: the shipped piece from the belt, once per product */
-.pieces { display: flex; align-items: flex-end; gap: 10px; }
-.pieces div { text-align: center; font: 600 9.5px var(--font-inter), sans-serif; color: rgba(214, 222, 236, 0.55); white-space: nowrap;
-  transition: translate 0.35s cubic-bezier(0.3, 1.6, 0.5, 1), color 0.3s; transition-delay: calc(var(--j) * 60ms); }
-.pieces svg { display: block; margin: 0 auto 5px; }
-.rc:hover .pieces div { translate: 0 -5px; color: #D9E4F2; }
-
-/* industries */
-.chips { display: flex; flex-wrap: wrap; gap: 5px; }
-.chips i { font: 600 11px var(--font-inter), sans-serif; font-style: normal; padding: 4px 9px; border-radius: 999px; background: rgba(169, 192, 224, 0.12); color: var(--lift);
-  transition: background 0.3s, color 0.3s; transition-delay: calc(var(--j) * 50ms); }
-.rc:hover .chips i { background: rgba(169, 192, 224, 0.24); color: #fff; }
-
 /* ---------- entrance: plays once, when the section scrolls into view ---------- */
-.process:not(.seen) :is(.head h2, .head p, .panel, .rig, .card, .ice, .rc) { opacity: 0; }
+.process:not(.seen) :is(.head h2, .head p, .panel, .rig, .card, .ice) { opacity: 0; }
 .seen .head h2 { animation: enter 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
 .seen .head p { animation: enter 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s backwards; }
 .seen .panel { animation: panelIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s backwards; }
 .seen .rig { animation: fade 0.8s ease 0.55s backwards; }
 .seen .card { animation: enter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; animation-delay: calc(0.45s + var(--i) * 80ms); }
 .seen .ice { animation: iceIn 0.75s cubic-bezier(0.3, 1.5, 0.5, 1) 0.9s backwards; }
-/* results: each card rises, then its picture builds */
-.seen .rc { animation: enter 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; animation-delay: calc(0.8s + var(--i) * 90ms); }
-.seen .ticks i { animation: grow 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; animation-delay: calc(var(--d) + var(--j) * 45ms); }
-.seen .dots i { animation: pop 0.4s ease backwards; animation-delay: calc(var(--d) + var(--r) * 700ms); }
-.seen .pieces div { animation: drop 0.6s cubic-bezier(0.3, 1.2, 0.5, 1) backwards; animation-delay: calc(var(--d) + var(--j) * 120ms); }
-.seen .chips i { animation: chip 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) backwards; animation-delay: calc(var(--d) + var(--j) * 80ms); }
-@keyframes grow { from { transform: scaleY(0); } }
-@keyframes pop { from { opacity: 0; transform: scale(0); } }
-@keyframes drop { 0% { opacity: 0; transform: translateY(-22px); } 55% { opacity: 1; transform: translateY(0) scale(1.1, 0.88); } 100% { transform: none; } }
-@keyframes chip { from { opacity: 0; transform: scale(0.6); } }
 @keyframes enter { from { opacity: 0; transform: translateY(24px); } }
 @keyframes fade { from { opacity: 0; } }
 @keyframes panelIn { from { opacity: 0; transform: translateY(40px) scale(0.97); } }
@@ -187,15 +133,11 @@
   .broken .card.cur { border-left-color: var(--alarm); }
   .broken .card.cur .k, .broken .card.cur h3 { color: var(--alarm); }
   .power { display: none; }
-  .results { grid-template-columns: 1fr 1fr; gap: 12px; }
-  .rc { min-height: 0; padding: 20px; }
-  .num { font-size: 40px; }
 }
 @media (max-width: 880px) { .mini { margin: 0 -20px; padding: 10px 20px 8px; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .mSpin, .mPress, .mSquash, .mDetour, .seen :is(.head h2, .head p, .panel, .rig, .card, .ice, .rc, .ticks i, .dots i, .pieces div, .chips i) { animation: none !important; }
-  .rc, .rc *, .rc::before { transition: none !important; }
+  .mSpin, .mPress, .mSquash, .mDetour, .seen :is(.head h2, .head p, .panel, .rig, .card, .ice) { animation: none !important; }
   .mRide { transition: none; }
   .planb, .shake .panel, .ice:hover .hammer, .smash .hammer, .broken .crack path { animation: none !important; }
   .broken .crack path { stroke-dashoffset: 0; }
@@ -203,10 +145,3 @@
 
 /* match .container: 20px sides on small screens */
 @media (max-width: 880px) { .in { padding: 0 20px; } }
-/* phones: one card per row; the products row is too wide for half a phone */
-@media (max-width: 600px) {
-  .results { grid-template-columns: 1fr; gap: 10px; }
-  .rc { padding: 18px 20px; }
-  .vis { height: 44px; }
-  .num { padding-top: 14px; font-size: 36px; }
-}

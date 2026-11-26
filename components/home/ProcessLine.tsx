@@ -2,10 +2,8 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { PROCESS_STEPS, PROCESS_POWER } from '@/lib/home';
-import { STATS } from '@/lib/data';
 import { drawJosh } from './drawJosh';
 import ProcessMini from './ProcessMini';
-import ResultCard from './ResultCard';
 import { useSeen } from './useSeen';
 import s from './processLine.module.css';
 
@@ -367,9 +365,6 @@ export default function ProcessLine() {
               )}
             </article>
           </div>
-        </div>
-        <div className={s.results} aria-label="Results">
-          {STATS.map((st, i) => <ResultCard key={st.label} stat={st} i={i} seen={seen} />)}
         </div>
       </div>
     </section>
